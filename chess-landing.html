@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess.com Clone • Sidebar + Lessons</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* LEFT SIDEBAR */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: #18181b;
+            border-right: 1px solid #27272a;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            padding: 24px 20px 16px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #fff;
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo::before {
+            content: "♟️";
+            font-size: 32px;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            font-size: 17px;
+            font-weight: 500;
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-button:hover {
+            background: #27272a;
+            color: #ffffff;
+        }
+
+        .nav-button:hover .icon {
+            transform: scale(1.15);
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: transform 0.2s;
+        }
+
+        /* FIXED SUBMENU - NO MORE DISAPPEARING */
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            margin-left: -8px;           /* ← THIS OVERLAP ELIMINATES THE GAP */
+            width: 260px;
+            background: #27272a;
+            border-radius: 8px;
+            box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.4);
+            padding: 8px 0;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hover trigger is now continuous thanks to the overlap */
+        .nav-item:hover .submenu {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .submenu-item {
+            display: block;
+            padding: 14px 24px;
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .submenu-item:hover {
+            background: #3b3b40;
+            padding-left: 32px;
+            color: #fff;
+        }
+
+        .submenu-divider {
+            height: 1px;
+            background: #3b3b40;
+            margin: 8px 16px;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main {
+            margin-left: 260px;
+            height: 100vh;
+            background: linear-gradient(145deg, #1a1a1e, #111113);
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        /* LESSONS PAGE STYLES (unchanged) */
+        .lessons-page {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .lessons-header {
+            margin-bottom: 32px;
+        }
+
+        .lessons-header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .breadcrumb {
+            color: #58c2f2;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .side-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #27272a;
+            padding-bottom: 16px;
+        }
+
+        .side-btn {
+            flex: 1;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            background: #27272a;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .side-btn.active {
+            background: #58c2f2;
+            color: #000;
+            transform: scale(1.03);
+        }
+
+        .side-btn.ct::before { content: "🛡️"; }
+        .side-btn.t::before { content: "🔥"; }
+
+        .phase-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .phase-btn {
+            padding: 12px 28px;
+            background: #27272a;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 9999px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .phase-btn.active {
+            background: #58c2f2;
+            color: #000;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .video-card {
+            background: #27272a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(88, 194, 242, 0.2);
+        }
+
+        .thumbnail {
+            height: 180px;
+            background: #1a1a1e;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #58c2f2;
+        }
+
+        .thumbnail::after {
+            content: "▶";
+            position: absolute;
+            font-size: 42px;
+            background: rgba(0, 0, 0, 0.6);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+        }
+
+        .video-info {
+            padding: 16px;
+        }
+
+        .video-info h3 {
+            font-size: 17px;
+            line-height: 1.3;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .video-info .duration {
+            font-size: 13px;
+            color: #58c2f2;
+            font-weight: 500;
+        }
+
+        .video-info p {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #27272a;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #58c2f2;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            chess<span style="color: #58c2f2;">.</span>com
+        </div>
+
+        <nav class="nav">
+
+            <!-- PUZZLES -->
+            <div class="nav-item">
+                <button class="nav-button">
+                    <span class="icon">🧩</span>
+                    <span>Puzzles</span>
+                </button>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Daily Puzzle</a>
+                    <a href="#" class="submenu-item">Puzzle Rush</a>
+                    <a href="#" class="submenu-item">Rated Puzzles</a>
+                    <a href="#" class="submenu-item">Puzzle Streak</a>
+                    <div class="submenu-divider"></div>
+                    <a href="#" class="submenu-item">Puzzle History</a>
+                    <a href="#" class="submenu-item">Custom Puzzles</a>
+                </div>
+            </div>
+
+            <!-- LEARN -->
+            <div class="nav-item">
+                <button class="nav-button">
+                    <span class="icon">📚</span>
+                    <span>Learn</span>
+                </button>
+                <div class="submenu">
+                    <a href="#" onclick="loadLessons(); return false;" class="submenu-item">Lessons</a>
+                    <a href="#" class="submenu-item">Courses</a>
+                    <a href="#" class="submenu-item">Openings</a>
+                    <a href="#" class="submenu-item">Tactics Trainer</a>
+                    <div class="submenu-divider"></div>
+                    <a href="#" class="submenu-item">Opening Explorer</a>
+                    <a href="#" class="submenu-item">Chess Fundamentals</a>
+                </div>
+            </div>
+
+            <!-- TRAIN -->
+            <div class="nav-item">
+                <button class="nav-button">
+                    <span class="icon">⚔️</span>
+                    <span>Train</span>
+                </button>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Tactics</a>
+                    <a href="#" class="submenu-item">Endgame Practice</a>
+                    <a href="#" class="submenu-item">Bot Matches</a>
+                    <a href="#" class="submenu-item">Analysis Board</a>
+                    <div class="submenu-divider"></div>
+                    <a href="#" class="submenu-item">Training Challenges</a>
+                    <a href="#" class="submenu-item">Progress Tracker</a>
+                </div>
+            </div>
+
+            <!-- WATCH -->
+            <div class="nav-item">
+                <button class="nav-button">
+                    <span class="icon">📺</span>
+                    <span>Watch</span>
+                </button>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Live Streams</a>
+                    <a href="#" class="submenu-item">Videos</a>
+                    <a href="#" class="submenu-item">Tournaments</a>
+                    <a href="#" class="submenu-item">Top Games</a>
+                    <div class="submenu-divider"></div>
+                    <a href="#" class="submenu-item">Chess TV</a>
+                    <a href="#" class="submenu-item">Event Replays</a>
+                </div>
+            </div>
+
+            <!-- COMMUNITY -->
+            <div class="nav-item">
+                <button class="nav-button">
+                    <span class="icon">👥</span>
+                    <span>Community</span>
+                </button>
+                <div class="submenu">
+                    <a href="#" class="submenu-item">Forums</a>
+                    <a href="#" class="submenu-item">Clubs</a>
+                    <a href="#" class="submenu-item">Friends</a>
+                    <a href="#" class="submenu-item">Teams</a>
+                    <div class="submenu-divider"></div>
+                    <a href="#" class="submenu-item">Leaderboards</a>
+                    <a href="#" class="submenu-item">Events</a>
+                </div>
+            </div>
+
+        </nav>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main" id="main-content">
+        <!-- Default home screen -->
+        <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #555; text-align: center;">
+            <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Fixed!</h1>
+            <p style="font-size: 18px; max-width: 420px;">The submenu gap has been fixed.<br>
+            Hover any main button now → submenus stay open smoothly.</p>
+            <p style="margin-top: 20px; font-size: 15px; opacity: 0.6;">Click <strong>Learn → Lessons</strong> to test the video page again.</p>
+        </div>
+    </div>
+
+    <script>
+        // Video data (same as before)
+        const videoData = {
+            "ct_early": [{title: "CT Early Round – Default Hold on Mirage", duration: "12:34", desc: "Standard CT positions and setups for pistol round on Mirage A/B sites."}, {title: "CT Early Round – A Site Smoke Lineup", duration: "9:12", desc: "Essential smokes and flashes every CT player needs to know."}, {title: "CT Early Round – Retake Fundamentals", duration: "14:55", desc: "How to retake sites efficiently when you lose control early."}, {title: "CT Early Round – Utility Management", duration: "8:47", desc: "When and how to use your grenades in the first 30 seconds."}],
+            "ct_mid": [{title: "CT Mid Round – Rotations & Reads", duration: "11:20", desc: "How to rotate perfectly based on T side fake or real execute."}, {title: "CT Mid Round – Mid Control on Inferno", duration: "10:05", desc: "Holding mid and preventing T side from taking banana."}, {title: "CT Mid Round – Post-Plant Defense", duration: "13:40", desc: "Defending bombsites after the plant in mid-round scenarios."}, {title: "CT Mid Round – Trade Timing", duration: "7:58", desc: "When to take fights and when to hold for trades."}],
+            "ct_afterplant": [{title: "CT After Plant – 1v3 Clutch Guide", duration: "15:22", desc: "Advanced retake strategies when the bomb is already planted."}, {title: "CT After Plant – Site Executions", duration: "9:45", desc: "How CTs clear angles after T side plants on Dust2."}, {title: "CT After Plant – Fake Defuse Plays", duration: "11:10", desc: "Mind games and timing to bait T side out of positions."}, {title: "CT After Plant – Utility Retake", duration: "10:30", desc: "Using remaining utility to win post-plant situations."}],
+            "t_early": [{title: "T Early Round – Fast Execute on Mirage", duration: "8:19", desc: "How to rush B site with perfect utility usage."}, {title: "T Early Round – Fake & Split Plays", duration: "12:05", desc: "Advanced early round fakes to confuse CT side."}, {title: "T Early Round – Mid Control Takeover", duration: "9:50", desc: "Taking mid control before the main execute."}, {title: "T Early Round – Pistol Round Strats", duration: "14:15", desc: "Eco round tactics that win pistol rounds consistently."}],
+            "t_mid": [{title: "T Mid Round – Post-Plant Pressure", duration: "10:40", desc: "How to maintain pressure after planting in mid round."}, {title: "T Mid Round – Second Wave Attacks", duration: "11:30", desc: "Bringing in the second wave of players to overwhelm CTs."}, {title: "T Mid Round – Fake Plant Plays", duration: "8:55", desc: "Baiting CTs into bad positions with fake plants."}, {title: "T Mid Round – Utility Denial", duration: "13:10", desc: "How to deny CT utility and take map control."}],
+            "t_afterplant": [{title: "T After Plant – Defending Your Bomb", duration: "12:50", desc: "Holding the planted bomb against CT retakes."}, {title: "T After Plant – Angle Holding", duration: "9:35", desc: "Best angles to hold after plant on Nuke and Overpass."}, {title: "T After Plant – 3v2 Retake Defense", duration: "10:20", desc: "How to win the after-plant fight with numbers advantage."}, {title: "T After Plant – Bomb Timer Management", duration: "7:40", desc: "Timing your defense perfectly with 30 seconds left."}]
+        };
+
+        let currentSide = 'ct';
+        let currentPhase = 'early';
+
+        function renderVideos() {
+            const key = `${currentSide}_${currentPhase}`;
+            const videos = videoData[key] || [];
+            const container = document.getElementById('videos-container');
+            if (!videos.length) {
+                container.innerHTML = `<div class="empty-state">No videos found for this combination yet.<br>Try another side or round phase.</div>`;
+                return;
+            }
+            let html = '';
+            videos.forEach(video => {
+                html += `
+                    <div class="video-card" onclick="playPlaceholderVideo('${video.title}')">
+                        <div class="thumbnail">▶️</div>
+                        <div class="video-info">
+                            <h3>${video.title}</h3>
+                            <div class="duration">${video.duration}</div>
+                            <p>${video.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.selectSide = function(side) {
+            currentSide = side;
+            document.querySelectorAll('.side-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-side') === side);
+            });
+            renderVideos();
+        };
+
+        window.selectPhase = function(phase) {
+            currentPhase = phase;
+            document.querySelectorAll('.phase-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-phase') === phase);
+            });
+            renderVideos();
+        };
+
+        window.playPlaceholderVideo = function(title) {
+            const modalHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; display: flex; align-items: center; justify-content: center;" onclick="if(event.target === this) this.remove()">
+                    <div style="width: 900px; max-width: 92%; background: #18181b; border-radius: 12px; padding: 20px; position: relative;">
+                        <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; color: #fff; cursor: pointer;">×</button>
+                        <div style="background: #111; padding-top: 56.25%; position: relative; border-radius: 8px; overflow: hidden;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #58c2f2; font-size: 60px;">
+                                ▶️<br>
+                                <span style="font-size: 22px; display: block; margin-top: 20px;">Now playing:</span>
+                                <span style="font-size: 24px; font-weight: 600;">${title}</span>
+                            </div>
+                            <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 14px;">YouTube video would embed here (placeholder)</div>
+                        </div>
+                        <p style="margin-top: 16px; text-align: center; color: #aaa;">In a real site this would be an &lt;iframe&gt; YouTube embed.<br>Click anywhere outside to close.</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('main-content').insertAdjacentHTML('beforeend', modalHTML);
+        };
+
+        window.loadLessons = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="lessons-page">
+                    <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+                    <div class="lessons-header">
+                        <div class="breadcrumb">Learn &nbsp;›&nbsp; Lessons</div>
+                        <h1>Side-Specific Round Strategies</h1>
+                    </div>
+                    <div class="side-selector">
+                        <button onclick="selectSide('ct')" class="side-btn active" data-side="ct">CT Side</button>
+                        <button onclick="selectSide('t')" class="side-btn" data-side="t">T Side</button>
+                    </div>
+                    <div class="phase-selector">
+                        <button onclick="selectPhase('early')" class="phase-btn active" data-phase="early">Early Round</button>
+                        <button onclick="selectPhase('mid')" class="phase-btn" data-phase="mid">Mid Round</button>
+                        <button onclick="selectPhase('afterplant')" class="phase-btn" data-phase="afterplant">After Plant</button>
+                    </div>
+                    <div id="videos-container" class="video-grid"></div>
+                </div>
+            `;
+            currentSide = 'ct';
+            currentPhase = 'early';
+            renderVideos();
+        };
+
+        window.loadHome = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #555; text-align: center;">
+                    <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Submenu fixed</h1>
+                    <p style="font-size: 18px; max-width: 420px;">Hover any main button (Puzzles, Learn, etc.)<br>Submenus now stay open smoothly.</p>
+                    <p style="margin-top: 30px; font-size: 15px; opacity: 0.6;">Click <strong>Learn → Lessons</strong> to go back to the video page.</p>
+                </div>
+            `;
+        };
+
+        console.log('%c✅ Sidebar hover fixed! Submenus no longer disappear.', 'color:#58c2f2; font-size:15px; font-weight:600;');
+    </script>
+
+</body>
+</html>
