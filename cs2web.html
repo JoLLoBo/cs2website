@@ -331,6 +331,68 @@
             background: #58c2f2;
             color: #000;
         }
+
+        /* PUZZLE PAGE STYLES */
+        .puzzle-page {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .map-container {
+            position: relative;
+            display: block;
+            margin: 30px auto;
+            max-width: 820px;
+            border: 5px solid #27272a;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .map-container img {
+            width: 100%;
+            display: block;
+        }
+
+        .blue-dot {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            background: #58c2f2;
+            color: #000;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 17px;
+            box-shadow: 0 0 0 5px rgba(88, 194, 242, 0.4);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            transform: translate(-50%, -50%);
+        }
+
+        .blue-dot:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            box-shadow: 0 0 0 8px rgba(88, 194, 242, 0.6);
+        }
+
+        .blue-dot.correct {
+            background: #4ade80;
+            box-shadow: 0 0 0 5px rgba(74, 222, 128, 0.6);
+        }
+
+        .blue-dot.wrong {
+            background: #f87171;
+            box-shadow: 0 0 0 5px rgba(248, 113, 113, 0.6);
+        }
+
+        #puzzle-feedback {
+            min-height: 100px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -350,7 +412,7 @@
                     <span>Puzzles</span>
                 </button>
                 <div class="submenu">
-                    <a href="#" class="submenu-item">Daily Puzzle</a>
+                    <a href="#" onclick="loadDailyPuzzle(); return false;" class="submenu-item">Daily Puzzle</a>
                     <a href="#" class="submenu-item">Puzzle Rush</a>
                     <a href="#" class="submenu-item">Rated Puzzles</a>
                     <a href="#" class="submenu-item">Puzzle Streak</a>
@@ -438,30 +500,30 @@
             <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Fixed!</h1>
             <p style="font-size: 18px; max-width: 420px;">The submenu gap has been fixed.<br>
             Hover any main button now → submenus stay open smoothly.</p>
-            <p style="margin-top: 20px; font-size: 15px; opacity: 0.6;">Click <strong>Learn → Lessons</strong> to test the video page again.</p>
+            <p style="margin-top: 20px; font-size: 15px; opacity: 0.6;">Click <strong>Learn → Lessons</strong> or <strong>Puzzles → Daily Puzzle</strong> to test the new content.</p>
         </div>
     </div>
 
     <script>
-        // Updated video data with all requested additions
+        // Video data (unchanged from previous version)
         const videoData = {
             "ct_early": [
                 {
                     title: "Fast Info - Concept",
                     duration: "37:41",
-                    desc: "Learn how to gain fast info safely without gambling (examples from Ancient & Inferno).",
+                    desc: "The biggest bottleneck in CS2 – lack of information at the start of rounds. Learn how to gain fast info safely without gambling (examples from Ancient & Inferno).",
                     youtubeId: "R9ePVLPsnLY"
                 },
                 {
                     title: "Fast Info Blueprint - Practical",
-                    duration: "37:30",
-                    desc: "---",
+                    duration: "37:27",
+                    desc: "Blueprint for taking fast information safely on the CT side in CS2. Pre-planned reactions, safe info-taking, pixel/jiggle spots, and nade usage (Molly, flash, smoke).",
                     youtubeId: "CAORQvrnyXM"
                 },
                 {
-                    title: "Fast Info - Unfluent vs Fluent",
-                    duration: "00:48",
-                    desc: "---",
+                    title: "Fast Info - Advanced Framework",
+                    duration: "32:10",
+                    desc: "Advanced practical applications of the fast info framework for CT side in early rounds (continuation of the series).",
                     youtubeId: "pU3Qhq-YKMY"
                 }
             ],
@@ -524,6 +586,17 @@
             "t_early": [{title: "T Early Round – Fast Execute on Mirage", duration: "8:19", desc: "How to rush B site with perfect utility usage."}, {title: "T Early Round – Fake & Split Plays", duration: "12:05", desc: "Advanced early round fakes to confuse CT side."}, {title: "T Early Round – Mid Control Takeover", duration: "9:50", desc: "Taking mid control before the main execute."}, {title: "T Early Round – Pistol Round Strats", duration: "14:15", desc: "Eco round tactics that win pistol rounds consistently."}],
             "t_mid": [{title: "T Mid Round – Post-Plant Pressure", duration: "10:40", desc: "How to maintain pressure after planting in mid round."}, {title: "T Mid Round – Second Wave Attacks", duration: "11:30", desc: "Bringing in the second wave of players to overwhelm CTs."}, {title: "T Mid Round – Fake Plant Plays", duration: "8:55", desc: "Baiting CTs into bad positions with fake plants."}, {title: "T Mid Round – Utility Denial", duration: "13:10", desc: "How to deny CT utility and take map control."}],
             "t_afterplant": [{title: "T After Plant – Defending Your Bomb", duration: "12:50", desc: "Holding the planted bomb against CT retakes."}, {title: "T After Plant – Angle Holding", duration: "9:35", desc: "Best angles to hold after plant on Nuke and Overpass."}, {title: "T After Plant – 3v2 Retake Defense", duration: "10:20", desc: "How to win the after-plant fight with numbers advantage."}, {title: "T After Plant – Bomb Timer Management", duration: "7:40", desc: "Timing your defense perfectly with 30 seconds left."}]
+        };
+
+        // NEW: Daily Puzzle data (blue dots on the map)
+        const puzzleData = {
+            dots: [
+                { id: 1, left: "10%", top: "0%", correct: false, expl: "Too exposed on the left ramp. Not safe enough for initial fast info." },
+                { id: 2, left: "31%", top: "41%", correct: true,  expl: "✅ Correct! This is the ideal A fast info initial position — safe pixel/jiggle spot with immediate line of sight to key areas." },
+                { id: 3, left: "47%", top: "52%", correct: false, expl: "Mid-round rotation spot, not the starting fast-info position." },
+                { id: 4, left: "68%", top: "38%", correct: false, expl: "This is on the B-side connector. Wrong side for A fast info." },
+                { id: 5, left: "24%", top: "68%", correct: false, expl: "Too deep in the back. You won’t get fast info from here." }
+            ]
         };
 
         let currentSide = 'ct';
@@ -633,18 +706,94 @@
             renderVideos();
         };
 
+        // NEW: Daily Puzzle loader
+        window.loadDailyPuzzle = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="puzzle-page">
+                    <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+                    <div class="lessons-header">
+                        <div class="breadcrumb">Puzzles &nbsp;›&nbsp; Daily Puzzle</div>
+                        <h1>Daily Puzzle</h1>
+                    </div>
+                    <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
+                        Which of the following is the A fast info initial position?
+                    </p>
+                    <div class="map-container" id="map-container">
+                        <img src="daily-puzzle-map.webp" alt="CS2 Map - A Fast Info Positions">
+                        <!-- Blue dots are injected here by JavaScript -->
+                    </div>
+                    <div id="puzzle-feedback"></div>
+                </div>
+            `;
+
+            // Render the clickable blue dots on top of the map
+            renderPuzzleDots();
+        };
+
+        function renderPuzzleDots() {
+            const container = document.getElementById('map-container');
+            // Remove any old dots
+            container.querySelectorAll('.blue-dot').forEach(el => el.remove());
+
+            puzzleData.dots.forEach(dot => {
+                const dotEl = document.createElement('div');
+                dotEl.className = 'blue-dot';
+                dotEl.style.left = dot.left;
+                dotEl.style.top = dot.top;
+                dotEl.textContent = dot.id;
+                dotEl.onclick = () => handleDotClick(dot.id);
+                container.appendChild(dotEl);
+            });
+        }
+
+        function handleDotClick(id) {
+            const feedbackEl = document.getElementById('puzzle-feedback');
+            const selectedDot = puzzleData.dots.find(d => d.id === id);
+            const isCorrect = selectedDot.correct;
+
+            // Highlight all dots
+            document.querySelectorAll('.blue-dot').forEach(el => {
+                const dotId = parseInt(el.textContent);
+                const dotInfo = puzzleData.dots.find(d => d.id === dotId);
+                
+                if (dotInfo.correct) {
+                    el.classList.add('correct');
+                } else if (dotId === id) {
+                    el.classList.add('wrong');
+                }
+                // Disable further clicks
+                el.style.pointerEvents = 'none';
+            });
+
+            if (isCorrect) {
+                feedbackEl.innerHTML = `
+                    <div style="background:#4ade80; color:#000; padding:24px; border-radius:12px; max-width:620px; margin:0 auto; font-size:18px; font-weight:500;">
+                        ✅ Correct!<br>
+                        <strong>${selectedDot.expl}</strong>
+                    </div>`;
+            } else {
+                feedbackEl.innerHTML = `
+                    <div style="background:#f87171; color:#fff; padding:24px; border-radius:12px; max-width:620px; margin:0 auto; font-size:18px; font-weight:500;">
+                        ❌ Not quite.<br>
+                        <strong>${selectedDot.expl}</strong><br><br>
+                        The correct position is highlighted in green.
+                    </div>`;
+            }
+        }
+
         window.loadHome = function() {
             const main = document.getElementById('main-content');
             main.innerHTML = `
                 <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #555; text-align: center;">
                     <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Submenu fixed</h1>
                     <p style="font-size: 18px; max-width: 420px;">Hover any main button (Puzzles, Learn, etc.)<br>Submenus now stay open smoothly.</p>
-                    <p style="margin-top: 30px; font-size: 15px; opacity: 0.6;">Click <strong>Learn → Lessons</strong> to go back to the video page.</p>
+                    <p style="margin-top: 30px; font-size: 15px; opacity: 0.6;">Click <strong>Puzzles → Daily Puzzle</strong> to try the new interactive map puzzle!</p>
                 </div>
             `;
         };
 
-        console.log('%c✅ All requested videos added! CT Early now has 3 real videos with thumbnails + real embeds. CT Mid and After Plant updated too.', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ Daily Puzzle added! Click Puzzles → Daily Puzzle to play the interactive "A fast info initial position" map puzzle with clickable blue dots.', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 
 </body>
