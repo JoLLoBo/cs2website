@@ -104,7 +104,7 @@
             position: absolute;
             top: 0;
             left: 100%;
-            margin-left: -8px;           /* ← THIS OVERLAP ELIMINATES THE GAP */
+            margin-left: -8px;
             width: 260px;
             background: #27272a;
             border-radius: 8px;
@@ -116,7 +116,6 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Hover trigger is now continuous thanks to the overlap */
         .nav-item:hover .submenu {
             display: block;
             opacity: 1;
@@ -154,7 +153,6 @@
             padding: 40px;
         }
 
-        /* LESSONS PAGE STYLES (unchanged) */
         .lessons-page {
             max-width: 1100px;
             margin: 0 auto;
@@ -261,6 +259,13 @@
             justify-content: center;
             font-size: 48px;
             color: #58c2f2;
+            overflow: hidden;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .thumbnail::after {
@@ -275,6 +280,7 @@
             align-items: center;
             justify-content: center;
             opacity: 0.9;
+            z-index: 2;
         }
 
         .video-info {
@@ -437,11 +443,84 @@
     </div>
 
     <script>
-        // Video data (same as before)
+        // Updated video data with all requested additions
         const videoData = {
-            "ct_early": [{title: "CT Early Round – Default Hold on Mirage", duration: "12:34", desc: "Standard CT positions and setups for pistol round on Mirage A/B sites."}, {title: "CT Early Round – A Site Smoke Lineup", duration: "9:12", desc: "Essential smokes and flashes every CT player needs to know."}, {title: "CT Early Round – Retake Fundamentals", duration: "14:55", desc: "How to retake sites efficiently when you lose control early."}, {title: "CT Early Round – Utility Management", duration: "8:47", desc: "When and how to use your grenades in the first 30 seconds."}],
-            "ct_mid": [{title: "CT Mid Round – Rotations & Reads", duration: "11:20", desc: "How to rotate perfectly based on T side fake or real execute."}, {title: "CT Mid Round – Mid Control on Inferno", duration: "10:05", desc: "Holding mid and preventing T side from taking banana."}, {title: "CT Mid Round – Post-Plant Defense", duration: "13:40", desc: "Defending bombsites after the plant in mid-round scenarios."}, {title: "CT Mid Round – Trade Timing", duration: "7:58", desc: "When to take fights and when to hold for trades."}],
-            "ct_afterplant": [{title: "CT After Plant – 1v3 Clutch Guide", duration: "15:22", desc: "Advanced retake strategies when the bomb is already planted."}, {title: "CT After Plant – Site Executions", duration: "9:45", desc: "How CTs clear angles after T side plants on Dust2."}, {title: "CT After Plant – Fake Defuse Plays", duration: "11:10", desc: "Mind games and timing to bait T side out of positions."}, {title: "CT After Plant – Utility Retake", duration: "10:30", desc: "Using remaining utility to win post-plant situations."}],
+            "ct_early": [
+                {
+                    title: "Fast Info - Concept",
+                    duration: "37:41",
+                    desc: "Learn how to gain fast info safely without gambling (examples from Ancient & Inferno).",
+                    youtubeId: "R9ePVLPsnLY"
+                },
+                {
+                    title: "Fast Info Blueprint - Practical",
+                    duration: "37:30",
+                    desc: "---",
+                    youtubeId: "CAORQvrnyXM"
+                },
+                {
+                    title: "Fast Info - Unfluent vs Fluent",
+                    duration: "00:48",
+                    desc: "---",
+                    youtubeId: "pU3Qhq-YKMY"
+                }
+            ],
+            "ct_mid": [
+                {
+                    title: "CT Mid Round – Rotations & Reads",
+                    duration: "11:20",
+                    desc: "How to rotate perfectly based on T side fake or real execute."
+                },
+                {
+                    title: "CT Mid Round – Mid Control on Inferno",
+                    duration: "10:05",
+                    desc: "Holding mid and preventing T side from taking banana."
+                },
+                {
+                    title: "CT Mid Round – Post-Plant Defense",
+                    duration: "13:40",
+                    desc: "Defending bombsites after the plant in mid-round scenarios."
+                },
+                {
+                    title: "CT Mid Round – Trade Timing",
+                    duration: "7:58",
+                    desc: "When to take fights and when to hold for trades."
+                },
+                {
+                    title: "Midrounding basics CT side",
+                    duration: "23:15",
+                    desc: "CT midrounding strategy in CS2: gathering information, setting up positions, pushing sites, rotating to beam, smoking red room, and triple pushing B while keeping A coverage.",
+                    youtubeId: "JW03Uf-hjeU"
+                }
+            ],
+            "ct_afterplant": [
+                {
+                    title: "CT After Plant – 1v3 Clutch Guide",
+                    duration: "15:22",
+                    desc: "Advanced retake strategies when the bomb is already planted."
+                },
+                {
+                    title: "CT After Plant – Site Executions",
+                    duration: "9:45",
+                    desc: "How CTs clear angles after T side plants on Dust2."
+                },
+                {
+                    title: "CT After Plant – Fake Defuse Plays",
+                    duration: "11:10",
+                    desc: "Mind games and timing to bait T side out of positions."
+                },
+                {
+                    title: "CT After Plant – Utility Retake",
+                    duration: "10:30",
+                    desc: "Using remaining utility to win post-plant situations."
+                },
+                {
+                    title: "Afterplant CT - reverse execute basics - Practical",
+                    duration: "08:32",
+                    desc: "CT-side reverse execute strategies: no nade removal, smoking the bomb after clearing, and pushing from two sides for defuse.",
+                    youtubeId: "4ZgqSO4j5_Q"
+                }
+            ],
             "t_early": [{title: "T Early Round – Fast Execute on Mirage", duration: "8:19", desc: "How to rush B site with perfect utility usage."}, {title: "T Early Round – Fake & Split Plays", duration: "12:05", desc: "Advanced early round fakes to confuse CT side."}, {title: "T Early Round – Mid Control Takeover", duration: "9:50", desc: "Taking mid control before the main execute."}, {title: "T Early Round – Pistol Round Strats", duration: "14:15", desc: "Eco round tactics that win pistol rounds consistently."}],
             "t_mid": [{title: "T Mid Round – Post-Plant Pressure", duration: "10:40", desc: "How to maintain pressure after planting in mid round."}, {title: "T Mid Round – Second Wave Attacks", duration: "11:30", desc: "Bringing in the second wave of players to overwhelm CTs."}, {title: "T Mid Round – Fake Plant Plays", duration: "8:55", desc: "Baiting CTs into bad positions with fake plants."}, {title: "T Mid Round – Utility Denial", duration: "13:10", desc: "How to deny CT utility and take map control."}],
             "t_afterplant": [{title: "T After Plant – Defending Your Bomb", duration: "12:50", desc: "Holding the planted bomb against CT retakes."}, {title: "T After Plant – Angle Holding", duration: "9:35", desc: "Best angles to hold after plant on Nuke and Overpass."}, {title: "T After Plant – 3v2 Retake Defense", duration: "10:20", desc: "How to win the after-plant fight with numbers advantage."}, {title: "T After Plant – Bomb Timer Management", duration: "7:40", desc: "Timing your defense perfectly with 30 seconds left."}]
@@ -460,9 +539,15 @@
             }
             let html = '';
             videos.forEach(video => {
+                const thumbnailHTML = video.youtubeId 
+                    ? `<img src="https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg" alt="${video.title}">`
+                    : '▶️';
+                
                 html += `
-                    <div class="video-card" onclick="playPlaceholderVideo('${video.title}')">
-                        <div class="thumbnail">▶️</div>
+                    <div class="video-card" onclick="playPlaceholderVideo('${video.title}', '${video.youtubeId || ''}')">
+                        <div class="thumbnail">
+                            ${thumbnailHTML}
+                        </div>
                         <div class="video-info">
                             <h3>${video.title}</h3>
                             <div class="duration">${video.duration}</div>
@@ -490,20 +575,32 @@
             renderVideos();
         };
 
-        window.playPlaceholderVideo = function(title) {
+        window.playPlaceholderVideo = function(title, youtubeId = '') {
+            let videoHTML = '';
+            if (youtubeId) {
+                videoHTML = `
+                    <iframe width="100%" height="100%" style="position:absolute;top:0;left:0;border-radius:8px;" 
+                            src="https://www.youtube.com/embed/${youtubeId}?autoplay=1" 
+                            title="${title}" frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>`;
+            } else {
+                videoHTML = `
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #58c2f2; font-size: 60px;">
+                        ▶️<br>
+                        <span style="font-size: 22px; display: block; margin-top: 20px;">Now playing:</span>
+                        <span style="font-size: 24px; font-weight: 600;">${title}</span>
+                    </div>`;
+            }
+
             const modalHTML = `
                 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; display: flex; align-items: center; justify-content: center;" onclick="if(event.target === this) this.remove()">
                     <div style="width: 900px; max-width: 92%; background: #18181b; border-radius: 12px; padding: 20px; position: relative;">
                         <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; color: #fff; cursor: pointer;">×</button>
                         <div style="background: #111; padding-top: 56.25%; position: relative; border-radius: 8px; overflow: hidden;">
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #58c2f2; font-size: 60px;">
-                                ▶️<br>
-                                <span style="font-size: 22px; display: block; margin-top: 20px;">Now playing:</span>
-                                <span style="font-size: 24px; font-weight: 600;">${title}</span>
-                            </div>
-                            <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 14px;">YouTube video would embed here (placeholder)</div>
+                            ${videoHTML}
                         </div>
-                        <p style="margin-top: 16px; text-align: center; color: #aaa;">In a real site this would be an &lt;iframe&gt; YouTube embed.<br>Click anywhere outside to close.</p>
+                        <p style="margin-top: 16px; text-align: center; color: #aaa;">Click anywhere outside to close.</p>
                     </div>
                 </div>
             `;
@@ -547,7 +644,7 @@
             `;
         };
 
-        console.log('%c✅ Sidebar hover fixed! Submenus no longer disappear.', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ All requested videos added! CT Early now has 3 real videos with thumbnails + real embeds. CT Mid and After Plant updated too.', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 
 </body>
