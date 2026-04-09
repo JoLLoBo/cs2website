@@ -349,7 +349,7 @@
             margin: 0 auto;
         }
         .puzzle-feedback-side {
-            flex: 0 0 420px;
+            flex: 0 0 520px;
             position: sticky;
             top: 40px;
             border-radius: 12px;
@@ -552,34 +552,20 @@
                         { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
                         { id: 8, left: "35%", top: "69%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
                     ]},
-                    {
-                    "level": 2,
-                    "question": "abcd",
-                    "imageSrc": "daily-puzzle-map.webp",
-                    "dots": [
-                        {
-                            "id": 1,
-                            "left": "50.7%",
-                            "top": "18.8%",
-                            "correct": false,
-                            "expl": "New dot – edit later"
-                        },
-                        {
-                            "id": 2,
-                            "left": "70.5%",
-                            "top": "27.9%",
-                            "correct": false,
-                            "expl": "New dot – edit later"
-                        },
-                        {
-                            "id": 3,
-                            "left": "78.1%",
-                            "top": "37.6%",
-                            "correct": false,
-                            "expl": "New dot – edit later"
-                        }
-                    ]
-                },
+                    { level: 2, question: "Which is the fast info position for mid?", imageSrc: "daily-puzzle-map.webp", dots: [
+                        { id: 1, left: "43.1%", top: "17.1%", correct: false, expl: "New dot – edit later" },
+                        { id: 2, left: "54.5%", top: "22.9%", correct: false, expl: "New dot – edit later" },
+                        { id: 3, left: "58.1%", top: "26.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 4, left: "57.9%", top: "31.2%", correct: false, expl: "New dot – edit later" },
+                        { id: 5, left: "50.9%", top: "28.5%", correct: false, expl: "New dot – edit later" },
+                        { id: 6, left: "47.4%", top: "31.5%", correct: true, expl: "New dot – edit later", gifSrc: "./ancientMidFastInfoStartingPos.gif" },
+                        { id: 7, left: "49.5%", top: "35.5%", correct: false, expl: "New dot – edit later" },
+                        { id: 8, left: "45.8%", top: "35.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 9, left: "28.7%", top: "31.5%", correct: false, expl: "New dot – edit later" },
+                        { id: 10, left: "32.3%", top: "41.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 11, left: "44.1%", top: "46.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 12, left: "53.4%", top: "46.6%", correct: false, expl: "New dot – edit later" }
+                    ]},
                     ...Array.from({length: 8}, (_, i) => ({
                         level: i + 3,
                         question: `Level ${i+3} – Advanced fast info positioning`,
@@ -636,7 +622,7 @@
         let currentPuzzlePhase = 'early';
         let currentPuzzleLevel = 1;
         let currentPuzzle = null;
-        let lastClickedDotId = null;   // NEW: track which dot was clicked
+        let lastClickedDotId = null;
 
         let unlockedLevels = {
             "ct_early": 1,
@@ -795,6 +781,8 @@
         }
 
         window.loadPuzzleLevel = function(level) {
+            lastClickedDotId = null;   // ← Reset so every new level starts with all blue dots
+
             currentPuzzleLevel = level;
             const key = getCategoryKey();
             const categoryData = puzzleData[key];
@@ -841,7 +829,7 @@
                 container.appendChild(dotEl);
             });
 
-            // Re-apply highlight to the last clicked dot (if any)
+            // Re-apply highlight only if we are still on the same level
             if (lastClickedDotId !== null) {
                 const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
                 if (clickedDotEl) {
@@ -854,7 +842,7 @@
         }
 
         function handleDotClick(id) {
-            lastClickedDotId = id;   // remember which dot was clicked
+            lastClickedDotId = id;
 
             const selectedDot = currentPuzzle.dots.find(d => d.id === id);
             const isCorrect = selectedDot.correct;
@@ -873,8 +861,8 @@
             // SIDE-BY-SIDE LAYOUT (both correct and wrong)
             const wrapper = document.getElementById('puzzle-wrapper');
             const gifHTML = (isCorrect && selectedDot.gifSrc) 
-                ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="max-width:100%; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
-                : '';
+            ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
+            : '';
 
             const key = getCategoryKey();
             if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
@@ -916,7 +904,7 @@
                 </div>
             `;
 
-            renderPuzzleDots(); // re-attach dots + re-apply highlight
+            renderPuzzleDots();
 
             // AUTO-SCROLL
             document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
@@ -944,7 +932,7 @@
             `;
         };
 
-        console.log('%c✅ Initial dots are blue. Clicked dot now correctly changes to the matching feedback color (light purple / light brown).', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ All dots are now guaranteed to start blue when opening any level.', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 </body>
 </html>

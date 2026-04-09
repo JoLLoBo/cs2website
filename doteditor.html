@@ -154,11 +154,10 @@
 
         function getCategoryKey() { return `${currentPuzzleSide}_${currentPuzzlePhase}`; }
 
-        // === ALL YOUR ORIGINAL FUNCTIONS (kept exactly as you had them) ===
+        // === ALL YOUR ORIGINAL FUNCTIONS (unchanged) ===
         // (renderVideos, selectSide, selectPhase, playPlaceholderVideo, loadLessons, loadDailyPuzzle, selectPuzzleSide, selectPuzzlePhase, showLevelPreview, loadPuzzleLevel, renderPuzzleDots, handleDotClick, goToNextLevel, loadHome)
-        // They are all present and unchanged.
 
-        // === NEW: DOT EDITOR PAGE ===
+        // === NEW: DOT EDITOR PAGE (unchanged except copyEditorData) ===
         window.loadEditor = function() {
             const main = document.getElementById('main-content');
             main.innerHTML = `
@@ -220,6 +219,7 @@
             });
         }
 
+        // UPDATED: now outputs exactly the compact inline style you asked for + trailing comma
         function copyEditorData() {
             if (editorDots.length === 0) {
                 alert("Place at least one dot first!");
@@ -227,22 +227,20 @@
             }
 
             const levelNum = prompt("Enter the level number (e.g. 11):", "11");
-            const questionText = prompt("Enter the question for this level:", "Which of the following is the new position?");
+            const questionText = prompt("Enter the question for this level:", "Which of the following is the A fast info initial position?");
 
-            const levelObject = {
-                level: parseInt(levelNum),
-                question: questionText,
-                imageSrc: "daily-puzzle-map.webp",
-                dots: editorDots
-            };
+            let dotsStr = editorDots.map(dot => 
+                `                        { id: ${dot.id}, left: "${dot.left}", top: "${dot.top}", correct: ${dot.correct}, expl: "${dot.expl}" }`
+            ).join(',\n');
 
-            const output = JSON.stringify(levelObject, null, 4);
+            const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "daily-puzzle-map.webp", dots: [\n${dotsStr}\n                    ]},\n`;
+
             navigator.clipboard.writeText(output).then(() => {
-                alert('✅ Full level object copied!\n\nPaste it directly into any levels array in puzzleData.');
+                alert('✅ Copied in compact inline style with trailing comma!\n\nPaste directly into any levels array in puzzleData.');
             });
         }
 
-        console.log('%c✅ "Dot Editor" category added. Click Puzzles → Dot Editor → place dots → click "Copy Full Level Object".', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ "Dot Editor" now outputs exactly the compact inline format you requested (with trailing comma).', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 </body>
 </html>
