@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess.com Clone • Sidebar + Lessons</title>
+    <title>CS2.com</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap');
         * {
@@ -44,7 +44,7 @@
             gap: 8px;
         }
         .logo::before {
-            content: "♟️";
+            content: "🧬";
             font-size: 32px;
         }
         .nav {
@@ -415,7 +415,7 @@
     <!-- LEFT SIDEBAR -->
     <div class="sidebar">
         <div class="logo">
-            chess<span style="color: #58c2f2;">.</span>com
+            cs2.com
         </div>
         <nav class="nav">
             <!-- PUZZLES -->
@@ -426,12 +426,6 @@
                 </button>
                 <div class="submenu">
                     <a href="#" onclick="loadDailyPuzzle(); return false;" class="submenu-item">Puzzles</a>
-                    <a href="#" class="submenu-item">Puzzle Rush</a>
-                    <a href="#" class="submenu-item">Rated Puzzles</a>
-                    <a href="#" class="submenu-item">Puzzle Streak</a>
-                    <div class="submenu-divider"></div>
-                    <a href="#" class="submenu-item">Puzzle History</a>
-                    <a href="#" class="submenu-item">Custom Puzzles</a>
                 </div>
             </div>
             <!-- LEARN -->
@@ -442,60 +436,6 @@
                 </button>
                 <div class="submenu">
                     <a href="#" onclick="loadLessons(); return false;" class="submenu-item">Lessons</a>
-                    <a href="#" class="submenu-item">Courses</a>
-                    <a href="#" class="submenu-item">Openings</a>
-                    <a href="#" class="submenu-item">Tactics Trainer</a>
-                    <div class="submenu-divider"></div>
-                    <a href="#" class="submenu-item">Opening Explorer</a>
-                    <a href="#" class="submenu-item">Chess Fundamentals</a>
-                </div>
-            </div>
-            <!-- TRAIN -->
-            <div class="nav-item">
-                <button class="nav-button">
-                    <span class="icon">⚔️</span>
-                    <span>Train</span>
-                </button>
-                <div class="submenu">
-                    <a href="#" class="submenu-item">Tactics</a>
-                    <a href="#" class="submenu-item">Endgame Practice</a>
-                    <a href="#" class="submenu-item">Bot Matches</a>
-                    <a href="#" class="submenu-item">Analysis Board</a>
-                    <div class="submenu-divider"></div>
-                    <a href="#" class="submenu-item">Training Challenges</a>
-                    <a href="#" class="submenu-item">Progress Tracker</a>
-                </div>
-            </div>
-            <!-- WATCH -->
-            <div class="nav-item">
-                <button class="nav-button">
-                    <span class="icon">📺</span>
-                    <span>Watch</span>
-                </button>
-                <div class="submenu">
-                    <a href="#" class="submenu-item">Live Streams</a>
-                    <a href="#" class="submenu-item">Videos</a>
-                    <a href="#" class="submenu-item">Tournaments</a>
-                    <a href="#" class="submenu-item">Top Games</a>
-                    <div class="submenu-divider"></div>
-                    <a href="#" class="submenu-item">Chess TV</a>
-                    <a href="#" class="submenu-item">Event Replays</a>
-                </div>
-            </div>
-            <!-- COMMUNITY -->
-            <div class="nav-item">
-                <button class="nav-button">
-                    <span class="icon">👥</span>
-                    <span>Community</span>
-                </button>
-                <div class="submenu">
-                    <a href="#" class="submenu-item">Forums</a>
-                    <a href="#" class="submenu-item">Clubs</a>
-                    <a href="#" class="submenu-item">Friends</a>
-                    <a href="#" class="submenu-item">Teams</a>
-                    <div class="submenu-divider"></div>
-                    <a href="#" class="submenu-item">Leaderboards</a>
-                    <a href="#" class="submenu-item">Events</a>
                 </div>
             </div>
         </nav>
@@ -541,7 +481,7 @@
                         { id: 1, left: "55%", top: "11%", correct: false, expl: "More info can be safely taken" },
                         { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
                         { id: 3, left: "37%", top: "27%", correct: false, expl: "More info can be safely taken" },
-                        { id: 4, left: "21%", top: "32%", correct: true, expl: "Correct. Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientAFastInfoStartingPos.gif" },
+                        { id: 4, left: "21%", top: "32%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientAFastInfoStartingPos.gif" },
                         { id: 5, left: "22%", top: "41%", correct: false, expl: "Unsafe jiggle position" },
                         { id: 6, left: "18%", top: "48%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
                         { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
@@ -582,33 +522,7 @@
                     ]},
                 ]
             },
-            "ct_mid": {
-                levels: [
-                    { level: 1, question: "Which of the following is the best mid-round CT rotation spot?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "12%", top: "18%", correct: false, expl: "Too exposed on the ramp – T side sees you immediately" },
-                        { id: 2, left: "29%", top: "29%", correct: false, expl: "Good for early round but not optimal for mid-round rotation" },
-                        { id: 3, left: "41%", top: "38%", correct: true, expl: "✅ Correct! Perfect safe pixel for mid-round rotation and fast info", gifSrc: "./correct-explanation.gif" },
-                        { id: 4, left: "55%", top: "22%", correct: false, expl: "Too high up – you lose map control quickly" },
-                        { id: 5, left: "19%", top: "55%", correct: false, expl: "Deep CT position – you get no fast info" },
-                        { id: 6, left: "68%", top: "48%", correct: false, expl: "B-side connector – wrong area for A-site rotation" },
-                        { id: 7, left: "33%", top: "71%", correct: false, expl: "Way too deep in spawn – zero info advantage" }
-                    ]},
-                    ...Array.from({length: 9}, (_, i) => ({
-                        level: i + 2,
-                        question: `Level ${i+2} – Mid-round rotation tactics`,
-                        imageSrc: "./mapImages/ancientMap.webp",
-                        dots: [
-                            { id: 1, left: "12%", top: "18%", correct: false, expl: "Too exposed" },
-                            { id: 2, left: "29%", top: "29%", correct: false, expl: "Not optimal" },
-                            { id: 3, left: "41%", top: "38%", correct: true, expl: `Correct level ${i+2} rotation`, gifSrc: "./correct-explanation.gif" },
-                            { id: 4, left: "55%", top: "22%", correct: false, expl: "Too high up" },
-                            { id: 5, left: "19%", top: "55%", correct: false, expl: "Deep CT position" },
-                            { id: 6, left: "68%", top: "48%", correct: false, expl: "Wrong area" },
-                            { id: 7, left: "33%", top: "71%", correct: false, expl: "Zero info advantage" }
-                        ]
-                    }))
-                ]
-            },
+            "ct_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
             "ct_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
             "t_early": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Early Round Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
             "t_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Mid Round Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
@@ -797,9 +711,9 @@
 
             const container = document.getElementById('puzzle-container');
             container.innerHTML = `
-                <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Levels</div>
+                <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Puzzles</div>
                 <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
-                    Level ${currentPuzzle.level} – ${currentPuzzle.question}
+                    ${currentPuzzle.question}
                 </p>
                 <div class="puzzle-wrapper" id="puzzle-wrapper">
                     <div class="map-container" id="map-container">
@@ -871,7 +785,7 @@
             const feedbackHTML = isCorrect 
                 ? `
                     <div class="puzzle-feedback-side" style="background:#c084fc; color:#111;">
-                        ✅ Correct!<br>
+                        👾 Correct<br>
                         <strong>${selectedDot.expl}</strong>
                         ${gifHTML}
                         <div style="margin-top:25px; display:flex; gap:12px; justify-content:center;">
@@ -885,7 +799,7 @@
                     </div>`
                 : `
                     <div class="puzzle-feedback-side" style="background:#e8c39e; color:#111;">
-                        ❌ Not quite.<br>
+                        🤖 Not quite<br>
                         <strong>${selectedDot.expl}</strong>
                         <div style="margin-top:25px; display:flex; justify-content:center;">
                             <button onclick="showLevelPreview()" style="background:#27272a; color:#fff; border:none; padding:14px 28px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
