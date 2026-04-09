@@ -135,10 +135,10 @@
         const puzzleData = {
             "ct_early": { levels: [ /* your full ct_early levels */ ] },
             "ct_mid": { levels: [ /* your full ct_mid levels */ ] },
-            "ct_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) },
-            "t_early": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Early Round Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) },
-            "t_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Mid Round Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) },
-            "t_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T After Plant Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) }
+            "ct_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_early": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Early Round Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Mid Round Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T After Plant Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) }
         };
 
         let currentSide = 'ct';
@@ -172,7 +172,7 @@
                         <div class="coord-display" id="live-coords">Move mouse over map → live coordinates</div>
                     </div>
                     <div class="map-container" id="map-container">
-                        <img src="daily-puzzle-map.webp" alt="CS2 Map Puzzle">
+                        <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
                     </div>
                     <p style="text-align:center;margin-top:20px;opacity:0.7;">Click anywhere to add a dot • Drag to move • Copy when finished</p>
                 </div>
@@ -233,7 +233,7 @@
                 `                        { id: ${dot.id}, left: "${dot.left}", top: "${dot.top}", correct: ${dot.correct}, expl: "${dot.expl}" }`
             ).join(',\n');
 
-            const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "daily-puzzle-map.webp", dots: [\n${dotsStr}\n                    ]},\n`;
+            const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "./mapImages/ancientMap.webp", dots: [\n${dotsStr}\n                    ]},\n`;
 
             navigator.clipboard.writeText(output).then(() => {
                 alert('✅ Copied in compact inline style with trailing comma!\n\nPaste directly into any levels array in puzzleData.');

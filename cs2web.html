@@ -515,27 +515,22 @@
         // Video data (unchanged)
         const videoData = {
             "ct_early": [
-                { title: "Fast Info - Concept", duration: "37:41", desc: "The biggest bottleneck in CS2 – lack of information at the start of rounds. Learn how to gain fast info safely without gambling (examples from Ancient & Inferno).", youtubeId: "R9ePVLPsnLY" },
-                { title: "Fast Info Blueprint - Practical", duration: "37:27", desc: "Blueprint for taking fast information safely on the CT side in CS2. Pre-planned reactions, safe info-taking, pixel/jiggle spots, and nade usage (Molly, flash, smoke).", youtubeId: "CAORQvrnyXM" },
-                { title: "Fast Info - Advanced Framework", duration: "32:10", desc: "Advanced practical applications of the fast info framework for CT side in early rounds (continuation of the series).", youtubeId: "pU3Qhq-YKMY" }
+                { title: "Fast Info - Concept", duration: "37:42", desc: "Most fundamental aspect of CS2", youtubeId: "R9ePVLPsnLY" },
+                { title: "Fast Info Blueprint - Practical", duration: "37:31", desc: "How to apply fast info anywhere", youtubeId: "CAORQvrnyXM" },
+                { title: "Unfluent vs Fluent", duration: "00:48", desc: "Contrast that comes from practice + review + fix + repeat", youtubeId: "pU3Qhq-YKMY" }
             ],
             "ct_mid": [
-                { title: "CT Mid Round – Rotations & Reads", duration: "11:20", desc: "How to rotate perfectly based on T side fake or real execute." },
-                { title: "CT Mid Round – Mid Control on Inferno", duration: "10:05", desc: "Holding mid and preventing T side from taking banana." },
-                { title: "CT Mid Round – Post-Plant Defense", duration: "13:40", desc: "Defending bombsites after the plant in mid-round scenarios." },
-                { title: "CT Mid Round – Trade Timing", duration: "7:58", desc: "When to take fights and when to hold for trades." },
-                { title: "Midrounding basics CT side", duration: "23:15", desc: "CT midrounding strategy in CS2: gathering information, setting up positions, pushing sites, rotating to beam, smoking red room, and triple pushing B while keeping A coverage.", youtubeId: "JW03Uf-hjeU" }
+                { title: "Midrounding basics CT side", duration: "23:19", desc: "FISPI", youtubeId: "JW03Uf-hjeU" }
             ],
             "ct_afterplant": [
-                { title: "CT After Plant – 1v3 Clutch Guide", duration: "15:22", desc: "Advanced retake strategies when the bomb is already planted." },
-                { title: "CT After Plant – Site Executions", duration: "9:45", desc: "How CTs clear angles after T side plants on Dust2." },
-                { title: "CT After Plant – Fake Defuse Plays", duration: "11:10", desc: "Mind games and timing to bait T side out of positions." },
-                { title: "CT After Plant – Utility Retake", duration: "10:30", desc: "Using remaining utility to win post-plant situations." },
-                { title: "Afterplant CT - reverse execute basics - Practical", duration: "08:32", desc: "CT-side reverse execute strategies: no nade removal, smoking the bomb after clearing, and pushing from two sides for defuse.", youtubeId: "4ZgqSO4j5_Q" }
+                { title: "Afterplant CT - reverse execute basics - Practical", duration: "08:35", desc: "CT-side reverse execute afterplant", youtubeId: "4ZgqSO4j5_Q" }
             ],
-            "t_early": [{title: "T Early Round – Fast Execute on Mirage", duration: "8:19", desc: "How to rush B site with perfect utility usage."}, {title: "T Early Round – Fake & Split Plays", duration: "12:05", desc: "Advanced early round fakes to confuse CT side."}, {title: "T Early Round – Mid Control Takeover", duration: "9:50", desc: "Taking mid control before the main execute."}, {title: "T Early Round – Pistol Round Strats", duration: "14:15", desc: "Eco round tactics that win pistol rounds consistently."}],
-            "t_mid": [{title: "T Mid Round – Post-Plant Pressure", duration: "10:40", desc: "How to maintain pressure after planting in mid round."}, {title: "T Mid Round – Second Wave Attacks", duration: "11:30", desc: "Bringing in the second wave of players to overwhelm CTs."}, {title: "T Mid Round – Fake Plant Plays", duration: "8:55", desc: "Baiting CTs into bad positions with fake plants."}, {title: "T Mid Round – Utility Denial", duration: "13:10", desc: "How to deny CT utility and take map control."}],
-            "t_afterplant": [{title: "T After Plant – Defending Your Bomb", duration: "12:50", desc: "Holding the planted bomb against CT retakes."}, {title: "T After Plant – Angle Holding", duration: "9:35", desc: "Best angles to hold after plant on Nuke and Overpass."}, {title: "T After Plant – 3v2 Retake Defense", duration: "10:20", desc: "How to win the after-plant fight with numbers advantage."}, {title: "T After Plant – Bomb Timer Management", duration: "7:40", desc: "Timing your defense perfectly with 30 seconds left."}]
+            "t_early": [{title: "Map Control - Concept", duration: "11:30", desc: "T side map control", youtubeId: "ZA7lWrY6eMQ" },
+                        {title: "Map Control - Practical", duration: "10:27", desc: "Comming up with map control plan", youtubeId: "mSji4khMcjk" },
+                        {title: "Fast Info / Setups within Map Control", duration: "08:21", desc: "Information within map control", youtubeId: "tMzg14lugoU" }
+            ],
+            "t_mid": [{title: "Execute Fundamentals", duration: "11:20", desc: "Site execute", youtubeId: "HSoAoGzLGDI" }],
+            "t_afterplant": [{title: "FISPI afterplant", duration: "17:24", desc: "FISPI afterplant", youtubeId: "JQlJG0y7bXE" }]
         };
 
         // Puzzle data with levels 1-10 per category (your exact data)
@@ -566,21 +561,25 @@
                         { id: 11, left: "44.1%", top: "46.6%", correct: false, expl: "New dot – edit later" },
                         { id: 12, left: "53.4%", top: "46.6%", correct: false, expl: "New dot – edit later" }
                     ]},
-                    ...Array.from({length: 8}, (_, i) => ({
-                        level: i + 3,
-                        question: `Level ${i+3} – Advanced fast info positioning`,
-                        imageSrc: "./mapImages/ancientMap.webp",
-                        dots: [
-                            { id: 1, left: "55%", top: "11%", correct: false, expl: "More info can be safely taken" },
-                            { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
-                            { id: 3, left: "37%", top: "27%", correct: false, expl: "More info can be safely taken" },
-                            { id: 4, left: "21%", top: "32%", correct: true, expl: `Correct level ${i+3} position`, gifSrc: "./correct-explanation.gif" },
-                            { id: 5, left: "22%", top: "41%", correct: false, expl: "Unsafe jiggle position" },
-                            { id: 6, left: "18%", top: "48%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                            { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                            { id: 8, left: "35%", top: "69%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
-                        ]
-                    }))
+                    { level: 3, question: "Which of the following is the Cave fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                        { id: 1, left: "57.7%", top: "28.8%", correct: false, expl: "New dot – edit later" },
+                        { id: 2, left: "67.0%", top: "27.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 3, left: "71.6%", top: "27.9%", correct: false, expl: "New dot – edit later" },
+                        { id: 4, left: "73.6%", top: "41.0%", correct: false, expl: "New dot – edit later" },
+                        { id: 5, left: "68.1%", top: "39.3%", correct: false, expl: "New dot – edit later" },
+                        { id: 6, left: "65.5%", top: "48.9%", correct: true, expl: "Here that position was mollied, so we take the next available one", gifSrc: "./gifs/ancientCaveFastInfoStartingPos.gif" },
+                        { id: 7, left: "58.1%", top: "52.3%", correct: false, expl: "New dot – edit later" },
+                        { id: 8, left: "60.3%", top: "56.1%", correct: false, expl: "New dot – edit later" },
+                        { id: 9, left: "64.9%", top: "58.5%", correct: false, expl: "New dot – edit later" }
+                    ]},
+                    { level: 4, question: "Which of the following is the B ramp fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                        { id: 1, left: "77.0%", top: "27.7%", correct: false, expl: "New dot – edit later" },
+                        { id: 2, left: "82.1%", top: "32.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 3, left: "78.7%", top: "37.8%", correct: true, expl: "New dot – edit later", gifSrc: "./gifs/ancientBFastInfoStartingPos.gif" },
+                        { id: 4, left: "71.8%", top: "39.4%", correct: false, expl: "New dot – edit later" },
+                        { id: 5, left: "78.7%", top: "53.2%", correct: false, expl: "New dot – edit later" },
+                        { id: 6, left: "78.8%", top: "58.4%", correct: false, expl: "New dot – edit later" }
+                    ]},
                 ]
             },
             "ct_mid": {
