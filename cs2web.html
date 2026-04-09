@@ -425,7 +425,7 @@
                     <span>Puzzles</span>
                 </button>
                 <div class="submenu">
-                    <a href="#" onclick="loadDailyPuzzle(); return false;" class="submenu-item">Daily Puzzle</a>
+                    <a href="#" onclick="loadDailyPuzzle(); return false;" class="submenu-item">Puzzles</a>
                     <a href="#" class="submenu-item">Puzzle Rush</a>
                     <a href="#" class="submenu-item">Rated Puzzles</a>
                     <a href="#" class="submenu-item">Puzzle Streak</a>
@@ -507,7 +507,7 @@
             <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Fixed!</h1>
             <p style="font-size: 18px; max-width: 420px;">The submenu gap has been fixed.<br>
             Hover any main button now → submenus stay open smoothly.</p>
-            <p style="margin-top: 20px; font-size: 15px; opacity: 0.6;">Daily Puzzle dots now match your reference image.</p>
+            <p style="margin-top: 20px; font-size: 15px; opacity: 0.6;">Puzzles dots now match your reference image.</p>
         </div>
     </div>
 
@@ -542,23 +542,23 @@
         const puzzleData = {
             "ct_early": {
                 levels: [
-                    { level: 1, question: "Which of the following is the A fast info initial position?", imageSrc: "daily-puzzle-map.webp", dots: [
+                    { level: 1, question: "Which of the following is the A fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
                         { id: 1, left: "55%", top: "11%", correct: false, expl: "More info can be safely taken" },
                         { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
                         { id: 3, left: "37%", top: "27%", correct: false, expl: "More info can be safely taken" },
-                        { id: 4, left: "21%", top: "32%", correct: true, expl: "Correct. Deeper info leads to danger. Less info leads to less info", gifSrc: "./correct-explanation.gif" },
+                        { id: 4, left: "21%", top: "32%", correct: true, expl: "Correct. Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientAFastInfoStartingPos.gif" },
                         { id: 5, left: "22%", top: "41%", correct: false, expl: "Unsafe jiggle position" },
                         { id: 6, left: "18%", top: "48%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
                         { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
                         { id: 8, left: "35%", top: "69%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
                     ]},
-                    { level: 2, question: "Which is the fast info position for mid?", imageSrc: "daily-puzzle-map.webp", dots: [
+                    { level: 2, question: "Which is the fast info position for mid?", imageSrc: "./mapImages/ancientMap.webp", dots: [
                         { id: 1, left: "43.1%", top: "17.1%", correct: false, expl: "New dot – edit later" },
                         { id: 2, left: "54.5%", top: "22.9%", correct: false, expl: "New dot – edit later" },
                         { id: 3, left: "58.1%", top: "26.6%", correct: false, expl: "New dot – edit later" },
                         { id: 4, left: "57.9%", top: "31.2%", correct: false, expl: "New dot – edit later" },
                         { id: 5, left: "50.9%", top: "28.5%", correct: false, expl: "New dot – edit later" },
-                        { id: 6, left: "47.4%", top: "31.5%", correct: true, expl: "New dot – edit later", gifSrc: "./ancientMidFastInfoStartingPos.gif" },
+                        { id: 6, left: "47.4%", top: "31.5%", correct: true, expl: "New dot – edit later", gifSrc: "./gifs/ancientMidFastInfoStartingPos.gif" },
                         { id: 7, left: "49.5%", top: "35.5%", correct: false, expl: "New dot – edit later" },
                         { id: 8, left: "45.8%", top: "35.6%", correct: false, expl: "New dot – edit later" },
                         { id: 9, left: "28.7%", top: "31.5%", correct: false, expl: "New dot – edit later" },
@@ -569,7 +569,7 @@
                     ...Array.from({length: 8}, (_, i) => ({
                         level: i + 3,
                         question: `Level ${i+3} – Advanced fast info positioning`,
-                        imageSrc: "daily-puzzle-map.webp",
+                        imageSrc: "./mapImages/ancientMap.webp",
                         dots: [
                             { id: 1, left: "55%", top: "11%", correct: false, expl: "More info can be safely taken" },
                             { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
@@ -585,7 +585,7 @@
             },
             "ct_mid": {
                 levels: [
-                    { level: 1, question: "Which of the following is the best mid-round CT rotation spot?", imageSrc: "daily-puzzle-map.webp", dots: [
+                    { level: 1, question: "Which of the following is the best mid-round CT rotation spot?", imageSrc: "./mapImages/ancientMap.webp", dots: [
                         { id: 1, left: "12%", top: "18%", correct: false, expl: "Too exposed on the ramp – T side sees you immediately" },
                         { id: 2, left: "29%", top: "29%", correct: false, expl: "Good for early round but not optimal for mid-round rotation" },
                         { id: 3, left: "41%", top: "38%", correct: true, expl: "✅ Correct! Perfect safe pixel for mid-round rotation and fast info", gifSrc: "./correct-explanation.gif" },
@@ -597,7 +597,7 @@
                     ...Array.from({length: 9}, (_, i) => ({
                         level: i + 2,
                         question: `Level ${i+2} – Mid-round rotation tactics`,
-                        imageSrc: "daily-puzzle-map.webp",
+                        imageSrc: "./mapImages/ancientMap.webp",
                         dots: [
                             { id: 1, left: "12%", top: "18%", correct: false, expl: "Too exposed" },
                             { id: 2, left: "29%", top: "29%", correct: false, expl: "Not optimal" },
@@ -610,10 +610,10 @@
                     }))
                 ]
             },
-            "ct_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) },
-            "t_early": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Early Round Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) },
-            "t_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Mid Round Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) },
-            "t_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T After Plant Level ${i+1} (coming soon)`, imageSrc: "daily-puzzle-map.webp", dots: [] })) }
+            "ct_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_early": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Early Round Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Mid Round Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T After Plant Level ${i+1} (coming soon)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) }
         };
 
         let currentSide = 'ct';
@@ -724,8 +724,8 @@
                 <div class="puzzle-page">
                     <div onclick="loadHome()" class="back-btn">← Back to Home</div>
                     <div class="lessons-header">
-                        <div class="breadcrumb">Puzzles &nbsp;›&nbsp; Daily Puzzle</div>
-                        <h1>Daily Puzzles</h1>
+                        <div class="breadcrumb">Puzzles &nbsp;›&nbsp; Puzzles</div>
+                        <h1>Puzzles</h1>
                     </div>
                     <div class="side-selector">
                         <button onclick="selectPuzzleSide('ct')" class="side-btn active" data-side="ct">CT Side</button>
@@ -765,7 +765,7 @@
             const container = document.getElementById('puzzle-container');
             const maxUnlocked = unlockedLevels[key] || 1;
 
-            let html = `<p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">Select a level</p>`;
+            let html = `<p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">Select a puzzle</p>`;
             html += `<div class="level-preview">`;
 
             for (let i = 1; i <= 10; i++) {
@@ -927,7 +927,7 @@
                     <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Fixed!</h1>
                     <p style="font-size: 18px; max-width: 420px;">The submenu gap has been fixed.<br>
                     Hover any main button now → submenus stay open smoothly.</p>
-                    <p style="margin-top: 30px; font-size: 15px; opacity: 0.6;">Daily Puzzle dots now match your reference image.</p>
+                    <p style="margin-top: 30px; font-size: 15px; opacity: 0.6;">Puzzles dots now match your reference image.</p>
                 </div>
             `;
         };
