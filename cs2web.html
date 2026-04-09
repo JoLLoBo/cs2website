@@ -294,7 +294,6 @@
         .map-container {
             position: relative;
             display: block;
-            margin: 30px auto;
             max-width: 820px;
             background: #111113;
             padding: 20px;
@@ -313,8 +312,8 @@
             position: absolute;
             width: 24px;
             height: 24px;
-            background: #58c2f2;
-            color: #000;
+            background: #58c2f2; /* initial blue for all dots */
+            color: #111;
             border: 3px solid #fff;
             border-radius: 50%;
             display: flex;
@@ -322,7 +321,7 @@
             justify-content: center;
             font-weight: 700;
             font-size: 15px;
-            box-shadow: 0 0 0 5px rgba(88, 194, 242, 0.4);
+            box-shadow: 0 0 0 5px rgba(88,194,242,0.4);
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
@@ -330,21 +329,39 @@
         }
         .blue-dot:hover {
             transform: translate(-50%, -50%) scale(1.15);
-            box-shadow: 0 0 0 8px rgba(88, 194, 242, 0.6);
+            box-shadow: 0 0 0 8px rgba(88,194,242,0.6);
         }
+        /* Highlight colors (only applied after click) */
         .blue-dot.correct {
-            background: #f87171; /* RED for correct */
-            box-shadow: 0 0 0 5px rgba(248, 113, 113, 0.6);
+            background: #c084fc; /* light purple */
+            box-shadow: 0 0 0 5px rgba(192, 132, 252, 0.6);
         }
         .blue-dot.wrong {
-            background: #4ade80; /* GREEN for wrong */
-            box-shadow: 0 0 0 5px rgba(74, 222, 128, 0.6);
+            background: #e8c39e; /* light brown */
+            box-shadow: 0 0 0 5px rgba(232, 195, 158, 0.6);
+        }
+        /* SIDE-BY-SIDE LAYOUT FOR BOTH CORRECT AND WRONG */
+        .puzzle-wrapper {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .puzzle-feedback-side {
+            flex: 0 0 420px;
+            position: sticky;
+            top: 40px;
+            border-radius: 12px;
+            padding: 28px;
+            font-size: 19px;
+            font-weight: 600;
         }
         #puzzle-feedback {
             min-height: 100px;
             margin-top: 20px;
         }
-        /* NEW: LEVEL SELECTOR */
+        /* LEVEL SELECTOR */
         .level-preview {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -521,7 +538,7 @@
             "t_afterplant": [{title: "T After Plant – Defending Your Bomb", duration: "12:50", desc: "Holding the planted bomb against CT retakes."}, {title: "T After Plant – Angle Holding", duration: "9:35", desc: "Best angles to hold after plant on Nuke and Overpass."}, {title: "T After Plant – 3v2 Retake Defense", duration: "10:20", desc: "How to win the after-plant fight with numbers advantage."}, {title: "T After Plant – Bomb Timer Management", duration: "7:40", desc: "Timing your defense perfectly with 30 seconds left."}]
         };
 
-        // Puzzle data with levels 1-10 per category
+        // Puzzle data with levels 1-10 per category (your exact data)
         const puzzleData = {
             "ct_early": {
                 levels: [
@@ -563,7 +580,6 @@
                         }
                     ]
                 },
-                    // Levels 3-10 are placeholder (same image + different question)
                     ...Array.from({length: 8}, (_, i) => ({
                         level: i + 3,
                         question: `Level ${i+3} – Advanced fast info positioning`,
@@ -592,7 +608,6 @@
                         { id: 6, left: "68%", top: "48%", correct: false, expl: "B-side connector – wrong area for A-site rotation" },
                         { id: 7, left: "33%", top: "71%", correct: false, expl: "Way too deep in spawn – zero info advantage" }
                     ]},
-                    // Levels 2-10 placeholder
                     ...Array.from({length: 9}, (_, i) => ({
                         level: i + 2,
                         question: `Level ${i+2} – Mid-round rotation tactics`,
@@ -621,8 +636,8 @@
         let currentPuzzlePhase = 'early';
         let currentPuzzleLevel = 1;
         let currentPuzzle = null;
+        let lastClickedDotId = null;   // NEW: track which dot was clicked
 
-        // Progress tracking – only level 1 unlocked initially for every category
         let unlockedLevels = {
             "ct_early": 1,
             "ct_mid": 1,
@@ -799,8 +814,10 @@
                 <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
                     Level ${currentPuzzle.level} – ${currentPuzzle.question}
                 </p>
-                <div class="map-container" id="map-container">
-                    <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+                <div class="puzzle-wrapper" id="puzzle-wrapper">
+                    <div class="map-container" id="map-container">
+                        <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+                    </div>
                 </div>
                 <div id="puzzle-feedback"></div>
             `;
@@ -809,6 +826,7 @@
 
         function renderPuzzleDots() {
             const container = document.getElementById('map-container');
+            if (!container) return;
             container.querySelectorAll('.blue-dot').forEach(el => el.remove());
 
             if (!currentPuzzle || !currentPuzzle.dots) return;
@@ -822,10 +840,22 @@
                 dotEl.onclick = () => handleDotClick(dot.id);
                 container.appendChild(dotEl);
             });
+
+            // Re-apply highlight to the last clicked dot (if any)
+            if (lastClickedDotId !== null) {
+                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
+                if (clickedDotEl) {
+                    const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
+                    if (dotData) {
+                        clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
+                    }
+                }
+            }
         }
 
         function handleDotClick(id) {
-            const feedbackEl = document.getElementById('puzzle-feedback');
+            lastClickedDotId = id;   // remember which dot was clicked
+
             const selectedDot = currentPuzzle.dots.find(d => d.id === id);
             const isCorrect = selectedDot.correct;
 
@@ -840,20 +870,20 @@
                 clickedDotEl.classList.add(isCorrect ? 'correct' : 'wrong');
             }
 
-            // Show feedback + GIF
-            if (isCorrect) {
-                const gifHTML = selectedDot.gifSrc 
-                    ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="max-width:100%; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
-                    : '';
+            // SIDE-BY-SIDE LAYOUT (both correct and wrong)
+            const wrapper = document.getElementById('puzzle-wrapper');
+            const gifHTML = (isCorrect && selectedDot.gifSrc) 
+                ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="max-width:100%; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
+                : '';
 
-                // Unlock next level if this was the highest unlocked
-                const key = getCategoryKey();
-                if (currentPuzzleLevel === unlockedLevels[key]) {
-                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
-                }
+            const key = getCategoryKey();
+            if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
+            }
 
-                feedbackEl.innerHTML = `
-                    <div style="background:#f87171; color:#fff; padding:28px; border-radius:12px; max-width:620px; margin:0 auto; font-size:19px; font-weight:600; text-align:center;">
+            const feedbackHTML = isCorrect 
+                ? `
+                    <div class="puzzle-feedback-side" style="background:#c084fc; color:#111;">
                         ✅ Correct!<br>
                         <strong>${selectedDot.expl}</strong>
                         ${gifHTML}
@@ -865,22 +895,31 @@
                                 Next Level →
                             </button>
                         </div>
-                    </div>`;
-            } else {
-                feedbackEl.innerHTML = `
-                    <div style="background:#4ade80; color:#000; padding:28px; border-radius:12px; max-width:620px; margin:0 auto; font-size:19px; font-weight:600; text-align:center;">
+                    </div>`
+                : `
+                    <div class="puzzle-feedback-side" style="background:#e8c39e; color:#111;">
                         ❌ Not quite.<br>
                         <strong>${selectedDot.expl}</strong>
-                        <div style="margin-top:25px;">
+                        <div style="margin-top:25px; display:flex; justify-content:center;">
                             <button onclick="showLevelPreview()" style="background:#27272a; color:#fff; border:none; padding:14px 28px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
                                 Back to Levels
                             </button>
                         </div>
                     </div>`;
-            }
 
-            // AUTO-SCROLL to the feedback
-            feedbackEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            wrapper.innerHTML = `
+                <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
+                    <div class="map-container" id="map-container" style="flex:1;">
+                        <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+                    </div>
+                    ${feedbackHTML}
+                </div>
+            `;
+
+            renderPuzzleDots(); // re-attach dots + re-apply highlight
+
+            // AUTO-SCROLL
+            document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
         window.goToNextLevel = function() {
@@ -905,7 +944,7 @@
             `;
         };
 
-        console.log('%c✅ Levels 1-10 system added! Only level 1 unlocked initially. Solve correctly to unlock the next. You can always go back to the level preview and redo any unlocked puzzle.', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ Initial dots are blue. Clicked dot now correctly changes to the matching feedback color (light purple / light brown).', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 </body>
 </html>
