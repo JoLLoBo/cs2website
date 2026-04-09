@@ -312,7 +312,7 @@
             position: absolute;
             width: 24px;
             height: 24px;
-            background: #58c2f2; /* initial blue for all dots */
+            background: #58c2f2;
             color: #111;
             border: 3px solid #fff;
             border-radius: 50%;
@@ -333,11 +333,11 @@
         }
         /* Highlight colors (only applied after click) */
         .blue-dot.correct {
-            background: #c084fc; /* light purple */
+            background: #c084fc;
             box-shadow: 0 0 0 5px rgba(192, 132, 252, 0.6);
         }
         .blue-dot.wrong {
-            background: #e8c39e; /* light brown */
+            background: #e8c39e;
             box-shadow: 0 0 0 5px rgba(232, 195, 158, 0.6);
         }
         /* SIDE-BY-SIDE LAYOUT FOR BOTH CORRECT AND WRONG */
@@ -410,52 +410,59 @@
             opacity: 0.8;
         }
 
-        /* T-SIDE ORANGE THEME */
-        .puzzle-page.t-side .blue-dot {
+        /* T-SIDE ORANGE THEME (works in BOTH Lessons and Puzzles) */
+        .t-side .blue-dot {
             background: #f59e0b;
             box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.4);
         }
-        .puzzle-page.t-side .blue-dot.correct {
+        .t-side .blue-dot.correct {
             background: #fb923c;
             box-shadow: 0 0 0 5px rgba(251, 146, 60, 0.6);
         }
-        .puzzle-page.t-side .blue-dot.wrong {
+        .t-side .blue-dot.wrong {
             background: #f97316;
             box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.6);
         }
-        .puzzle-page.t-side .puzzle-feedback-side[style*="background:#c084fc"] {
+        .t-side .puzzle-feedback-side[style*="background:#c084fc"] {
             background: #fb923c !important;
             color: #111;
         }
-        .puzzle-page.t-side .level-card.unlocked {
+        .t-side .level-card.unlocked {
             background: #f59e0b !important;
         }
-        .puzzle-page.t-side .side-btn.active {
-            background: #f59e0b !important;
-            color: #111;
-        }
-        /* NEW: Phase buttons + header text become orange on T side */
-        .puzzle-page.t-side .phase-btn.active {
+        .t-side .side-btn.active {
             background: #f59e0b !important;
             color: #111;
         }
-        .puzzle-page.t-side .lessons-header h1,
-        .puzzle-page.t-side .breadcrumb {
+        .t-side .phase-btn.active {
+            background: #f59e0b !important;
+            color: #111;
+        }
+        .t-side .lessons-header h1,
+        .t-side .breadcrumb {
             color: #f59e0b !important;
         }
-        /* PUZZLES HEADER COLOR */
-        .puzzle-page .lessons-header h1,
-        .puzzle-page .breadcrumb {
-            color: #58c2f2;   /* blue when CT side is selected */
+        .t-side .back-btn:hover {
+            background: #f59e0b;
+            color: #111;
         }
-        /* BACK TO HOME BUTTON THEME */
-        .puzzle-page .back-btn:hover {
+
+        /* CT side remains blue (default) */
+        .lessons-header h1,
+        .breadcrumb {
+            color: #58c2f2;
+        }
+        .back-btn:hover {
             background: #58c2f2;
             color: #111;
         }
-        .puzzle-page.t-side .back-btn:hover {
-            background: #f59e0b;
-            color: #111;
+        /* Video card hover shadow respects the blue/orange theme */
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(88, 194, 242, 0.2);
+        }
+        .t-side .video-card:hover {
+            box-shadow: 0 12px 24px rgba(245, 158, 11, 0.3);
         }
     </style>
 </head>
@@ -521,7 +528,7 @@
             "t_afterplant": [{title: "FISPI afterplant", duration: "17:24", desc: "FISPI afterplant", youtubeId: "JQlJG0y7bXE" }]
         };
 
-        // Puzzle data with levels 1-10 per category (your exact data)
+        // Puzzle data (unchanged)
         const puzzleData = {
             "ct_early": {
                 levels: [
@@ -530,43 +537,43 @@
                         { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
                         { id: 3, left: "37%", top: "27%", correct: false, expl: "More info can be safely taken" },
                         { id: 4, left: "21%", top: "32%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientAFastInfoStartingPos.gif" },
-                        { id: 5, left: "22%", top: "41%", correct: false, expl: "Unsafe jiggle position" },
+                        { id: 5, left: "22%", top: "41%", correct: false, expl: "Too exposed to fully jiggle the entire A main" },
                         { id: 6, left: "18%", top: "48%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
                         { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
                         { id: 8, left: "35%", top: "69%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
                     ]},
                     { level: 2, question: "Which is the fast info position for mid?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "43.1%", top: "17.1%", correct: false, expl: "New dot – edit later" },
-                        { id: 2, left: "54.5%", top: "22.9%", correct: false, expl: "New dot – edit later" },
-                        { id: 3, left: "58.1%", top: "26.6%", correct: false, expl: "New dot – edit later" },
-                        { id: 4, left: "57.9%", top: "31.2%", correct: false, expl: "New dot – edit later" },
-                        { id: 5, left: "50.9%", top: "28.5%", correct: false, expl: "New dot – edit later" },
+                        { id: 1, left: "43.1%", top: "17.1%", correct: false, expl: "More info can be safely taken" },
+                        { id: 2, left: "54.5%", top: "22.9%", correct: false, expl: "More info can be safely taken" },
+                        { id: 3, left: "58.1%", top: "26.6%", correct: false, expl: "More info can be safely taken" },
+                        { id: 4, left: "57.9%", top: "31.2%", correct: false, expl: "More info can be safely taken" },
+                        { id: 5, left: "50.9%", top: "28.5%", correct: false, expl: "More info can be safely taken" },
                         { id: 6, left: "47.4%", top: "31.5%", correct: true, expl: "Can spot entire mid (elbow + heaven)", gifSrc: "./gifs/ancientMidFastInfoStartingPos.gif" },
-                        { id: 7, left: "49.5%", top: "35.5%", correct: false, expl: "New dot – edit later" },
-                        { id: 8, left: "45.8%", top: "35.6%", correct: false, expl: "New dot – edit later" },
-                        { id: 9, left: "28.7%", top: "31.5%", correct: false, expl: "New dot – edit later" },
-                        { id: 10, left: "32.3%", top: "41.6%", correct: false, expl: "New dot – edit later" },
-                        { id: 11, left: "44.1%", top: "46.6%", correct: false, expl: "New dot – edit later" },
-                        { id: 12, left: "53.4%", top: "46.6%", correct: false, expl: "New dot – edit later" }
+                        { id: 7, left: "49.5%", top: "35.5%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
+                        { id: 8, left: "45.8%", top: "35.6%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
+                        { id: 9, left: "28.7%", top: "31.5%", correct: false, expl: "More info can be safely taken" },
+                        { id: 10, left: "32.3%", top: "41.6%", correct: false, expl: "More info can be safely taken" },
+                        { id: 11, left: "44.1%", top: "46.6%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
+                        { id: 12, left: "53.4%", top: "46.6%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
                     ]},
                     { level: 3, question: "Which of the following is the Cave fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "57.7%", top: "28.8%", correct: false, expl: "New dot – edit later" },
-                        { id: 2, left: "67.0%", top: "27.6%", correct: false, expl: "New dot – edit later" },
-                        { id: 3, left: "71.6%", top: "27.9%", correct: false, expl: "New dot – edit later" },
-                        { id: 4, left: "73.6%", top: "41.0%", correct: false, expl: "New dot – edit later" },
-                        { id: 5, left: "68.1%", top: "39.3%", correct: false, expl: "New dot – edit later" },
+                        { id: 1, left: "57.7%", top: "28.8%", correct: false, expl: "More info can be safely taken" },
+                        { id: 2, left: "67.0%", top: "27.6%", correct: false, expl: "More info can be safely taken" },
+                        { id: 3, left: "71.6%", top: "27.9%", correct: false, expl: "More info can be safely taken" },
+                        { id: 4, left: "73.6%", top: "41.0%", correct: false, expl: "More info can be safely taken" },
+                        { id: 5, left: "68.1%", top: "39.3%", correct: false, expl: "More info can be safely taken" },
                         { id: 6, left: "65.5%", top: "48.9%", correct: true, expl: "If that position is mollied, we can consider the next available one", gifSrc: "./gifs/ancientCaveFastInfoStartingPos.gif" },
-                        { id: 7, left: "58.1%", top: "52.3%", correct: false, expl: "New dot – edit later" },
-                        { id: 8, left: "60.3%", top: "56.1%", correct: false, expl: "New dot – edit later" },
-                        { id: 9, left: "64.9%", top: "58.5%", correct: false, expl: "New dot – edit later" }
+                        { id: 7, left: "58.1%", top: "52.3%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                        { id: 8, left: "60.3%", top: "56.1%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                        { id: 9, left: "64.9%", top: "58.5%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
                     ]},
                     { level: 4, question: "Which of the following is the B ramp fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "77.0%", top: "27.7%", correct: false, expl: "New dot – edit later" },
-                        { id: 2, left: "82.1%", top: "32.6%", correct: false, expl: "New dot – edit later" },
+                        { id: 1, left: "77.0%", top: "27.7%", correct: false, expl: "More info can be safely taken" },
+                        { id: 2, left: "82.1%", top: "32.6%", correct: false, expl: "More info can be safely taken" },
                         { id: 3, left: "78.7%", top: "37.8%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientBFastInfoStartingPos.gif" },
-                        { id: 4, left: "71.8%", top: "39.4%", correct: false, expl: "New dot – edit later" },
-                        { id: 5, left: "78.7%", top: "53.2%", correct: false, expl: "New dot – edit later" },
-                        { id: 6, left: "78.8%", top: "58.4%", correct: false, expl: "New dot – edit later" }
+                        { id: 4, left: "71.8%", top: "39.4%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                        { id: 5, left: "78.7%", top: "53.2%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                        { id: 6, left: "78.8%", top: "58.4%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
                     ]},
                 ]
             },
@@ -627,6 +634,8 @@
 
         window.selectSide = function(side) {
             currentSide = side;
+            const main = document.getElementById('main-content');
+            main.classList.toggle('t-side', side === 't');   // ← applies to BOTH Lessons and Puzzles
             document.querySelectorAll('.side-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-side') === side));
             renderVideos();
         };
@@ -660,7 +669,7 @@
                     <div onclick="loadHome()" class="back-btn">← Back to Home</div>
                     <div class="lessons-header">
                         <div class="breadcrumb">Learn &nbsp;›&nbsp; Lessons</div>
-                        <h1>Side-Specific Round Strategies</h1>
+                        <h1>Learning Videos</h1>
                     </div>
                     <div class="side-selector">
                         <button onclick="selectSide('ct')" class="side-btn active" data-side="ct">CT Side</button>
@@ -676,6 +685,7 @@
             `;
             currentSide = 'ct';
             currentPhase = 'early';
+            main.classList.remove('t-side');   // ensure CT = blue on load
             renderVideos();
         };
 
@@ -702,15 +712,14 @@
             `;
             currentPuzzleSide = 'ct';
             currentPuzzlePhase = 'early';
+            main.classList.remove('t-side');
             showLevelPreview();
         };
 
         window.selectPuzzleSide = function(side) {
             currentPuzzleSide = side;
-            const puzzlePage = document.querySelector('.puzzle-page');
-            if (puzzlePage) {
-                puzzlePage.classList.toggle('t-side', side === 't');
-            }
+            const main = document.getElementById('main-content');
+            main.classList.toggle('t-side', side === 't');
             document.querySelectorAll('#main-content .side-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-side') === side);
             });
@@ -746,7 +755,7 @@
         }
 
         window.loadPuzzleLevel = function(level) {
-            lastClickedDotId = null;   // ← Reset so every new level starts with all blue dots
+            lastClickedDotId = null;
 
             currentPuzzleLevel = level;
             const key = getCategoryKey();
@@ -794,7 +803,6 @@
                 container.appendChild(dotEl);
             });
 
-            // Re-apply highlight only if we are still on the same level
             if (lastClickedDotId !== null) {
                 const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
                 if (clickedDotEl) {
@@ -812,18 +820,15 @@
             const selectedDot = currentPuzzle.dots.find(d => d.id === id);
             const isCorrect = selectedDot.correct;
 
-            // Clear previous highlights
             document.querySelectorAll('.blue-dot').forEach(el => {
                 el.classList.remove('correct', 'wrong');
             });
 
-            // Highlight only the clicked dot
             const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
             if (clickedDotEl) {
                 clickedDotEl.classList.add(isCorrect ? 'correct' : 'wrong');
             }
 
-            // SIDE-BY-SIDE LAYOUT (both correct and wrong)
             const wrapper = document.getElementById('puzzle-wrapper');
             const gifHTML = (isCorrect && selectedDot.gifSrc) 
             ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
@@ -841,9 +846,6 @@
                         <strong>${selectedDot.expl}</strong>
                         ${gifHTML}
                         <div style="margin-top:25px; display:flex; gap:12px; justify-content:center;">
-                            <button onclick="showLevelPreview()" style="background:#27272a; color:#fff; border:none; padding:14px 28px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
-                                Back to Levels
-                            </button>
                             <button onclick="goToNextLevel()" style="background:#58c2f2; color:#000; border:none; padding:14px 32px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
                                 Next Level →
                             </button>
@@ -853,11 +855,6 @@
                     <div class="puzzle-feedback-side" style="background:#e8c39e; color:#111;">
                         🤖 Not quite<br>
                         <strong>${selectedDot.expl}</strong>
-                        <div style="margin-top:25px; display:flex; justify-content:center;">
-                            <button onclick="showLevelPreview()" style="background:#27272a; color:#fff; border:none; padding:14px 28px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
-                                Back to Levels
-                            </button>
-                        </div>
                     </div>`;
 
             wrapper.innerHTML = `
@@ -871,7 +868,6 @@
 
             renderPuzzleDots();
 
-            // AUTO-SCROLL
             document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
@@ -897,7 +893,7 @@
             `;
         };
 
-        console.log('%c✅ T-side orange theme extended to phase buttons + header text (breadcrumb + h1).', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ Blue/orange theme is now fully consistent across Lessons + Puzzles.', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 </body>
 </html>
