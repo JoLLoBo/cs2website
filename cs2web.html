@@ -409,6 +409,45 @@
             margin-top: 8px;
             opacity: 0.8;
         }
+
+        /* T-SIDE ORANGE THEME */
+        .puzzle-page.t-side .blue-dot {
+            background: #f59e0b;
+            box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.4);
+        }
+        .puzzle-page.t-side .blue-dot.correct {
+            background: #fb923c;
+            box-shadow: 0 0 0 5px rgba(251, 146, 60, 0.6);
+        }
+        .puzzle-page.t-side .blue-dot.wrong {
+            background: #f97316;
+            box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.6);
+        }
+        .puzzle-page.t-side .puzzle-feedback-side[style*="background:#c084fc"] {
+            background: #fb923c !important;
+            color: #111;
+        }
+        .puzzle-page.t-side .level-card.unlocked {
+            background: #f59e0b !important;
+        }
+        .puzzle-page.t-side .side-btn.active {
+            background: #f59e0b !important;
+            color: #111;
+        }
+        /* NEW: Phase buttons + header text become orange on T side */
+        .puzzle-page.t-side .phase-btn.active {
+            background: #f59e0b !important;
+            color: #111;
+        }
+        .puzzle-page.t-side .lessons-header h1,
+        .puzzle-page.t-side .breadcrumb {
+            color: #f59e0b !important;
+        }
+        /* PUZZLES HEADER COLOR */
+        .puzzle-page .lessons-header h1,
+        .puzzle-page .breadcrumb {
+            color: #58c2f2;   /* blue when CT side is selected */
+        }
     </style>
 </head>
 <body>
@@ -659,6 +698,10 @@
 
         window.selectPuzzleSide = function(side) {
             currentPuzzleSide = side;
+            const puzzlePage = document.querySelector('.puzzle-page');
+            if (puzzlePage) {
+                puzzlePage.classList.toggle('t-side', side === 't');
+            }
             document.querySelectorAll('#main-content .side-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-side') === side);
             });
@@ -845,7 +888,7 @@
             `;
         };
 
-        console.log('%c✅ All dots are now guaranteed to start blue when opening any level.', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ T-side orange theme extended to phase buttons + header text (breadcrumb + h1).', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
 </body>
 </html>
