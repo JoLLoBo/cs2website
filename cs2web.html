@@ -464,6 +464,26 @@
         .t-side .video-card:hover {
             box-shadow: 0 12px 24px rgba(245, 158, 11, 0.3);
         }
+
+        /* ZONE EDITOR STYLES */
+        .zone-editor {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .zone-canvas-container {
+            position: relative;
+            display: inline-block;
+            border: 6px solid #27272a;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .zone-canvas-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
     </style>
 </head>
 <body>
@@ -481,6 +501,7 @@
                 </button>
                 <div class="submenu">
                     <a href="#" onclick="loadDailyPuzzle(); return false;" class="submenu-item">Puzzles</a>
+                    <a href="#" onclick="loadZoneEditor(); return false;" class="submenu-item">Zone Editor</a>
                 </div>
             </div>
             <!-- LEARN -->
@@ -584,6 +605,76 @@
             "t_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T After Plant Level ${i+1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) }
         };
 
+        // === T AFTERPLANT RANDOM PUZZLE CONFIG ===
+        const spawnConfig = {
+        "ctPlayers": {
+            "zones": [
+                {
+                    "left": "57.6%",
+                    "top": "24.3%",
+                    "width": "7.6%",
+                    "height": "3.0%"
+                },
+                {
+                    "left": "57.4%",
+                    "top": "27.7%",
+                    "width": "2.4%",
+                    "height": "2.8%"
+                },
+                {
+                    "left": "51.3%",
+                    "top": "25.5%",
+                    "width": "4.5%",
+                    "height": "4.3%"
+                }
+            ],
+            "min": 2,
+            "max": 5
+        },
+        "tPlayers": {
+            "zones": [
+                {
+                    "left": "81.0%",
+                    "top": "27.9%",
+                    "width": "4.0%",
+                    "height": "4.1%"
+                },
+                {
+                    "left": "81.2%",
+                    "top": "32.7%",
+                    "width": "1.6%",
+                    "height": "4.0%"
+                },
+                {
+                    "left": "72.7%",
+                    "top": "35.1%",
+                    "width": "7.7%",
+                    "height": "4.4%"
+                },
+                {
+                    "left": "74.9%",
+                    "top": "40.1%",
+                    "width": "6.1%",
+                    "height": "7.2%"
+                }
+            ],
+            "min": 3,
+            "max": 6
+        },
+        "bomb": {
+            "zones": [
+                {
+                    "left": "72.4%",
+                    "top": "42.3%",
+                    "width": "2.2%",
+                    "height": "1.3%"
+                }
+            ],
+            "min": 1,
+            "max": 1
+        }
+    };
+
         let currentSide = 'ct';
         let currentPhase = 'early';
         let currentPuzzleSide = 'ct';
@@ -635,7 +726,7 @@
         window.selectSide = function(side) {
             currentSide = side;
             const main = document.getElementById('main-content');
-            main.classList.toggle('t-side', side === 't');   // ← applies to BOTH Lessons and Puzzles
+            main.classList.toggle('t-side', side === 't');
             document.querySelectorAll('.side-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-side') === side));
             renderVideos();
         };
@@ -685,7 +776,7 @@
             `;
             currentSide = 'ct';
             currentPhase = 'early';
-            main.classList.remove('t-side');   // ensure CT = blue on load
+            main.classList.remove('t-side');
             renderVideos();
         };
 
@@ -737,8 +828,36 @@
         function showLevelPreview() {
             const key = getCategoryKey();
             const container = document.getElementById('puzzle-container');
-            const maxUnlocked = unlockedLevels[key] || 1;
 
+            if (key === 't_afterplant') {
+                container.innerHTML = `
+                    <div onclick="loadHome()" class="back-btn" style="margin-bottom:16px;">← Back to Home</div>
+                    <div class="lessons-header" style="text-align:center; margin-bottom:40px;">
+                        <div class="breadcrumb" style="color:#f59e0b;">Puzzles &nbsp;›&nbsp; T Afterplant</div>
+                        <h1 style="color:#f59e0b;">Infinite AI Practice</h1>
+                        <p style="color:#aaa; margin-top:8px; max-width:620px; margin-left:auto; margin-right:auto;">
+                            Randomly generated afterplant situations<br>
+                            Your answers will be assessed by AI
+                        </p>
+                    </div>
+                    
+                    <div style="text-align:center; margin:80px 0 60px;">
+                        <button onclick="generateNewTAfterplantPuzzle()" 
+                                style="background:#f59e0b; color:#111; font-size:21px; font-weight:600; 
+                                       padding:22px 64px; border:none; border-radius:9999px; cursor:pointer; 
+                                       box-shadow:0 10px 30px rgba(245,158,11,0.4); transition:all 0.2s;">
+                            Generate New Puzzle →
+                        </button>
+                    </div>
+                    
+                    <p style="text-align:center; color:#666; font-size:15px;">
+                        Unlimited unique scenarios • Performance tracked automatically
+                    </p>
+                `;
+                return;
+            }
+
+            const maxUnlocked = unlockedLevels[key] || 1;
             let html = `<p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">Select a puzzle</p>`;
             html += `<div class="level-preview">`;
 
@@ -754,9 +873,287 @@
             container.innerHTML = html;
         }
 
+        window.generateNewTAfterplantPuzzle = function() {
+            const container = document.getElementById('puzzle-container');
+            
+            const numCT = Math.floor(Math.random() * (spawnConfig.ctPlayers.max - spawnConfig.ctPlayers.min + 1)) + spawnConfig.ctPlayers.min;
+            const numT  = Math.floor(Math.random() * (spawnConfig.tPlayers.max - spawnConfig.tPlayers.min + 1)) + spawnConfig.tPlayers.min;
+            const numBomb = spawnConfig.bomb.min;
+
+            function randomInZone(zone) {
+                const left = parseFloat(zone.left) + Math.random() * parseFloat(zone.width);
+                const top  = parseFloat(zone.top) + Math.random() * parseFloat(zone.height);
+                return { left: left.toFixed(1) + '%', top: top.toFixed(1) + '%' };
+            }
+
+            const dots = [];
+            let id = 1;
+
+            for (let i = 0; i < numCT; i++) {
+                const zone = spawnConfig.ctPlayers.zones[Math.floor(Math.random() * spawnConfig.ctPlayers.zones.length)] || {left:"20%", top:"20%", width:"20%", height:"20%"};
+                const pos = randomInZone(zone);
+                dots.push({ id: id++, type: 'ct', left: pos.left, top: pos.top, color: '#58c2f2' });
+            }
+            for (let i = 0; i < numT; i++) {
+                const zone = spawnConfig.tPlayers.zones[Math.floor(Math.random() * spawnConfig.tPlayers.zones.length)] || {left:"60%", top:"60%", width:"20%", height:"20%"};
+                const pos = randomInZone(zone);
+                dots.push({ id: id++, type: 't', left: pos.left, top: pos.top, color: '#f59e0b' });
+            }
+            for (let i = 0; i < numBomb; i++) {
+                const zone = spawnConfig.bomb.zones[Math.floor(Math.random() * spawnConfig.bomb.zones.length)] || {left:"50%", top:"50%", width:"10%", height:"10%"};
+                const pos = randomInZone(zone);
+                dots.push({ id: id++, type: 'bomb', left: pos.left, top: pos.top, color: '#eab308' });
+            }
+
+            container.innerHTML = `
+                <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
+                <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
+                    Random T Afterplant • ${numCT} CT • ${numT} T • Bomb
+                </p>
+                <div class="puzzle-wrapper" id="puzzle-wrapper">
+                    <div class="map-container" id="map-container">
+                        <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
+                    </div>
+                </div>
+                <div id="puzzle-feedback"></div>
+            `;
+
+            const mapContainer = document.getElementById('map-container');
+            dots.forEach(dot => {
+                const dotEl = document.createElement('div');
+                dotEl.className = 'blue-dot';
+                dotEl.style.left = dot.left;
+                dotEl.style.top = dot.top;
+                dotEl.style.background = dot.color;
+                dotEl.style.width = dot.type === 'bomb' ? '32px' : '24px';
+                dotEl.style.height = dot.type === 'bomb' ? '32px' : '24px';
+                dotEl.style.fontSize = dot.type === 'bomb' ? '18px' : '15px';
+                dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
+                mapContainer.appendChild(dotEl);
+            });
+
+            console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb', 'color:#f59e0b; font-weight:600;');
+        };
+
+        // ==================== ZONE EDITOR ====================
+        let zoneEditorData = {
+            ct: [],
+            t: [],
+            bomb: []
+        };
+        let currentDrawingCategory = 'ct';
+        let isDrawing = false;
+        let startX = 0, startY = 0;
+        let tempRect = null;
+
+        window.loadZoneEditor = function() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="zone-editor">
+                    <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+                    <div class="lessons-header" style="margin-bottom:20px;">
+                        <div class="breadcrumb">Puzzles &nbsp;›&nbsp; Zone Editor</div>
+                        <h1>Define Spawn Zones on Ancient</h1>
+                        <p style="color:#aaa;">Draw rectangles for CT players (blue), T players (orange), and Bomb (yellow). Click Finish when done.</p>
+                    </div>
+
+                    <div style="display:flex; gap:30px; align-items:flex-start;">
+                        <!-- Map + Canvas -->
+                        <div class="zone-canvas-container" id="zone-canvas-wrapper">
+                            <img id="zone-map" src="./mapImages/ancientMap.webp" style="display:block; width:820px; border-radius:8px;" alt="Ancient Map">
+                            <canvas id="zone-canvas" width="820" height="820"></canvas>
+                        </div>
+
+                        <!-- Controls -->
+                        <div style="flex:1; max-width:320px;">
+                            <h3 style="margin-bottom:12px;">Current Category</h3>
+                            <div style="display:flex; gap:8px; margin-bottom:24px;">
+                                <button onclick="setDrawingCategory('ct')" id="btn-ct" style="background:#58c2f2; color:#111; flex:1; padding:14px; font-weight:600; border:none; border-radius:8px;">CT Players (blue)</button>
+                                <button onclick="setDrawingCategory('t')" id="btn-t" style="background:#f59e0b; color:#111; flex:1; padding:14px; font-weight:600; border:none; border-radius:8px;">T Players (orange)</button>
+                                <button onclick="setDrawingCategory('bomb')" id="btn-bomb" style="background:#eab308; color:#111; flex:1; padding:14px; font-weight:600; border:none; border-radius:8px;">Bomb</button>
+                            </div>
+
+                            <h3 style="margin-bottom:12px;">Defined Zones</h3>
+                            <div id="zone-list" style="background:#27272a; border-radius:12px; padding:16px; min-height:300px; font-size:14px; line-height:1.5;"></div>
+
+                            <div style="margin-top:30px; display:flex; gap:12px;">
+                                <button onclick="clearAllZones()" style="flex:1; background:#27272a; color:#fff; padding:14px; border:none; border-radius:9999px; font-weight:600;">Clear All</button>
+                                <button onclick="finishZoneEditor()" style="flex:1; background:#58c2f2; color:#000; padding:14px; border:none; border-radius:9999px; font-weight:600;">Finish & Export Config</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Reset data
+            zoneEditorData = { ct: [], t: [], bomb: [] };
+            currentDrawingCategory = 'ct';
+            updateZoneList();
+
+            // Setup canvas
+            const img = document.getElementById('zone-map');
+            const canvas = document.getElementById('zone-canvas');
+            const ctx = canvas.getContext('2d');
+
+            img.onload = () => {
+                canvas.width = img.offsetWidth;
+                canvas.height = img.offsetHeight;
+                setupCanvasDrawing(ctx, canvas);
+            };
+            if (img.complete) {
+                canvas.width = img.offsetWidth;
+                canvas.height = img.offsetHeight;
+                setupCanvasDrawing(ctx, canvas);
+            }
+        };
+
+        function setDrawingCategory(cat) {
+            currentDrawingCategory = cat;
+            document.getElementById('btn-ct').style.opacity = cat === 'ct' ? '1' : '0.6';
+            document.getElementById('btn-t').style.opacity = cat === 't' ? '1' : '0.6';
+            document.getElementById('btn-bomb').style.opacity = cat === 'bomb' ? '1' : '0.6';
+        }
+
+        function setupCanvasDrawing(ctx, canvas) {
+            let startX = 0, startY = 0;
+
+            canvas.addEventListener('mousedown', e => {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                startX = e.clientX - rect.left;
+                startY = e.clientY - rect.top;
+            });
+
+            canvas.addEventListener('mousemove', e => {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const currentX = e.clientX - rect.left;
+                const currentY = e.clientY - rect.top;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Redraw all saved zones
+                redrawAllZones(ctx);
+
+                // Draw temp rectangle
+                ctx.strokeStyle = currentDrawingCategory === 'ct' ? '#58c2f2' : currentDrawingCategory === 't' ? '#f59e0b' : '#eab308';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([6, 4]);
+                ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+                ctx.setLineDash([]);
+            });
+
+            canvas.addEventListener('mouseup', e => {
+                if (!isDrawing) return;
+                isDrawing = false;
+
+                const rect = canvas.getBoundingClientRect();
+                const endX = e.clientX - rect.left;
+                const endY = e.clientY - rect.top;
+
+                const x = Math.min(startX, endX);
+                const y = Math.min(startY, endY);
+                const w = Math.abs(endX - startX);
+                const h = Math.abs(endY - startY);
+
+                if (w > 10 && h > 10) {
+                    const zone = {
+                        left: (x / canvas.width * 100).toFixed(1) + '%',
+                        top: (y / canvas.height * 100).toFixed(1) + '%',
+                        width: (w / canvas.width * 100).toFixed(1) + '%',
+                        height: (h / canvas.height * 100).toFixed(1) + '%'
+                    };
+                    zoneEditorData[currentDrawingCategory].push(zone);
+                    updateZoneList();
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                redrawAllZones(ctx);
+            });
+        }
+
+        function redrawAllZones(ctx) {
+            const colors = { ct: '#58c2f2', t: '#f59e0b', bomb: '#eab308' };
+
+            Object.keys(zoneEditorData).forEach(cat => {
+                ctx.strokeStyle = colors[cat];
+                ctx.lineWidth = 4;
+                ctx.setLineDash([6, 4]);
+                zoneEditorData[cat].forEach(zone => {
+                    const x = parseFloat(zone.left) / 100 * ctx.canvas.width;
+                    const y = parseFloat(zone.top) / 100 * ctx.canvas.height;
+                    const w = parseFloat(zone.width) / 100 * ctx.canvas.width;
+                    const h = parseFloat(zone.height) / 100 * ctx.canvas.height;
+                    ctx.strokeRect(x, y, w, h);
+                });
+            });
+            ctx.setLineDash([]);
+        }
+
+        function updateZoneList() {
+            const list = document.getElementById('zone-list');
+            let html = '';
+            Object.keys(zoneEditorData).forEach(cat => {
+                const label = cat === 'ct' ? 'CT Players' : cat === 't' ? 'T Players' : 'Bomb';
+                const color = cat === 'ct' ? '#58c2f2' : cat === 't' ? '#f59e0b' : '#eab308';
+                html += `<div style="margin-bottom:16px;"><strong style="color:${color}">${label}</strong> (${zoneEditorData[cat].length} zones)</div>`;
+                zoneEditorData[cat].forEach((z, i) => {
+                    html += `<div style="font-size:13px; background:#1a1a1e; padding:8px 12px; margin-bottom:4px; border-radius:6px;">
+                        ${z.left}, ${z.top} → ${z.width}×${z.height}
+                        <span onclick="deleteZone('${cat}', ${i}); event.stopImmediatePropagation();" style="float:right; color:#f44; cursor:pointer;">×</span>
+                    </div>`;
+                });
+            });
+            if (html === '') html = '<p style="color:#666; text-align:center; padding:40px 0;">No zones defined yet.<br>Draw rectangles on the map.</p>';
+            list.innerHTML = html;
+        }
+
+        function deleteZone(cat, index) {
+            zoneEditorData[cat].splice(index, 1);
+            updateZoneList();
+            const canvas = document.getElementById('zone-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                redrawAllZones(ctx);
+            }
+        }
+
+        function clearAllZones() {
+            zoneEditorData = { ct: [], t: [], bomb: [] };
+            updateZoneList();
+            const canvas = document.getElementById('zone-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        window.finishZoneEditor = function() {
+            // Copy the zones into spawnConfig
+            spawnConfig.ctPlayers.zones = [...zoneEditorData.ct];
+            spawnConfig.tPlayers.zones = [...zoneEditorData.t];
+            spawnConfig.bomb.zones = [...zoneEditorData.bomb];
+
+            const json = JSON.stringify(spawnConfig, null, 4);
+
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="zone-editor" style="text-align:center;">
+                    <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+                    <h1 style="color:#58c2f2;">✅ Zones Saved!</h1>
+                    <p style="margin:30px 0 20px; color:#aaa;">Copy the code below and replace the <strong>spawnConfig</strong> object in your script.</p>
+                    <pre style="background:#18181b; padding:24px; border-radius:12px; text-align:left; overflow:auto; max-height:420px; font-size:13px; line-height:1.4; white-space:pre;">const spawnConfig = ${json};</pre>
+                    <button onclick="loadDailyPuzzle()" style="margin-top:30px; background:#58c2f2; color:#000; padding:16px 40px; font-size:18px; font-weight:600; border:none; border-radius:9999px;">Back to Puzzles</button>
+                </div>
+            `;
+
+            console.log('%c✅ Zone Editor finished – spawnConfig ready to copy:', 'color:#58c2f2; font-weight:600;');
+            console.log(json);
+        };
+
         window.loadPuzzleLevel = function(level) {
             lastClickedDotId = null;
-
             currentPuzzleLevel = level;
             const key = getCategoryKey();
             const categoryData = puzzleData[key];
@@ -816,7 +1213,6 @@
 
         function handleDotClick(id) {
             lastClickedDotId = id;
-
             const selectedDot = currentPuzzle.dots.find(d => d.id === id);
             const isCorrect = selectedDot.correct;
 
@@ -867,7 +1263,6 @@
             `;
 
             renderPuzzleDots();
-
             document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
@@ -893,7 +1288,7 @@
             `;
         };
 
-        console.log('%c✅ Blue/orange theme is now fully consistent across Lessons + Puzzles.', 'color:#58c2f2; font-size:15px; font-weight:600;');
+        console.log('%c✅ Full code with visual Zone Editor loaded – draw on Ancient map and export spawnConfig.', 'color:#58c2f2; font-weight:600;');
     </script>
 </body>
 </html>
