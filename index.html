@@ -987,6 +987,8 @@
                         }
                     });
 
+                    updateSetupLines(); // Redraw lines with new active partner set
+
                     setupSelectionMode = false;
                     setupActive = true;
                     selectedDotForDrag = null; // Allow any active dot to be dragged independently
@@ -1106,42 +1108,49 @@
             }
 
             function updateSetupLines() {
-                if (!setupLinesSvg) return;
+                    if (!setupLinesSvg) return;
 
-                // Clear existing lines
-                setupLinesSvg.innerHTML = '';
+                    // Clear existing lines
+                    setupLinesSvg.innerHTML = '';
 
-                const anchorEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === setupAnchorDotId);
-                if (!anchorEl) return;
+                    // Determine which set of dot IDs to use
+                    const dotIdSet = setupActive ? activeSetupDotIds : new Set([setupAnchorDotId, ...setupPartnerIds]);
+                    const dotIds = Array.from(dotIdSet);
 
-                const mapContainer = document.getElementById('map-container');
-                const containerRect = mapContainer.getBoundingClientRect();
+                    if (dotIds.length < 2) return;
 
-                // Get anchor center position (percentage)
-                const anchorLeft = parseFloat(anchorEl.style.left) || 0;
-                const anchorTop = parseFloat(anchorEl.style.top) || 0;
+                    // Get all dot elements
+                    const dotElements = dotIds.map(id => {
+                        const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                        return { id, el };
+                    }).filter(item => item.el);
 
-                setupPartnerIds.forEach(partnerId => {
-                    const partnerEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === partnerId);
-                    if (!partnerEl) return;
+                    // Draw lines between all pairs
+                    for (let i = 0; i < dotElements.length; i++) {
+                        for (let j = i + 1; j < dotElements.length; j++) {
+                            const dotA = dotElements[i];
+                            const dotB = dotElements[j];
 
-                    const partnerLeft = parseFloat(partnerEl.style.left) || 0;
-                    const partnerTop = parseFloat(partnerEl.style.top) || 0;
+                            const leftA = parseFloat(dotA.el.style.left) || 0;
+                            const topA = parseFloat(dotA.el.style.top) || 0;
+                            const leftB = parseFloat(dotB.el.style.left) || 0;
+                            const topB = parseFloat(dotB.el.style.top) || 0;
 
-                    // Create line
-                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                    line.setAttribute('x1', `${anchorLeft}%`);
-                    line.setAttribute('y1', `${anchorTop}%`);
-                    line.setAttribute('x2', `${partnerLeft}%`);
-                    line.setAttribute('y2', `${partnerTop}%`);
-                    line.setAttribute('stroke', '#a78bfa');
-                    line.setAttribute('stroke-width', '2');
-                    line.setAttribute('stroke-dasharray', '5,5');
-                    line.style.opacity = '0.8';
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', `${leftA}%`);
+                            line.setAttribute('y1', `${topA}%`);
+                            line.setAttribute('x2', `${leftB}%`);
+                            line.setAttribute('y2', `${topB}%`);
+                            line.setAttribute('stroke', '#a78bfa');      // bright purple
+                            line.setAttribute('stroke-width', '4');       // thicker
+                            line.setAttribute('stroke-linecap', 'round');
+                            line.style.opacity = '0.9';
+                            line.style.filter = 'drop-shadow(0 0 4px rgba(167, 139, 250, 0.8))'; // glow
 
-                    setupLinesSvg.appendChild(line);
-                });
-            }
+                            setupLinesSvg.appendChild(line);
+                        }
+                    }
+                }
 
             // Modify enableDrag to also update lines when dragging setup dots
             // Find the onMouseMove function inside enableDrag and add a call to updateSetupLinesIfNeeded
@@ -1158,24 +1167,15 @@
                     selectedDotForDrag = null;
                 }
 
-                // Remove SVG overlay if exists
-                if (setupLinesSvg) {
-                    setupLinesSvg.remove();
-                    setupLinesSvg = null;
-                }
+                // IMPORTANT: Do NOT remove setupLinesSvg or reset setupActive/activeSetupDotIds
+                // The setup lines persist until a new puzzle is generated.
 
-                // Reset setup-related flags
-                setupSelectionMode = false;
-                setupActive = false;
-                activeSetupDotIds.clear();
-                setupAnchorDotId = null;
-                setupPartnerIds.clear();
-
-                // Update panel message
-                const panel = document.getElementById('nade-menu-panel');
-                if (panel) {
-                    panel.innerHTML = `<em>Click any T‑side dot to choose a tactic</em>`;
-                }
+                // Update panel message (but keep any setup info if present)
+                // Update panel message (always reset to default instruction)
+            const panel = document.getElementById('nade-menu-panel');
+            if (panel) {
+                panel.innerHTML = `<em>Click any T‑side dot to choose a tactic</em>`;
+            }
             }
 
             // Make it globally accessible
