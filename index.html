@@ -1160,24 +1160,62 @@
                 dotEl.style.height = dot.type === 'bomb' ? '32px' : '24px';
                 dotEl.style.fontSize = dot.type === 'bomb' ? '18px' : '15px';
                 dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
-                dotEl.onclick = () => showInfiniteNadeMenu(dot.id);   // direct call
+                dotEl.onclick = () => handleInfiniteDotClick(dot);
                 mapContainer.appendChild(dotEl);
             });
 
             console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb (no contact + stays inside zones)', 'color:#f59e0b; font-weight:600;');
         };
 
-        function showInfiniteNadeMenu(dotId) {
-            const menuPanel = document.getElementById('nade-menu-panel');
-            if (!menuPanel) return;
+        // REMOVE the old showInfiniteNadeMenu function entirely.
+            // ADD these two functions in its place:
 
-            menuPanel.innerHTML = `
-        <strong>Dot #${dotId} selected</strong><br><br>
-        <div style="background:#fff; color:#111; padding:24px; border-radius:8px; min-height:220px;">
-            No Nades
+            function handleInfiniteDotClick(dot) {
+                const panel = document.getElementById('nade-menu-panel');
+                if (!panel) return;
+
+                if (dot.type === 't') {
+                    panel.innerHTML = `
+            <strong style="display:block; margin-bottom:20px;">T player at position #${dot.id}</strong>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <button onclick="window.selectTactic('fastinfo', ${dot.id})" 
+                        style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                    ⚡ Fast Info
+                </button>
+                <button onclick="window.selectTactic('setup', ${dot.id})" 
+                        style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                    🛠️ Setup
+                </button>
+                <button onclick="window.selectTactic('push', ${dot.id})" 
+                        style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                    🚀 Push
+                </button>
+            </div>
+            <p style="margin-top:20px; font-size:14px; opacity:0.8;">Choose the action this player will perform.</p>
+        `;
+                } else {
+                    const typeName = dot.type === 'ct' ? 'CT player' : 'Bomb';
+                    panel.innerHTML = `
+            <strong>${typeName} #${dot.id}</strong><br><br>
+            <div style="background:#fff; color:#111; padding:24px; border-radius:8px; min-height:120px;">
+                ${dot.type === 'ct' ? 'No tactical options for CT positions.' : 'Bomb location – no tactics.'}
+            </div>
+        `;
+                }
+            }
+
+            window.selectTactic = function (tactic, dotId) {
+                const panel = document.getElementById('nade-menu-panel');
+                const tacticNames = { fastinfo: 'Fast Info', setup: 'Setup', push: 'Push' };
+                panel.innerHTML = `
+        <strong>✅ Tactic selected</strong><br><br>
+        <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+            Player #${dotId} will play <strong>${tacticNames[tactic]}</strong>.<br><br>
+            <em>(This would trigger AI feedback in the full version.)</em>
         </div>
     `;
-        }
+                console.log(`%c🎯 Tactic chosen: ${tactic} for dot #${dotId}`, 'color:#f59e0b; font-weight:600;');
+            };
 
         // ==================== ZONE EDITOR ====================
         let zoneEditorData = {
@@ -1535,4 +1573,5 @@
         console.log('%c✅ Full code with visual Zone Editor loaded – draw on Ancient map and export spawnConfig.', 'color:#58c2f2; font-weight:600;');
     </script>
 </body>
+
 </html>
