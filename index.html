@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS2.com</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: #0f0f0f;
@@ -18,6 +21,7 @@
             overflow: hidden;
             height: 100vh;
         }
+
         /* LEFT SIDEBAR */
         .sidebar {
             position: fixed;
@@ -32,6 +36,7 @@
             z-index: 1000;
             box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
         }
+
         .logo {
             padding: 24px 20px 16px;
             font-size: 28px;
@@ -43,18 +48,22 @@
             align-items: center;
             gap: 8px;
         }
+
         .logo::before {
             content: "🧬";
             font-size: 32px;
         }
+
         .nav {
             flex: 1;
             padding: 12px 0;
         }
+
         .nav-item {
             position: relative;
             cursor: pointer;
         }
+
         .nav-button {
             display: flex;
             align-items: center;
@@ -70,13 +79,16 @@
             width: 100%;
             text-align: left;
         }
+
         .nav-button:hover {
             background: #27272a;
             color: #ffffff;
         }
+
         .nav-button:hover .icon {
             transform: scale(1.15);
         }
+
         .icon {
             width: 24px;
             height: 24px;
@@ -86,6 +98,7 @@
             font-size: 22px;
             transition: transform 0.2s;
         }
+
         /* FIXED SUBMENU */
         .submenu {
             display: none;
@@ -103,11 +116,13 @@
             transform: translateX(-10px);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .nav-item:hover .submenu {
             display: block;
             opacity: 1;
             transform: translateX(0);
         }
+
         .submenu-item {
             display: block;
             padding: 14px 24px;
@@ -117,16 +132,19 @@
             font-weight: 500;
             transition: all 0.2s;
         }
+
         .submenu-item:hover {
             background: #3b3b40;
             padding-left: 32px;
             color: #fff;
         }
+
         .submenu-divider {
             height: 1px;
             background: #3b3b40;
             margin: 8px 16px;
         }
+
         /* MAIN CONTENT AREA */
         .main {
             margin-left: 260px;
@@ -135,23 +153,29 @@
             overflow-y: auto;
             padding: 40px;
         }
-        .lessons-page, .puzzle-page {
+
+        .lessons-page,
+        .puzzle-page {
             max-width: 1100px;
             margin: 0 auto;
         }
+
         .lessons-header {
             margin-bottom: 32px;
         }
+
         .lessons-header h1 {
             font-size: 32px;
             font-weight: 600;
             color: #fff;
         }
+
         .breadcrumb {
             color: #58c2f2;
             font-size: 15px;
             margin-bottom: 8px;
         }
+
         .side-selector {
             display: flex;
             gap: 12px;
@@ -159,6 +183,7 @@
             border-bottom: 2px solid #27272a;
             padding-bottom: 16px;
         }
+
         .side-btn {
             flex: 1;
             padding: 16px 24px;
@@ -175,18 +200,27 @@
             justify-content: center;
             gap: 10px;
         }
+
         .side-btn.active {
             background: #58c2f2;
             color: #000;
             transform: scale(1.03);
         }
-        .side-btn.ct::before { content: "🛡️"; }
-        .side-btn.t::before { content: "🔥"; }
+
+        .side-btn.ct::before {
+            content: "🛡️";
+        }
+
+        .side-btn.t::before {
+            content: "🔥";
+        }
+
         .phase-selector {
             display: flex;
             gap: 12px;
             margin-bottom: 32px;
         }
+
         .phase-btn {
             padding: 12px 28px;
             background: #27272a;
@@ -198,15 +232,18 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .phase-btn.active {
             background: #58c2f2;
             color: #000;
         }
+
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
+
         .video-card {
             background: #27272a;
             border-radius: 12px;
@@ -214,10 +251,12 @@
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
+
         .video-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px rgba(88, 194, 242, 0.2);
         }
+
         .thumbnail {
             height: 180px;
             background: #1a1a1e;
@@ -229,11 +268,13 @@
             color: #58c2f2;
             overflow: hidden;
         }
+
         .thumbnail img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .thumbnail::after {
             content: "▶";
             position: absolute;
@@ -248,31 +289,37 @@
             opacity: 0.9;
             z-index: 2;
         }
+
         .video-info {
             padding: 16px;
         }
+
         .video-info h3 {
             font-size: 17px;
             line-height: 1.3;
             margin-bottom: 6px;
             color: #fff;
         }
+
         .video-info .duration {
             font-size: 13px;
             color: #58c2f2;
             font-weight: 500;
         }
+
         .video-info p {
             font-size: 14px;
             color: #aaa;
             margin-top: 8px;
             line-height: 1.4;
         }
+
         .empty-state {
             text-align: center;
             padding: 80px 20px;
             color: #666;
         }
+
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -286,10 +333,12 @@
             cursor: pointer;
             transition: 0.2s;
         }
+
         .back-btn:hover {
             background: #58c2f2;
             color: #000;
         }
+
         /* PUZZLE PAGE STYLES */
         .map-container {
             position: relative;
@@ -302,12 +351,14 @@
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
+
         .map-container img {
             width: 100%;
             display: block;
             border-radius: 8px;
             filter: brightness(1.25) contrast(1.15);
         }
+
         .blue-dot {
             position: absolute;
             width: 24px;
@@ -321,25 +372,29 @@
             justify-content: center;
             font-weight: 700;
             font-size: 15px;
-            box-shadow: 0 0 0 5px rgba(88,194,242,0.4);
+            box-shadow: 0 0 0 5px rgba(88, 194, 242, 0.4);
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
             transform: translate(-50%, -50%);
         }
+
         .blue-dot:hover {
             transform: translate(-50%, -50%) scale(1.15);
-            box-shadow: 0 0 0 8px rgba(88,194,242,0.6);
+            box-shadow: 0 0 0 8px rgba(88, 194, 242, 0.6);
         }
+
         /* Highlight colors (only applied after click) */
         .blue-dot.correct {
             background: #c084fc;
             box-shadow: 0 0 0 5px rgba(192, 132, 252, 0.6);
         }
+
         .blue-dot.wrong {
             background: #e8c39e;
             box-shadow: 0 0 0 5px rgba(232, 195, 158, 0.6);
         }
+
         /* SIDE-BY-SIDE LAYOUT FOR BOTH CORRECT AND WRONG */
         .puzzle-wrapper {
             display: flex;
@@ -348,6 +403,7 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .puzzle-feedback-side {
             flex: 0 0 520px;
             position: sticky;
@@ -357,10 +413,12 @@
             font-size: 19px;
             font-weight: 600;
         }
+
         #puzzle-feedback {
             min-height: 100px;
             margin-top: 20px;
         }
+
         /* LEVEL SELECTOR */
         .level-preview {
             display: grid;
@@ -369,6 +427,7 @@
             margin: 40px auto;
             max-width: 820px;
         }
+
         .level-card {
             background: #27272a;
             border-radius: 12px;
@@ -380,15 +439,18 @@
             transition: all 0.2s;
             position: relative;
         }
+
         .level-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(88, 194, 242, 0.3);
         }
+
         .level-card.locked {
             background: #1f1f23;
             color: #555;
             cursor: not-allowed;
         }
+
         .level-card.locked::after {
             content: "🔒";
             position: absolute;
@@ -396,14 +458,17 @@
             right: 12px;
             font-size: 18px;
         }
+
         .level-card.unlocked {
             background: #58c2f2;
             color: #000;
         }
+
         .level-card .level-number {
             font-size: 42px;
             line-height: 1;
         }
+
         .level-card .level-title {
             font-size: 14px;
             margin-top: 8px;
@@ -415,33 +480,41 @@
             background: #f59e0b;
             box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.4);
         }
+
         .t-side .blue-dot.correct {
             background: #fb923c;
             box-shadow: 0 0 0 5px rgba(251, 146, 60, 0.6);
         }
+
         .t-side .blue-dot.wrong {
             background: #f97316;
             box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.6);
         }
+
         .t-side .puzzle-feedback-side[style*="background:#c084fc"] {
             background: #fb923c !important;
             color: #111;
         }
+
         .t-side .level-card.unlocked {
             background: #f59e0b !important;
         }
+
         .t-side .side-btn.active {
             background: #f59e0b !important;
             color: #111;
         }
+
         .t-side .phase-btn.active {
             background: #f59e0b !important;
             color: #111;
         }
+
         .t-side .lessons-header h1,
         .t-side .breadcrumb {
             color: #f59e0b !important;
         }
+
         .t-side .back-btn:hover {
             background: #f59e0b;
             color: #111;
@@ -452,15 +525,18 @@
         .breadcrumb {
             color: #58c2f2;
         }
+
         .back-btn:hover {
             background: #58c2f2;
             color: #111;
         }
+
         /* Video card hover shadow respects the blue/orange theme */
         .video-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px rgba(88, 194, 242, 0.2);
         }
+
         .t-side .video-card:hover {
             box-shadow: 0 12px 24px rgba(245, 158, 11, 0.3);
         }
@@ -470,14 +546,16 @@
             max-width: 1100px;
             margin: 0 auto;
         }
+
         .zone-canvas-container {
             position: relative;
             display: inline-block;
             border: 6px solid #27272a;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
+
         .zone-canvas-container canvas {
             position: absolute;
             top: 0;
@@ -486,6 +564,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- LEFT SIDEBAR -->
     <div class="sidebar">
@@ -519,10 +598,11 @@
     <!-- MAIN CONTENT AREA -->
     <div class="main" id="main-content">
         <!-- Default home screen -->
-        <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #555; text-align: center;">
+        <div
+            style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #555; text-align: center;">
             <h1 style="font-size: 42px; margin-bottom: 16px; color: #58c2f2;">✅ Fixed!</h1>
             <p style="font-size: 18px; max-width: 420px;">The submenu gap has been fixed.<br>
-            Hover any main button now → submenus stay open smoothly.</p>
+                Hover any main button now → submenus stay open smoothly.</p>
             <p style="margin-top: 20px; font-size: 15px; opacity: 0.6;">Puzzles dots now match your reference image.</p>
         </div>
     </div>
@@ -541,205 +621,213 @@
             "ct_afterplant": [
                 { title: "Afterplant CT - reverse execute basics - Practical", duration: "08:35", desc: "CT-side reverse execute afterplant", youtubeId: "4ZgqSO4j5_Q" }
             ],
-            "t_early": [{title: "Map Control - Concept", duration: "11:30", desc: "T side map control", youtubeId: "ZA7lWrY6eMQ" },
-                        {title: "Map Control - Practical", duration: "10:27", desc: "Comming up with map control plan", youtubeId: "mSji4khMcjk" },
-                        {title: "Fast Info / Setups within Map Control", duration: "08:21", desc: "Information within map control", youtubeId: "tMzg14lugoU" }
+            "t_early": [{ title: "Map Control - Concept", duration: "11:30", desc: "T side map control", youtubeId: "ZA7lWrY6eMQ" },
+            { title: "Map Control - Practical", duration: "10:27", desc: "Comming up with map control plan", youtubeId: "mSji4khMcjk" },
+            { title: "Fast Info / Setups within Map Control", duration: "08:21", desc: "Information within map control", youtubeId: "tMzg14lugoU" }
             ],
-            "t_mid": [{title: "Execute Fundamentals", duration: "11:20", desc: "Site execute", youtubeId: "HSoAoGzLGDI" }],
-            "t_afterplant": [{title: "FISPI afterplant", duration: "17:24", desc: "FISPI afterplant", youtubeId: "JQlJG0y7bXE" }]
+            "t_mid": [{ title: "Execute Fundamentals", duration: "11:20", desc: "Site execute", youtubeId: "HSoAoGzLGDI" }],
+            "t_afterplant": [{ title: "FISPI afterplant", duration: "17:24", desc: "FISPI afterplant", youtubeId: "JQlJG0y7bXE" }]
         };
 
         // Puzzle data (unchanged)
         const puzzleData = {
             "ct_early": {
                 levels: [
-                    { level: 1, question: "Which of the following is the A fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "55%", top: "11%", correct: false, expl: "More info can be safely taken" },
-                        { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
-                        { id: 3, left: "37%", top: "27%", correct: false, expl: "More info can be safely taken" },
-                        { id: 4, left: "21%", top: "32%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientAFastInfoStartingPos.gif" },
-                        { id: 5, left: "22%", top: "41%", correct: false, expl: "Too exposed to fully jiggle the entire A main" },
-                        { id: 6, left: "18%", top: "48%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                        { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                        { id: 8, left: "35%", top: "69%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
-                    ]},
-                    { level: 2, question: "Which is the fast info position for mid?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "43.1%", top: "17.1%", correct: false, expl: "More info can be safely taken" },
-                        { id: 2, left: "54.5%", top: "22.9%", correct: false, expl: "More info can be safely taken" },
-                        { id: 3, left: "58.1%", top: "26.6%", correct: false, expl: "More info can be safely taken" },
-                        { id: 4, left: "57.9%", top: "31.2%", correct: false, expl: "More info can be safely taken" },
-                        { id: 5, left: "50.9%", top: "28.5%", correct: false, expl: "More info can be safely taken" },
-                        { id: 6, left: "47.4%", top: "31.5%", correct: true, expl: "Can spot entire mid (elbow + heaven)", gifSrc: "./gifs/ancientMidFastInfoStartingPos.gif" },
-                        { id: 7, left: "49.5%", top: "35.5%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
-                        { id: 8, left: "45.8%", top: "35.6%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
-                        { id: 9, left: "28.7%", top: "31.5%", correct: false, expl: "More info can be safely taken" },
-                        { id: 10, left: "32.3%", top: "41.6%", correct: false, expl: "More info can be safely taken" },
-                        { id: 11, left: "44.1%", top: "46.6%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
-                        { id: 12, left: "53.4%", top: "46.6%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
-                    ]},
-                    { level: 3, question: "Which of the following is the Cave fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "57.7%", top: "28.8%", correct: false, expl: "More info can be safely taken" },
-                        { id: 2, left: "67.0%", top: "27.6%", correct: false, expl: "More info can be safely taken" },
-                        { id: 3, left: "71.6%", top: "27.9%", correct: false, expl: "More info can be safely taken" },
-                        { id: 4, left: "73.6%", top: "41.0%", correct: false, expl: "More info can be safely taken" },
-                        { id: 5, left: "68.1%", top: "39.3%", correct: false, expl: "More info can be safely taken" },
-                        { id: 6, left: "65.5%", top: "48.9%", correct: true, expl: "If that position is mollied, we can consider the next available one", gifSrc: "./gifs/ancientCaveFastInfoStartingPos.gif" },
-                        { id: 7, left: "58.1%", top: "52.3%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                        { id: 8, left: "60.3%", top: "56.1%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                        { id: 9, left: "64.9%", top: "58.5%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
-                    ]},
-                    { level: 4, question: "Which of the following is the B ramp fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                        { id: 1, left: "77.0%", top: "27.7%", correct: false, expl: "More info can be safely taken" },
-                        { id: 2, left: "82.1%", top: "32.6%", correct: false, expl: "More info can be safely taken" },
-                        { id: 3, left: "78.7%", top: "37.8%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientBFastInfoStartingPos.gif" },
-                        { id: 4, left: "71.8%", top: "39.4%", correct: false, expl: "More info can be safely taken" },
-                        { id: 5, left: "78.7%", top: "53.2%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
-                        { id: 6, left: "78.8%", top: "58.4%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
-                    ]},
+                    {
+                        level: 1, question: "Which of the following is the A fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                            { id: 1, left: "55%", top: "11%", correct: false, expl: "More info can be safely taken" },
+                            { id: 2, left: "46%", top: "21%", correct: false, expl: "More info can be safely taken" },
+                            { id: 3, left: "37%", top: "27%", correct: false, expl: "More info can be safely taken" },
+                            { id: 4, left: "21%", top: "32%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientAFastInfoStartingPos.gif" },
+                            { id: 5, left: "22%", top: "41%", correct: false, expl: "Too exposed to fully jiggle the entire A main" },
+                            { id: 6, left: "18%", top: "48%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                            { id: 7, left: "28%", top: "67%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                            { id: 8, left: "35%", top: "69%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
+                        ]
+                    },
+                    {
+                        level: 2, question: "Which is the fast info position for mid?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                            { id: 1, left: "43.1%", top: "17.1%", correct: false, expl: "More info can be safely taken" },
+                            { id: 2, left: "54.5%", top: "22.9%", correct: false, expl: "More info can be safely taken" },
+                            { id: 3, left: "58.1%", top: "26.6%", correct: false, expl: "More info can be safely taken" },
+                            { id: 4, left: "57.9%", top: "31.2%", correct: false, expl: "More info can be safely taken" },
+                            { id: 5, left: "50.9%", top: "28.5%", correct: false, expl: "More info can be safely taken" },
+                            { id: 6, left: "47.4%", top: "31.5%", correct: true, expl: "Can spot entire mid (elbow + heaven)", gifSrc: "./gifs/ancientMidFastInfoStartingPos.gif" },
+                            { id: 7, left: "49.5%", top: "35.5%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
+                            { id: 8, left: "45.8%", top: "35.6%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
+                            { id: 9, left: "28.7%", top: "31.5%", correct: false, expl: "More info can be safely taken" },
+                            { id: 10, left: "32.3%", top: "41.6%", correct: false, expl: "More info can be safely taken" },
+                            { id: 11, left: "44.1%", top: "46.6%", correct: false, expl: "Too exposed to fully jiggle elbow AND heaven" },
+                            { id: 12, left: "53.4%", top: "46.6%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
+                        ]
+                    },
+                    {
+                        level: 3, question: "Which of the following is the Cave fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                            { id: 1, left: "57.7%", top: "28.8%", correct: false, expl: "More info can be safely taken" },
+                            { id: 2, left: "67.0%", top: "27.6%", correct: false, expl: "More info can be safely taken" },
+                            { id: 3, left: "71.6%", top: "27.9%", correct: false, expl: "More info can be safely taken" },
+                            { id: 4, left: "73.6%", top: "41.0%", correct: false, expl: "More info can be safely taken" },
+                            { id: 5, left: "68.1%", top: "39.3%", correct: false, expl: "More info can be safely taken" },
+                            { id: 6, left: "65.5%", top: "48.9%", correct: true, expl: "If that position is mollied, we can consider the next available one", gifSrc: "./gifs/ancientCaveFastInfoStartingPos.gif" },
+                            { id: 7, left: "58.1%", top: "52.3%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                            { id: 8, left: "60.3%", top: "56.1%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                            { id: 9, left: "64.9%", top: "58.5%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
+                        ]
+                    },
+                    {
+                        level: 4, question: "Which of the following is the B ramp fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                            { id: 1, left: "77.0%", top: "27.7%", correct: false, expl: "More info can be safely taken" },
+                            { id: 2, left: "82.1%", top: "32.6%", correct: false, expl: "More info can be safely taken" },
+                            { id: 3, left: "78.7%", top: "37.8%", correct: true, expl: "Deeper info leads to danger. Less info leads to less info", gifSrc: "./gifs/ancientBFastInfoStartingPos.gif" },
+                            { id: 4, left: "71.8%", top: "39.4%", correct: false, expl: "More info can be safely taken" },
+                            { id: 5, left: "78.7%", top: "53.2%", correct: false, expl: "Unsafe spot to take, Ts see that position first" },
+                            { id: 6, left: "78.8%", top: "58.4%", correct: false, expl: "Unsafe spot to take, Ts see that position first" }
+                        ]
+                    },
                 ]
             },
-            "ct_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
-            "ct_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `CT After Plant Level ${i+1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
-            "t_early": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Early Round Level ${i+1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
-            "t_mid": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T Mid Round Level ${i+1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
-            "t_afterplant": { levels: Array.from({length: 10}, (_, i) => ({ level: i+1, question: `T After Plant Level ${i+1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) }
+            "ct_mid": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `CT After Plant Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "ct_afterplant": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `CT After Plant Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_early": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `T Early Round Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_mid": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `T Mid Round Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
+            "t_afterplant": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `T After Plant Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) }
         };
 
         // === T AFTERPLANT RANDOM PUZZLE CONFIG ===
         const spawnConfig = {
-                "ctPlayers": {
-                    "zones": [
-                        {
-                            "left": "45.2%",
-                            "top": "25.5%",
-                            "width": "3.7%",
-                            "height": "2.3%"
-                        },
-                        {
-                            "left": "51.5%",
-                            "top": "25.7%",
-                            "width": "3.3%",
-                            "height": "3.4%"
-                        },
-                        {
-                            "left": "55.7%",
-                            "top": "27.2%",
-                            "width": "3.2%",
-                            "height": "1.3%"
-                        },
-                        {
-                            "left": "58.0%",
-                            "top": "24.6%",
-                            "width": "6.8%",
-                            "height": "2.0%"
-                        },
-                        {
-                            "left": "54.0%",
-                            "top": "56.5%",
-                            "width": "4.0%",
-                            "height": "2.0%"
-                        },
-                        {
-                            "left": "59.1%",
-                            "top": "50.9%",
-                            "width": "7.0%",
-                            "height": "2.0%"
-                        },
-                        {
-                            "left": "60.9%",
-                            "top": "54.4%",
-                            "width": "1.5%",
-                            "height": "3.7%"
-                        },
-                        {
-                            "left": "59.8%",
-                            "top": "57.6%",
-                            "width": "6.7%",
-                            "height": "1.7%"
-                        },
-                        {
-                            "left": "64.8%",
-                            "top": "56.8%",
-                            "width": "7.7%",
-                            "height": "1.8%"
-                        },
-                        {
-                            "left": "70.3%",
-                            "top": "53.4%",
-                            "width": "1.6%",
-                            "height": "3.8%"
-                        },
-                        {
-                            "left": "73.0%",
-                            "top": "55.1%",
-                            "width": "5.5%",
-                            "height": "3.5%"
-                        }
-                    ],
-                    "min": 1,
-                    "max": 5
-                },
-                "tPlayers": {
-                    "zones": [
-                        {
-                            "left": "81.4%",
-                            "top": "27.7%",
-                            "width": "2.6%",
-                            "height": "4.1%"
-                        },
-                        {
-                            "left": "80.9%",
-                            "top": "32.2%",
-                            "width": "2.1%",
-                            "height": "4.6%"
-                        },
-                        {
-                            "left": "70.9%",
-                            "top": "35.4%",
-                            "width": "8.5%",
-                            "height": "3.5%"
-                        },
-                        {
-                            "left": "65.2%",
-                            "top": "37.9%",
-                            "width": "2.2%",
-                            "height": "7.7%"
-                        },
-                        {
-                            "left": "75.7%",
-                            "top": "40.1%",
-                            "width": "4.5%",
-                            "height": "7.1%"
-                        },
-                        {
-                            "left": "70.9%",
-                            "top": "44.6%",
-                            "width": "3.8%",
-                            "height": "2.4%"
-                        },
-                        {
-                            "left": "80.8%",
-                            "top": "45.9%",
-                            "width": "2.1%",
-                            "height": "7.3%"
-                        }
-                    ],
-                    "min": 1,
-                    "max": 5
-                },
-                "bomb": {
-                    "zones": [
-                        {
-                            "left": "72.0%",
-                            "top": "42.1%",
-                            "width": "2.7%",
-                            "height": "2.0%"
-                        }
-                    ],
-                    "min": 1,
-                    "max": 1
-                }
-            };
+            "ctPlayers": {
+                "zones": [
+                    {
+                        "left": "45.2%",
+                        "top": "25.5%",
+                        "width": "3.7%",
+                        "height": "2.3%"
+                    },
+                    {
+                        "left": "51.5%",
+                        "top": "25.7%",
+                        "width": "3.3%",
+                        "height": "3.4%"
+                    },
+                    {
+                        "left": "55.7%",
+                        "top": "27.2%",
+                        "width": "3.2%",
+                        "height": "1.3%"
+                    },
+                    {
+                        "left": "58.0%",
+                        "top": "24.6%",
+                        "width": "6.8%",
+                        "height": "2.0%"
+                    },
+                    {
+                        "left": "54.0%",
+                        "top": "56.5%",
+                        "width": "4.0%",
+                        "height": "2.0%"
+                    },
+                    {
+                        "left": "59.1%",
+                        "top": "50.9%",
+                        "width": "7.0%",
+                        "height": "2.0%"
+                    },
+                    {
+                        "left": "60.9%",
+                        "top": "54.4%",
+                        "width": "1.5%",
+                        "height": "3.7%"
+                    },
+                    {
+                        "left": "59.8%",
+                        "top": "57.6%",
+                        "width": "6.7%",
+                        "height": "1.7%"
+                    },
+                    {
+                        "left": "64.8%",
+                        "top": "56.8%",
+                        "width": "7.7%",
+                        "height": "1.8%"
+                    },
+                    {
+                        "left": "70.3%",
+                        "top": "53.4%",
+                        "width": "1.6%",
+                        "height": "3.8%"
+                    },
+                    {
+                        "left": "73.0%",
+                        "top": "55.1%",
+                        "width": "5.5%",
+                        "height": "3.5%"
+                    }
+                ],
+                "min": 1,
+                "max": 5
+            },
+            "tPlayers": {
+                "zones": [
+                    {
+                        "left": "81.4%",
+                        "top": "27.7%",
+                        "width": "2.6%",
+                        "height": "4.1%"
+                    },
+                    {
+                        "left": "80.9%",
+                        "top": "32.2%",
+                        "width": "2.1%",
+                        "height": "4.6%"
+                    },
+                    {
+                        "left": "70.9%",
+                        "top": "35.4%",
+                        "width": "8.5%",
+                        "height": "3.5%"
+                    },
+                    {
+                        "left": "65.2%",
+                        "top": "37.9%",
+                        "width": "2.2%",
+                        "height": "7.7%"
+                    },
+                    {
+                        "left": "75.7%",
+                        "top": "40.1%",
+                        "width": "4.5%",
+                        "height": "7.1%"
+                    },
+                    {
+                        "left": "70.9%",
+                        "top": "44.6%",
+                        "width": "3.8%",
+                        "height": "2.4%"
+                    },
+                    {
+                        "left": "80.8%",
+                        "top": "45.9%",
+                        "width": "2.1%",
+                        "height": "7.3%"
+                    }
+                ],
+                "min": 1,
+                "max": 5
+            },
+            "bomb": {
+                "zones": [
+                    {
+                        "left": "72.0%",
+                        "top": "42.1%",
+                        "width": "2.7%",
+                        "height": "2.0%"
+                    }
+                ],
+                "min": 1,
+                "max": 1
+            }
+        };
 
         let currentSide = 'ct';
         let currentPhase = 'early';
@@ -789,7 +877,7 @@
             container.innerHTML = html;
         }
 
-        window.selectSide = function(side) {
+        window.selectSide = function (side) {
             currentSide = side;
             const main = document.getElementById('main-content');
             main.classList.toggle('t-side', side === 't');
@@ -797,13 +885,13 @@
             renderVideos();
         };
 
-        window.selectPhase = function(phase) {
+        window.selectPhase = function (phase) {
             currentPhase = phase;
             document.querySelectorAll('.phase-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-phase') === phase));
             renderVideos();
         };
 
-        window.playPlaceholderVideo = function(title, youtubeId = '') {
+        window.playPlaceholderVideo = function (title, youtubeId = '') {
             let videoHTML = youtubeId
                 ? `<iframe width="100%" height="100%" style="position:absolute;top:0;left:0;border-radius:8px;" src="https://www.youtube.com/embed/${youtubeId}?autoplay=1" title="${title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
                 : `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #58c2f2; font-size: 60px;">▶️<br><span style="font-size: 22px; display: block; margin-top: 20px;">Now playing:</span><span style="font-size: 24px; font-weight: 600;">${title}</span></div>`;
@@ -819,7 +907,7 @@
             document.getElementById('main-content').insertAdjacentHTML('beforeend', modalHTML);
         };
 
-        window.loadLessons = function() {
+        window.loadLessons = function () {
             const main = document.getElementById('main-content');
             main.innerHTML = `
                 <div class="lessons-page">
@@ -846,7 +934,7 @@
             renderVideos();
         };
 
-        window.loadDailyPuzzle = function() {
+        window.loadDailyPuzzle = function () {
             const main = document.getElementById('main-content');
             main.innerHTML = `
                 <div class="puzzle-page">
@@ -873,7 +961,7 @@
             showLevelPreview();
         };
 
-        window.selectPuzzleSide = function(side) {
+        window.selectPuzzleSide = function (side) {
             currentPuzzleSide = side;
             const main = document.getElementById('main-content');
             main.classList.toggle('t-side', side === 't');
@@ -883,7 +971,7 @@
             showLevelPreview();
         };
 
-        window.selectPuzzlePhase = function(phase) {
+        window.selectPuzzlePhase = function (phase) {
             currentPuzzlePhase = phase;
             document.querySelectorAll('#main-content .phase-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-phase') === phase);
@@ -938,99 +1026,99 @@
             html += `</div>`;
             container.innerHTML = html;
         }
-        
+
         window.generateNewTAfterplantPuzzle = function () {
-                const container = document.getElementById('puzzle-container');
+            const container = document.getElementById('puzzle-container');
 
-                const numCT = Math.floor(Math.random() * 5) + 1;
-                const numT = Math.floor(Math.random() * 5) + 1;
-                const numBomb = 1;
+            const numCT = Math.floor(Math.random() * 5) + 1;
+            const numT = Math.floor(Math.random() * 5) + 1;
+            const numBomb = 1;
 
-                function randomInZone(zone) {
-                    const left = parseFloat(zone.left) + Math.random() * parseFloat(zone.width);
-                    const top = parseFloat(zone.top) + Math.random() * parseFloat(zone.height);
-                    return { left: left.toFixed(1) + '%', top: top.toFixed(1) + '%' };
-                }
+            function randomInZone(zone) {
+                const left = parseFloat(zone.left) + Math.random() * parseFloat(zone.width);
+                const top = parseFloat(zone.top) + Math.random() * parseFloat(zone.height);
+                return { left: left.toFixed(1) + '%', top: top.toFixed(1) + '%' };
+            }
 
-                function clampToZone(pos, zone) {
-                    let l = parseFloat(pos.left);
-                    let t = parseFloat(pos.top);
-                    const zoneLeft = parseFloat(zone.left);
-                    const zoneTop = parseFloat(zone.top);
-                    const zoneRight = zoneLeft + parseFloat(zone.width);
-                    const zoneBottom = zoneTop + parseFloat(zone.height);
+            function clampToZone(pos, zone) {
+                let l = parseFloat(pos.left);
+                let t = parseFloat(pos.top);
+                const zoneLeft = parseFloat(zone.left);
+                const zoneTop = parseFloat(zone.top);
+                const zoneRight = zoneLeft + parseFloat(zone.width);
+                const zoneBottom = zoneTop + parseFloat(zone.height);
 
-                    l = Math.max(zoneLeft, Math.min(l, zoneRight));
-                    t = Math.max(zoneTop, Math.min(t, zoneBottom));
+                l = Math.max(zoneLeft, Math.min(l, zoneRight));
+                t = Math.max(zoneTop, Math.min(t, zoneBottom));
 
-                    return { left: l.toFixed(1) + '%', top: t.toFixed(1) + '%' };
-                }
+                return { left: l.toFixed(1) + '%', top: t.toFixed(1) + '%' };
+            }
 
-                const dots = [];
-                let id = 1;
+            const dots = [];
+            let id = 1;
 
-                function placeDot(type, zones, color) {
-                    const zone = zones[Math.floor(Math.random() * zones.length)] || { left: "20%", top: "20%", width: "20%", height: "20%" };
-                    let pos = randomInZone(zone);
+            function placeDot(type, zones, color) {
+                const zone = zones[Math.floor(Math.random() * zones.length)] || { left: "20%", top: "20%", width: "20%", height: "20%" };
+                let pos = randomInZone(zone);
 
-                    let attempts = 0;
-                    while (attempts < 2500) {
-                        attempts++;
+                let attempts = 0;
+                while (attempts < 2500) {
+                    attempts++;
 
-                        const candidate = { id: id, type: type, left: pos.left, top: pos.top, color: color };
+                    const candidate = { id: id, type: type, left: pos.left, top: pos.top, color: color };
 
-                        // Check overlap
-                        let collision = false;
-                        for (let existing of dots) {
-                            const dx = parseFloat(candidate.left) - parseFloat(existing.left);
-                            const dy = parseFloat(candidate.top) - parseFloat(existing.top);
-                            if (Math.sqrt(dx * dx + dy * dy) < 28) {   // 28% = guaranteed zero contact
-                                collision = true;
-                                break;
-                            }
+                    // Check overlap
+                    let collision = false;
+                    for (let existing of dots) {
+                        const dx = parseFloat(candidate.left) - parseFloat(existing.left);
+                        const dy = parseFloat(candidate.top) - parseFloat(existing.top);
+                        if (Math.sqrt(dx * dx + dy * dy) < 28) {   // 28% = guaranteed zero contact
+                            collision = true;
+                            break;
                         }
-
-                        if (!collision) {
-                            dots.push(candidate);
-                            id++;
-                            return;
-                        }
-
-                        // ADJUST: push away from closest dot, then clamp back inside the original zone
-                        let closest = dots[0];
-                        let minDist = Infinity;
-                        for (let existing of dots) {
-                            const dx = parseFloat(candidate.left) - parseFloat(existing.left);
-                            const dy = parseFloat(candidate.top) - parseFloat(existing.top);
-                            const d = Math.sqrt(dx * dx + dy * dy);
-                            if (d < minDist) {
-                                minDist = d;
-                                closest = existing;
-                            }
-                        }
-
-                        const dx = parseFloat(candidate.left) - parseFloat(closest.left);
-                        const dy = parseFloat(candidate.top) - parseFloat(closest.top);
-                        const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                        const push = 32;   // strong push
-
-                        pos.left = (parseFloat(candidate.left) + (dx / len) * push).toFixed(1) + '%';
-                        pos.top = (parseFloat(candidate.top) + (dy / len) * push).toFixed(1) + '%';
-
-                        // Clamp back inside the original zone so it never leaves the allowed area
-                        pos = clampToZone(pos, zone);
                     }
 
-                    // fallback
-                    dots.push({ id: id++, type: type, left: pos.left, top: pos.top, color: color });
+                    if (!collision) {
+                        dots.push(candidate);
+                        id++;
+                        return;
+                    }
+
+                    // ADJUST: push away from closest dot, then clamp back inside the original zone
+                    let closest = dots[0];
+                    let minDist = Infinity;
+                    for (let existing of dots) {
+                        const dx = parseFloat(candidate.left) - parseFloat(existing.left);
+                        const dy = parseFloat(candidate.top) - parseFloat(existing.top);
+                        const d = Math.sqrt(dx * dx + dy * dy);
+                        if (d < minDist) {
+                            minDist = d;
+                            closest = existing;
+                        }
+                    }
+
+                    const dx = parseFloat(candidate.left) - parseFloat(closest.left);
+                    const dy = parseFloat(candidate.top) - parseFloat(closest.top);
+                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const push = 32;   // strong push
+
+                    pos.left = (parseFloat(candidate.left) + (dx / len) * push).toFixed(1) + '%';
+                    pos.top = (parseFloat(candidate.top) + (dy / len) * push).toFixed(1) + '%';
+
+                    // Clamp back inside the original zone so it never leaves the allowed area
+                    pos = clampToZone(pos, zone);
                 }
 
-                // Place sequentially (CT first = lowest numbers)
-                for (let i = 0; i < numCT; i++)   placeDot('ct', spawnConfig.ctPlayers.zones, '#58c2f2');
-                for (let i = 0; i < numT; i++)    placeDot('t', spawnConfig.tPlayers.zones, '#f59e0b');
-                for (let i = 0; i < numBomb; i++) placeDot('bomb', spawnConfig.bomb.zones, '#eab308');
+                // fallback
+                dots.push({ id: id++, type: type, left: pos.left, top: pos.top, color: color });
+            }
 
-                        container.innerHTML = `
+            // Place sequentially (CT first = lowest numbers)
+            for (let i = 0; i < numCT; i++)   placeDot('ct', spawnConfig.ctPlayers.zones, '#58c2f2');
+            for (let i = 0; i < numT; i++)    placeDot('t', spawnConfig.tPlayers.zones, '#f59e0b');
+            for (let i = 0; i < numBomb; i++) placeDot('bomb', spawnConfig.bomb.zones, '#eab308');
+
+            container.innerHTML = `
         <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
         <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
             Random T Afterplant • ${numCT} CT • ${numT} T • Bomb
@@ -1061,7 +1149,7 @@
         </div>
     `;
 
-                    const mapContainer = document.getElementById('map-container');
+            const mapContainer = document.getElementById('map-container');
             dots.forEach(dot => {
                 const dotEl = document.createElement('div');
                 dotEl.className = 'blue-dot';
@@ -1076,20 +1164,20 @@
                 mapContainer.appendChild(dotEl);
             });
 
-                console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb (no contact + stays inside zones)', 'color:#f59e0b; font-weight:600;');
-            };
+            console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb (no contact + stays inside zones)', 'color:#f59e0b; font-weight:600;');
+        };
 
         function showInfiniteNadeMenu(dotId) {
-                const menuPanel = document.getElementById('nade-menu-panel');
-                if (!menuPanel) return;
+            const menuPanel = document.getElementById('nade-menu-panel');
+            if (!menuPanel) return;
 
-                menuPanel.innerHTML = `
+            menuPanel.innerHTML = `
         <strong>Dot #${dotId} selected</strong><br><br>
         <div style="background:#fff; color:#111; padding:24px; border-radius:8px; min-height:220px;">
-            Nades menu will appear here
+            No Nades
         </div>
     `;
-            }
+        }
 
         // ==================== ZONE EDITOR ====================
         let zoneEditorData = {
@@ -1102,7 +1190,7 @@
         let startX = 0, startY = 0;
         let tempRect = null;
 
-        window.loadZoneEditor = function() {
+        window.loadZoneEditor = function () {
             const main = document.getElementById('main-content');
             main.innerHTML = `
                 <div class="zone-editor">
@@ -1285,7 +1373,7 @@
             }
         }
 
-        window.finishZoneEditor = function() {
+        window.finishZoneEditor = function () {
             // Copy the zones into spawnConfig
             spawnConfig.ctPlayers.zones = [...zoneEditorData.ct];
             spawnConfig.tPlayers.zones = [...zoneEditorData.t];
@@ -1308,7 +1396,7 @@
             console.log(json);
         };
 
-        window.loadPuzzleLevel = function(level) {
+        window.loadPuzzleLevel = function (level) {
             lastClickedDotId = null;
             currentPuzzleLevel = level;
             const key = getCategoryKey();
@@ -1382,16 +1470,16 @@
             }
 
             const wrapper = document.getElementById('puzzle-wrapper');
-            const gifHTML = (isCorrect && selectedDot.gifSrc) 
-            ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
-            : '';
+            const gifHTML = (isCorrect && selectedDot.gifSrc)
+                ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
+                : '';
 
             const key = getCategoryKey();
             if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
                 unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
             }
 
-            const feedbackHTML = isCorrect 
+            const feedbackHTML = isCorrect
                 ? `
                     <div class="puzzle-feedback-side" style="background:#c084fc; color:#111;">
                         👾 Correct<br>
@@ -1422,7 +1510,7 @@
             document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
-        window.goToNextLevel = function() {
+        window.goToNextLevel = function () {
             const key = getCategoryKey();
             const maxUnlocked = unlockedLevels[key] || 1;
             if (currentPuzzleLevel < maxUnlocked) {
@@ -1432,7 +1520,7 @@
             }
         };
 
-        window.loadHome = function() {
+        window.loadHome = function () {
             const main = document.getElementById('main-content');
             main.innerHTML = `
                 <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #555; text-align: center;">
