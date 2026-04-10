@@ -836,6 +836,8 @@
         let currentPuzzleLevel = 1;
         let currentPuzzle = null;
         let lastClickedDotId = null;
+        let selectedDotForDrag = null;
+        let dotTactics = {}; // key: dotId, value: 'fastinfo' / 'setup' / 'push'
 
         let unlockedLevels = {
             "ct_early": 1,
@@ -845,6 +847,27 @@
             "t_mid": 1,
             "t_afterplant": 1
         };
+
+        function clearDotSelection() {
+                // Remove grey-out from all T dots
+                document.querySelectorAll('.blue-dot').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                    el.style.cursor = 'pointer';
+                });
+                // Reset drag state
+                if (selectedDotForDrag) {
+                    selectedDotForDrag = null;
+                }
+                // Update panel message
+                const panel = document.getElementById('nade-menu-panel');
+                if (panel) {
+                    panel.innerHTML = `<em>Click any T‑side dot to choose a tactic</em>`;
+                }
+            }
+
+            // Make it globally accessible
+            window.clearDotSelection = clearDotSelection;
 
         function getCategoryKey() {
             return `${currentPuzzleSide}_${currentPuzzlePhase}`;
@@ -1117,6 +1140,9 @@
             for (let i = 0; i < numCT; i++)   placeDot('ct', spawnConfig.ctPlayers.zones, '#58c2f2');
             for (let i = 0; i < numT; i++)    placeDot('t', spawnConfig.tPlayers.zones, '#f59e0b');
             for (let i = 0; i < numBomb; i++) placeDot('bomb', spawnConfig.bomb.zones, '#eab308');
+            
+            selectedDotForDrag = null; // Reset drag state
+            dotTactics = {}; // Reset tactic memory
 
             container.innerHTML = `
         <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
@@ -1143,7 +1169,7 @@
                 
                 <!-- Menu appears here (under the button) -->
                 <div id="nade-menu-panel" style="background:#f59e0b; color:#111; padding:28px; border-radius:12px; min-height:280px; font-size:19px;">
-                    <em>Click any dot to see its nades</em>
+                    <em>Click any dot to see its options</em>
                 </div>
             </div>
         </div>
@@ -1164,58 +1190,216 @@
                 mapContainer.appendChild(dotEl);
             });
 
+            // Add click listener on map container to clear selection when clicking empty area
+            mapContainer.addEventListener('click', (e) => {
+                // Only clear if the click target is the container itself or the image (not a dot)
+                if (e.target === mapContainer || e.target.tagName === 'IMG') {
+                    clearDotSelection();
+                }
+            });
+
             console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb (no contact + stays inside zones)', 'color:#f59e0b; font-weight:600;');
         };
 
-        // REMOVE the old showInfiniteNadeMenu function entirely.
-            // ADD these two functions in its place:
-
             function handleInfiniteDotClick(dot) {
-                const panel = document.getElementById('nade-menu-panel');
-                if (!panel) return;
+                    const panel = document.getElementById('nade-menu-panel');
+                    if (!panel) return;
 
-                if (dot.type === 't') {
-                    panel.innerHTML = `
-            <strong style="display:block; margin-bottom:20px;">T player at position #${dot.id}</strong>
-            <div style="display:flex; flex-direction:column; gap:12px;">
-                <button onclick="window.selectTactic('fastinfo', ${dot.id})" 
-                        style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                    ⚡ Fast Info
-                </button>
-                <button onclick="window.selectTactic('setup', ${dot.id})" 
-                        style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                    🛠️ Setup
-                </button>
-                <button onclick="window.selectTactic('push', ${dot.id})" 
-                        style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                    🚀 Push
-                </button>
-            </div>
-            <p style="margin-top:20px; font-size:14px; opacity:0.8;">Choose the action this player will perform.</p>
-        `;
-                } else {
-                    const typeName = dot.type === 'ct' ? 'CT player' : 'Bomb';
-                    panel.innerHTML = `
+                    // Grey out other T dots
+                    if (dot.type === 't') {
+                        document.querySelectorAll('.blue-dot').forEach(el => {
+                            const dotId = parseInt(el.textContent);
+                            const isCurrent = dotId === dot.id;
+                            const isT = el.style.background === 'rgb(245, 158, 11)' || el.style.background === '#f59e0b' ||
+                                (el.classList.contains('tactic-assigned') && dot.type === 't');
+                            if (isT && !isCurrent) {
+                                el.style.opacity = '0.4';
+                                el.style.pointerEvents = 'none';
+                            } else {
+                                el.style.opacity = '1';
+                                el.style.pointerEvents = 'auto';
+                            }
+                        });
+
+                        const existingTactic = dotTactics[dot.id];
+                        const tacticDisplay = { fastinfo: '⚡ Fast Info', setup: '🛠️ Setup', push: '🚀 Push' };
+
+                        if (existingTactic) {
+                            // Show current tactic with option to change
+                            panel.innerHTML = `
+                <strong style="display:block; margin-bottom:20px;">T player #${dot.id}</strong>
+                <div style="background:#fff; color:#111; padding:16px; border-radius:8px; margin-bottom:20px;">
+                    Current: <strong>${tacticDisplay[existingTactic]}</strong>
+                </div>
+                <p style="margin-bottom:12px; font-size:16px;">Change to:</p>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <button onclick="window.selectTactic('fastinfo', ${dot.id})" 
+                            style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        ⚡ Fast Info
+                    </button>
+                    <button onclick="window.selectTactic('setup', ${dot.id})" 
+                            style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        🛠️ Setup
+                    </button>
+                    <button onclick="window.selectTactic('push', ${dot.id})" 
+                            style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        🚀 Push
+                    </button>
+                </div>
+                <p style="margin-top:20px; font-size:14px; opacity:0.8;">Click a button to change the action.</p>
+            `;
+                        } else {
+                            // No tactic chosen yet – show normal selection
+                            panel.innerHTML = `
+                <strong style="display:block; margin-bottom:20px;">T player at position #${dot.id}</strong>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <button onclick="window.selectTactic('fastinfo', ${dot.id})" 
+                            style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        ⚡ Fast Info
+                    </button>
+                    <button onclick="window.selectTactic('setup', ${dot.id})" 
+                            style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        🛠️ Setup
+                    </button>
+                    <button onclick="window.selectTactic('push', ${dot.id})" 
+                            style="background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        🚀 Push
+                    </button>
+                </div>
+                <p style="margin-top:20px; font-size:14px; opacity:0.8;">Choose the action this player will perform.</p>
+            `;
+                        }
+                    } else {
+                        // CT or bomb – simple message
+                        const typeName = dot.type === 'ct' ? 'CT player' : 'Bomb';
+                        panel.innerHTML = `
             <strong>${typeName} #${dot.id}</strong><br><br>
             <div style="background:#fff; color:#111; padding:24px; border-radius:8px; min-height:120px;">
                 ${dot.type === 'ct' ? 'No tactical options for CT positions.' : 'Bomb location – no tactics.'}
             </div>
         `;
+                    }
+                }
+
+            window.selectTactic = function (tactic, dotId) {
+                    const panel = document.getElementById('nade-menu-panel');
+                    const tacticNames = { fastinfo: 'Fast Info', setup: 'Setup', push: 'Push' };
+
+                    // Store the tactic for this dot
+                    dotTactics[dotId] = tactic;
+
+                    // Find the dot element and mark it as having a tactic (purple background)
+                    const dotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === dotId);
+                    if (dotEl) {
+                        dotEl.style.background = '#c084fc'; // Purple
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(192, 132, 252, 0.6)';
+                        dotEl.classList.add('tactic-assigned');
+                    }
+
+                    if (tactic === 'fastinfo') {
+                        if (dotEl) {
+                            selectedDotForDrag = { element: dotEl, id: dotId };
+                            enableDrag(dotEl);
+
+                            panel.innerHTML = `
+                <strong>⚡ Fast Info selected</strong><br><br>
+                <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+                    <strong>Drag and drop the dot to the fast info position</strong><br><br>
+                    <em>(Drag the orange dot to its new location)</em>
+                </div>
+                <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+                    👆 Press anywhere on the image to finish and edit other dots
+                </p>
+            `;
+                        }
+                    } else {
+                        // For setup/push, just show confirmation
+                        panel.innerHTML = `
+            <strong>✅ Tactic updated</strong><br><br>
+            <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+                Player #${dotId} will play <strong>${tacticNames[tactic]}</strong>.<br><br>
+                <em>(Tactic saved)</em>
+            </div>
+            <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+                👆 Press anywhere on the image to edit other dots
+            </p>
+        `;
+                    }
+                    console.log(`%c🎯 Tactic chosen: ${tactic} for dot #${dotId}`, 'color:#f59e0b; font-weight:600;');
+                };
+
+        function enableDrag(dotEl) {
+                let isDragging = false;
+                let startX, startY, startLeft, startTop;
+                const container = document.getElementById('map-container');
+
+                function onMouseMove(e) {
+                    if (!isDragging) return;
+                    e.preventDefault();
+
+                    const rect = container.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+
+                    // Calculate new position as percentage
+                    let newLeft = (mouseX / rect.width) * 100;
+                    let newTop = (mouseY / rect.height) * 100;
+
+                    // Clamp to map bounds (optional)
+                    newLeft = Math.max(0, Math.min(100, newLeft));
+                    newTop = Math.max(0, Math.min(100, newTop));
+
+                    dotEl.style.left = newLeft + '%';
+                    dotEl.style.top = newTop + '%';
+                }
+
+                function onMouseUp(e) {
+                if (isDragging) {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+
+                    const panel = document.getElementById('nade-menu-panel');
+                    panel.innerHTML = `
+            <strong>✅ Dot dropped</strong><br><br>
+            <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+                Fast info position updated.<br>
+                <em>(Position saved: ${dotEl.style.left}, ${dotEl.style.top})</em>
+            </div>
+            <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+                👆 Press anywhere on the image to edit other dots
+            </p>
+        `;
                 }
             }
 
-            window.selectTactic = function (tactic, dotId) {
-                const panel = document.getElementById('nade-menu-panel');
-                const tacticNames = { fastinfo: 'Fast Info', setup: 'Setup', push: 'Push' };
-                panel.innerHTML = `
-        <strong>✅ Tactic selected</strong><br><br>
-        <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
-            Player #${dotId} will play <strong>${tacticNames[tactic]}</strong>.<br><br>
-            <em>(This would trigger AI feedback in the full version.)</em>
-        </div>
-    `;
-                console.log(`%c🎯 Tactic chosen: ${tactic} for dot #${dotId}`, 'color:#f59e0b; font-weight:600;');
-            };
+                function onMouseDown(e) {
+                    // Only allow drag if it's the selected dot and we're in fast info mode
+                    if (!selectedDotForDrag || selectedDotForDrag.element !== dotEl) return;
+
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startLeft = parseFloat(dotEl.style.left) || 0;
+                    startTop = parseFloat(dotEl.style.top) || 0;
+
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+
+                // Remove any existing listener and add new one
+                dotEl.removeEventListener('mousedown', dotEl._dragHandler);
+                dotEl._dragHandler = onMouseDown;
+                dotEl.addEventListener('mousedown', onMouseDown);
+
+                // Change cursor to indicate draggable
+                dotEl.style.cursor = 'grab';
+                dotEl.addEventListener('mousedown', () => dotEl.style.cursor = 'grabbing');
+                dotEl.addEventListener('mouseup', () => dotEl.style.cursor = 'grab');
+            }
 
         // ==================== ZONE EDITOR ====================
         let zoneEditorData = {
