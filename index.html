@@ -1030,50 +1030,66 @@
                 for (let i = 0; i < numT; i++)    placeDot('t', spawnConfig.tPlayers.zones, '#f59e0b');
                 for (let i = 0; i < numBomb; i++) placeDot('bomb', spawnConfig.bomb.zones, '#eab308');
 
-                    container.innerHTML = `
+                        container.innerHTML = `
         <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
         <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
             Random T Afterplant • ${numCT} CT • ${numT} T • Bomb
         </p>
         
         <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
-            <!-- Puzzle area (map + feedback) -->
+            <!-- Map stays full size and untouched -->
             <div class="puzzle-wrapper" id="puzzle-wrapper" style="flex:1;">
                 <div class="map-container" id="map-container">
                     <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
                 </div>
             </div>
             
-            <!-- Refresh button on the right, instantly visible -->
-            <div style="flex:0 0 220px; display:flex; align-items:center; height:100%; padding-top:60px;">
+            <!-- Right column: Refresh button + menu directly under it -->
+            <div style="flex:0 0 280px; display:flex; flex-direction:column; gap:20px;">
                 <button onclick="generateNewTAfterplantPuzzle()" 
                         style="background:#f59e0b; color:#111; font-size:19px; font-weight:600; 
                                padding:22px 32px; border:none; border-radius:9999px; cursor:pointer; 
-                               box-shadow:0 8px 25px rgba(245,158,11,0.35); white-space:nowrap;">
+                               box-shadow:0 8px 25px rgba(245,158,11,0.35);">
                     🔄 Refresh Positions
                 </button>
+                
+                <!-- Menu appears here (under the button) -->
+                <div id="nade-menu-panel" style="background:#f59e0b; color:#111; padding:28px; border-radius:12px; min-height:280px; font-size:19px;">
+                    <em>Click any dot to see its nades</em>
+                </div>
             </div>
         </div>
-        
-        <div id="puzzle-feedback"></div>
     `;
 
-                const mapContainer = document.getElementById('map-container');
-                dots.forEach(dot => {
-                    const dotEl = document.createElement('div');
-                    dotEl.className = 'blue-dot';
-                    dotEl.style.left = dot.left;
-                    dotEl.style.top = dot.top;
-                    dotEl.style.background = dot.color;
-                    dotEl.style.width = dot.type === 'bomb' ? '32px' : '24px';
-                    dotEl.style.height = dot.type === 'bomb' ? '32px' : '24px';
-                    dotEl.style.fontSize = dot.type === 'bomb' ? '18px' : '15px';
-                    dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
-                    mapContainer.appendChild(dotEl);
-                });
+                    const mapContainer = document.getElementById('map-container');
+            dots.forEach(dot => {
+                const dotEl = document.createElement('div');
+                dotEl.className = 'blue-dot';
+                dotEl.style.left = dot.left;
+                dotEl.style.top = dot.top;
+                dotEl.style.background = dot.color;
+                dotEl.style.width = dot.type === 'bomb' ? '32px' : '24px';
+                dotEl.style.height = dot.type === 'bomb' ? '32px' : '24px';
+                dotEl.style.fontSize = dot.type === 'bomb' ? '18px' : '15px';
+                dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
+                dotEl.onclick = () => showInfiniteNadeMenu(dot.id);   // direct call
+                mapContainer.appendChild(dotEl);
+            });
 
                 console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb (no contact + stays inside zones)', 'color:#f59e0b; font-weight:600;');
             };
+
+        function showInfiniteNadeMenu(dotId) {
+                const menuPanel = document.getElementById('nade-menu-panel');
+                if (!menuPanel) return;
+
+                menuPanel.innerHTML = `
+        <strong>Dot #${dotId} selected</strong><br><br>
+        <div style="background:#fff; color:#111; padding:24px; border-radius:8px; min-height:220px;">
+            Nades menu will appear here
+        </div>
+    `;
+            }
 
         // ==================== ZONE EDITOR ====================
         let zoneEditorData = {
