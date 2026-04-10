@@ -1294,37 +1294,24 @@
                         dotEl.style.background = '#c084fc'; // Purple
                         dotEl.style.boxShadow = '0 0 0 5px rgba(192, 132, 252, 0.6)';
                         dotEl.classList.add('tactic-assigned');
+
+                        // Make the dot draggable for ANY tactic
+                        selectedDotForDrag = { element: dotEl, id: dotId };
+                        enableDrag(dotEl);
                     }
 
-                    if (tactic === 'fastinfo') {
-                        if (dotEl) {
-                            selectedDotForDrag = { element: dotEl, id: dotId };
-                            enableDrag(dotEl);
+                    // Update panel with appropriate message (all now support dragging)
+                    panel.innerHTML = `
+        <strong>✅ ${tacticNames[tactic]} selected</strong><br><br>
+        <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+            <strong>Drag and drop the dot to the desired position</strong><br><br>
+            <em>(Drag the purple dot to its new location)</em>
+        </div>
+        <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+            👆 Press anywhere on the image to finish and edit other dots
+        </p>
+    `;
 
-                            panel.innerHTML = `
-                <strong>⚡ Fast Info selected</strong><br><br>
-                <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
-                    <strong>Drag and drop the dot to the fast info position</strong><br><br>
-                    <em>(Drag the orange dot to its new location)</em>
-                </div>
-                <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
-                    👆 Press anywhere on the image to finish and edit other dots
-                </p>
-            `;
-                        }
-                    } else {
-                        // For setup/push, just show confirmation
-                        panel.innerHTML = `
-            <strong>✅ Tactic updated</strong><br><br>
-            <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
-                Player #${dotId} will play <strong>${tacticNames[tactic]}</strong>.<br><br>
-                <em>(Tactic saved)</em>
-            </div>
-            <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
-                👆 Press anywhere on the image to edit other dots
-            </p>
-        `;
-                    }
                     console.log(`%c🎯 Tactic chosen: ${tactic} for dot #${dotId}`, 'color:#f59e0b; font-weight:600;');
                 };
 
@@ -1360,10 +1347,15 @@
                     document.removeEventListener('mouseup', onMouseUp);
 
                     const panel = document.getElementById('nade-menu-panel');
+                    const dotId = selectedDotForDrag ? selectedDotForDrag.id : null;
+                    const tactic = dotId ? dotTactics[dotId] : null;
+                    const tacticDisplay = { fastinfo: 'Fast Info', setup: 'Setup', push: 'Push' };
+                    const tacticName = tactic ? tacticDisplay[tactic] : 'action';
+
                     panel.innerHTML = `
             <strong>✅ Dot dropped</strong><br><br>
             <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
-                Fast info position updated.<br>
+                Position updated for ${tacticName}.<br>
                 <em>(Position saved: ${dotEl.style.left}, ${dotEl.style.top})</em>
             </div>
             <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
