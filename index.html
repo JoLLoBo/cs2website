@@ -829,6 +829,9 @@
             }
         };
 
+        window.confirmSetupSelection = confirmSetupSelection;
+        window.cancelSetupSelection = cancelSetupSelection;
+
         let currentSide = 'ct';
         let currentPhase = 'early';
         let currentPuzzleSide = 'ct';
@@ -838,6 +841,12 @@
         let lastClickedDotId = null;
         let selectedDotForDrag = null;
         let dotTactics = {}; // key: dotId, value: 'fastinfo' / 'setup' / 'push'
+        let setupAnchorDotId = null;           // The dot that initiated Setup
+        let setupPartnerIds = new Set();       // IDs of selected partner dots
+        let setupSelectionMode = false;        // Whether we're currently selecting partners
+        let setupLinesSvg = null;              // SVG element for connection lines
+        let setupActive = false;           // Whether a setup is currently active (post-confirmation)
+        let activeSetupDotIds = new Set(); // IDs of dots in the active setup (anchor + partners)
 
         let unlockedLevels = {
             "ct_early": 1,
@@ -847,6 +856,295 @@
             "t_mid": 1,
             "t_afterplant": 1
         };
+
+        function updateSetupLinesIfNeeded() {
+                if (setupSelectionMode || setupActive) {
+                    updateSetupLines();
+                }
+            }
+
+        function enterSetupSelectionMode(anchorId, anchorEl) {
+                setupActive = false; // Ensure we're not in active mode
+                activeSetupDotIds.clear();
+                setupAnchorDotId = anchorId;
+                setupPartnerIds.clear();
+                setupSelectionMode = true;
+
+                // Grey out all T dots that already have tactics (except anchor)
+                document.querySelectorAll('.blue-dot').forEach(el => {
+                    const dotId = parseInt(el.textContent);
+                    const isT = el.style.background === 'rgb(245, 158, 11)' || el.style.background === '#f59e0b' ||
+                        el.classList.contains('tactic-assigned');
+                    if (isT) {
+                        if (dotId === anchorId) {
+                            el.style.opacity = '1';
+                            el.style.pointerEvents = 'auto';
+                        } else if (dotTactics[dotId]) {
+                            // Already has a tactic, cannot be partner
+                            el.style.opacity = '0.3';
+                            el.style.pointerEvents = 'none';
+                        } else {
+                            // Unassigned T dot - clickable for selection
+                            el.style.opacity = '1';
+                            el.style.pointerEvents = 'auto';
+                            // Temporarily change click handler
+                            el.onclick = () => toggleSetupPartner(dotId);
+                        }
+                    } else {
+                        // CT / bomb - disable
+                        el.style.opacity = '0.3';
+                        el.style.pointerEvents = 'none';
+                    }
+                });
+
+                // Create SVG overlay for connection lines
+                createSetupLinesOverlay();
+
+                // Update panel
+                updateSetupSelectionPanel();
+
+                // Make anchor draggable immediately
+                selectedDotForDrag = { element: anchorEl, id: anchorId };
+                enableDrag(anchorEl);
+            }
+
+            function toggleSetupPartner(dotId) {
+                if (!setupSelectionMode) return;
+
+                const dotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === dotId);
+                if (!dotEl) return;
+
+                if (setupPartnerIds.has(dotId)) {
+                    setupPartnerIds.delete(dotId);
+                    dotEl.style.background = '#f59e0b'; // back to orange
+                    dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                } else {
+                    setupPartnerIds.add(dotId);
+                    dotEl.style.background = '#a78bfa'; // lighter purple for partners
+                    dotEl.style.boxShadow = '0 0 0 5px rgba(167, 139, 250, 0.6)';
+
+                    // Make partner draggable too
+                    enableDrag(dotEl);
+                }
+
+                updateSetupLines();
+                updateSetupSelectionPanel();
+            }
+
+            function updateSetupSelectionPanel() {
+                const panel = document.getElementById('nade-menu-panel');
+                const partnerCount = setupPartnerIds.size;
+
+                panel.innerHTML = `
+        <strong>🛠️ Setup - Select Partner Dots</strong><br><br>
+        <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+            <p><strong>Anchor:</strong> Dot #${setupAnchorDotId}</p>
+            <p><strong>Partners selected:</strong> ${partnerCount} dot${partnerCount !== 1 ? 's' : ''}</p>
+            ${partnerCount > 0 ? '<p style="margin-top:12px;">Click selected partners to deselect.</p>' : ''}
+            <p style="margin-top:12px; font-style:italic;">Click unassigned orange dots to add them to the setup.</p>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:20px;">
+            <button onclick="confirmSetupSelection()" 
+                    style="flex:2; background:#fff; color:#111; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer;">
+                ✅ Confirm Setup
+            </button>
+            <button onclick="cancelSetupSelection()" 
+                    style="flex:1; background:#111; color:#f59e0b; border:none; padding:16px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer;">
+                Cancel
+            </button>
+        </div>
+    `;
+            }
+
+            function confirmSetupSelection() {
+                    // Add anchor and all selected partners to active setup set
+                    activeSetupDotIds.clear();
+                    activeSetupDotIds.add(setupAnchorDotId);
+                    setupPartnerIds.forEach(partnerId => activeSetupDotIds.add(partnerId));
+
+                    // Assign 'setup' tactic to all partners (and ensure anchor has it)
+                    setupPartnerIds.forEach(partnerId => {
+                        dotTactics[partnerId] = 'setup';
+                        const partnerEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === partnerId);
+                        if (partnerEl) {
+                            partnerEl.style.background = '#c084fc';
+                            partnerEl.style.boxShadow = '0 0 0 5px rgba(192, 132, 252, 0.6)';
+                            partnerEl.classList.add('tactic-assigned');
+                        }
+                    });
+                    const anchorEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === setupAnchorDotId);
+                    if (anchorEl) {
+                        anchorEl.style.background = '#c084fc';
+                        anchorEl.style.boxShadow = '0 0 0 5px rgba(192, 132, 252, 0.6)';
+                        anchorEl.classList.add('tactic-assigned');
+                    }
+
+                    // Make all active setup dots draggable
+                    activeSetupDotIds.forEach(dotId => {
+                        const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === dotId);
+                        if (el) {
+                            enableDrag(el);
+                        }
+                    });
+
+                    setupSelectionMode = false;
+                    setupActive = true;
+                    selectedDotForDrag = null; // Allow any active dot to be dragged independently
+
+                    // Keep other T dots grayed out and non-clickable
+                    document.querySelectorAll('.blue-dot').forEach(el => {
+                        const dotId = parseInt(el.textContent);
+                        const isT = el.style.background === 'rgb(245, 158, 11)' || el.style.background === '#f59e0b' ||
+                            el.classList.contains('tactic-assigned');
+                        if (isT && !activeSetupDotIds.has(dotId)) {
+                            el.style.opacity = '0.4';
+                            el.style.pointerEvents = 'none';
+                        } else {
+                            el.style.opacity = '1';
+                            el.style.pointerEvents = 'auto';
+                        }
+                        if (isT) {
+                            el.onclick = () => handleInfiniteDotClick({ id: dotId, type: 't' });
+                        }
+                    });
+
+                    // Update panel
+                    const panel = document.getElementById('nade-menu-panel');
+                    const totalDots = activeSetupDotIds.size;
+                    panel.innerHTML = `
+        <strong>✅ Setup active</strong><br><br>
+        <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+            Setup with ${totalDots} dots is now active.<br>
+            <strong>Drag the purple dots to position them.</strong>
+        </div>
+        <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+            👆 Click anywhere on the map to finish and edit other dots
+        </p>
+    `;
+                }
+
+            function cancelSetupSelection() {
+                setupActive = false;
+                activeSetupDotIds.clear();
+                // Revert any partners back to unassigned
+                setupPartnerIds.forEach(partnerId => {
+                    delete dotTactics[partnerId];
+                    const partnerEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === partnerId);
+                    if (partnerEl) {
+                        partnerEl.style.background = '#f59e0b';
+                        partnerEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                        partnerEl.classList.remove('tactic-assigned');
+                        // Restore original click handler
+                        partnerEl.onclick = () => handleInfiniteDotClick({ id: partnerId, type: 't' });
+                    }
+                });
+
+                exitSetupSelectionMode(false);
+            }
+
+            function exitSetupSelectionMode(keepTactics) {
+                setupSelectionMode = false;
+
+                // Remove SVG overlay
+                if (setupLinesSvg) {
+                    setupLinesSvg.remove();
+                    setupLinesSvg = null;
+                }
+
+                // Restore normal click handlers for all T dots
+                document.querySelectorAll('.blue-dot').forEach(el => {
+                    const dotId = parseInt(el.textContent);
+                    const isT = el.style.background === 'rgb(245, 158, 11)' || el.style.background === '#f59e0b' ||
+                        el.classList.contains('tactic-assigned');
+                    if (isT) {
+                        el.onclick = () => handleInfiniteDotClick({ id: dotId, type: 't' });
+                    }
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                });
+
+                // Update panel
+                const panel = document.getElementById('nade-menu-panel');
+                if (keepTactics) {
+                    const totalDots = 1 + setupPartnerIds.size;
+                    panel.innerHTML = `
+            <strong>✅ Setup confirmed</strong><br><br>
+            <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+                Setup created with ${totalDots} dots.<br>
+                All dots are now draggable.
+            </div>
+            <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+                👆 Press anywhere on the image to edit other dots
+            </p>
+        `;
+                } else {
+                    panel.innerHTML = `<em>Setup cancelled. Click any T‑side dot to choose a tactic.</em>`;
+                }
+
+                setupAnchorDotId = null;
+                setupPartnerIds.clear();
+            }
+
+        function createSetupLinesOverlay() {
+                const mapContainer = document.getElementById('map-container');
+                if (!mapContainer) return;
+
+                // Remove existing overlay if any
+                if (setupLinesSvg) setupLinesSvg.remove();
+
+                // Create SVG element
+                setupLinesSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                setupLinesSvg.style.position = 'absolute';
+                setupLinesSvg.style.top = '0';
+                setupLinesSvg.style.left = '0';
+                setupLinesSvg.style.width = '100%';
+                setupLinesSvg.style.height = '100%';
+                setupLinesSvg.style.pointerEvents = 'none'; // allow clicking through
+                setupLinesSvg.style.zIndex = '5';
+
+                mapContainer.appendChild(setupLinesSvg);
+            }
+
+            function updateSetupLines() {
+                if (!setupLinesSvg) return;
+
+                // Clear existing lines
+                setupLinesSvg.innerHTML = '';
+
+                const anchorEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === setupAnchorDotId);
+                if (!anchorEl) return;
+
+                const mapContainer = document.getElementById('map-container');
+                const containerRect = mapContainer.getBoundingClientRect();
+
+                // Get anchor center position (percentage)
+                const anchorLeft = parseFloat(anchorEl.style.left) || 0;
+                const anchorTop = parseFloat(anchorEl.style.top) || 0;
+
+                setupPartnerIds.forEach(partnerId => {
+                    const partnerEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === partnerId);
+                    if (!partnerEl) return;
+
+                    const partnerLeft = parseFloat(partnerEl.style.left) || 0;
+                    const partnerTop = parseFloat(partnerEl.style.top) || 0;
+
+                    // Create line
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', `${anchorLeft}%`);
+                    line.setAttribute('y1', `${anchorTop}%`);
+                    line.setAttribute('x2', `${partnerLeft}%`);
+                    line.setAttribute('y2', `${partnerTop}%`);
+                    line.setAttribute('stroke', '#a78bfa');
+                    line.setAttribute('stroke-width', '2');
+                    line.setAttribute('stroke-dasharray', '5,5');
+                    line.style.opacity = '0.8';
+
+                    setupLinesSvg.appendChild(line);
+                });
+            }
+
+            // Modify enableDrag to also update lines when dragging setup dots
+            // Find the onMouseMove function inside enableDrag and add a call to updateSetupLinesIfNeeded
 
         function clearDotSelection() {
                 // Remove grey-out from all T dots
@@ -859,6 +1157,20 @@
                 if (selectedDotForDrag) {
                     selectedDotForDrag = null;
                 }
+
+                // Remove SVG overlay if exists
+                if (setupLinesSvg) {
+                    setupLinesSvg.remove();
+                    setupLinesSvg = null;
+                }
+
+                // Reset setup-related flags
+                setupSelectionMode = false;
+                setupActive = false;
+                activeSetupDotIds.clear();
+                setupAnchorDotId = null;
+                setupPartnerIds.clear();
+
                 // Update panel message
                 const panel = document.getElementById('nade-menu-panel');
                 if (panel) {
@@ -1051,6 +1363,12 @@
         }
 
         window.generateNewTAfterplantPuzzle = function () {
+            setupActive = false;
+            activeSetupDotIds.clear();
+            setupAnchorDotId = null;
+            setupPartnerIds.clear();
+            setupSelectionMode = false;
+            
             const container = document.getElementById('puzzle-container');
 
             const numCT = Math.floor(Math.random() * 5) + 1;
@@ -1205,6 +1523,16 @@
                     const panel = document.getElementById('nade-menu-panel');
                     if (!panel) return;
 
+                    // If there's an active setup and the clicked dot is part of it, do nothing (dragging handled separately)
+                    if (setupActive && activeSetupDotIds.has(dot.id)) {
+                        return;
+                    }
+
+                    // If there's an active setup and the clicked dot is NOT part of it, clear the setup first
+                    if (setupActive && !activeSetupDotIds.has(dot.id)) {
+                        clearDotSelection();
+                    }
+
                     // Grey out other T dots
                     if (dot.type === 't') {
                         document.querySelectorAll('.blue-dot').forEach(el => {
@@ -1291,26 +1619,31 @@
                     // Find the dot element and mark it as having a tactic (purple background)
                     const dotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === dotId);
                     if (dotEl) {
-                        dotEl.style.background = '#c084fc'; // Purple
+                        dotEl.style.background = '#c084fc';
                         dotEl.style.boxShadow = '0 0 0 5px rgba(192, 132, 252, 0.6)';
                         dotEl.classList.add('tactic-assigned');
 
-                        // Make the dot draggable for ANY tactic
-                        selectedDotForDrag = { element: dotEl, id: dotId };
-                        enableDrag(dotEl);
-                    }
+                        // For Fast Info and Push: immediate drag
+                        if (tactic === 'fastinfo' || tactic === 'push') {
+                            selectedDotForDrag = { element: dotEl, id: dotId };
+                            enableDrag(dotEl);
 
-                    // Update panel with appropriate message (all now support dragging)
-                    panel.innerHTML = `
-        <strong>✅ ${tacticNames[tactic]} selected</strong><br><br>
-        <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
-            <strong>Drag and drop the dot to the desired position</strong><br><br>
-            <em>(Drag the purple dot to its new location)</em>
-        </div>
-        <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
-            👆 Press anywhere on the image to finish and edit other dots
-        </p>
-    `;
+                            panel.innerHTML = `
+                <strong>✅ ${tacticNames[tactic]} selected</strong><br><br>
+                <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+                    <strong>Drag and drop the dot to the desired position</strong><br><br>
+                    <em>(Drag the purple dot to its new location)</em>
+                </div>
+                <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+                    👆 Press anywhere on the image to finish and edit other dots
+                </p>
+            `;
+                        }
+                        else if (tactic === 'setup') {
+                            // Enter Setup partner selection mode
+                            enterSetupSelectionMode(dotId, dotEl);
+                        }
+                    }
 
                     console.log(`%c🎯 Tactic chosen: ${tactic} for dot #${dotId}`, 'color:#f59e0b; font-weight:600;');
                 };
@@ -1328,46 +1661,55 @@
                     const mouseX = e.clientX - rect.left;
                     const mouseY = e.clientY - rect.top;
 
-                    // Calculate new position as percentage
                     let newLeft = (mouseX / rect.width) * 100;
                     let newTop = (mouseY / rect.height) * 100;
-
-                    // Clamp to map bounds (optional)
                     newLeft = Math.max(0, Math.min(100, newLeft));
                     newTop = Math.max(0, Math.min(100, newTop));
 
                     dotEl.style.left = newLeft + '%';
                     dotEl.style.top = newTop + '%';
+
+                    // Update lines if we're in setup mode or the dot is part of a setup
+                    updateSetupLinesIfNeeded();
                 }
 
                 function onMouseUp(e) {
-                if (isDragging) {
-                    isDragging = false;
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
+                    if (isDragging) {
+                        isDragging = false;
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
 
-                    const panel = document.getElementById('nade-menu-panel');
-                    const dotId = selectedDotForDrag ? selectedDotForDrag.id : null;
-                    const tactic = dotId ? dotTactics[dotId] : null;
-                    const tacticDisplay = { fastinfo: 'Fast Info', setup: 'Setup', push: 'Push' };
-                    const tacticName = tactic ? tacticDisplay[tactic] : 'action';
+                        // Only update panel if we are not in active setup mode
+                        if (!setupActive) {
+                            const panel = document.getElementById('nade-menu-panel');
+                            const dotId = selectedDotForDrag ? selectedDotForDrag.id : null;
+                            const tactic = dotId ? dotTactics[dotId] : null;
+                            const tacticDisplay = { fastinfo: 'Fast Info', setup: 'Setup', push: 'Push' };
+                            const tacticName = tactic ? tacticDisplay[tactic] : 'action';
 
-                    panel.innerHTML = `
-            <strong>✅ Dot dropped</strong><br><br>
-            <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
-                Position updated for ${tacticName}.<br>
-                <em>(Position saved: ${dotEl.style.left}, ${dotEl.style.top})</em>
-            </div>
-            <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
-                👆 Press anywhere on the image to edit other dots
-            </p>
-        `;
+                            panel.innerHTML = `
+                    <strong>✅ Dot dropped</strong><br><br>
+                    <div style="background:#fff; color:#111; padding:24px; border-radius:8px;">
+                        Position updated for ${tacticName}.<br>
+                        <em>(Position saved: ${dotEl.style.left}, ${dotEl.style.top})</em>
+                    </div>
+                    <p style="margin-top:16px; font-size:15px; opacity:0.9; text-align:center;">
+                        👆 Press anywhere on the image to edit other dots
+                    </p>
+                `;
+                        }
+                    }
                 }
-            }
 
                 function onMouseDown(e) {
-                    // Only allow drag if it's the selected dot and we're in fast info mode
-                    if (!selectedDotForDrag || selectedDotForDrag.element !== dotEl) return;
+                    const dotId = parseInt(dotEl.textContent);
+                    // Allow drag if:
+                    // - This dot is the globally selected one, OR
+                    // - We are in active setup mode and this dot is part of that setup
+                    const isSelected = selectedDotForDrag && selectedDotForDrag.element === dotEl;
+                    const isActiveSetupDot = setupActive && activeSetupDotIds.has(dotId);
+
+                    if (!isSelected && !isActiveSetupDot) return;
 
                     isDragging = true;
                     startX = e.clientX;
