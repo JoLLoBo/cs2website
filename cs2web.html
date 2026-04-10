@@ -607,73 +607,139 @@
 
         // === T AFTERPLANT RANDOM PUZZLE CONFIG ===
         const spawnConfig = {
-        "ctPlayers": {
-            "zones": [
-                {
-                    "left": "57.6%",
-                    "top": "24.3%",
-                    "width": "7.6%",
-                    "height": "3.0%"
+                "ctPlayers": {
+                    "zones": [
+                        {
+                            "left": "45.2%",
+                            "top": "25.5%",
+                            "width": "3.7%",
+                            "height": "2.3%"
+                        },
+                        {
+                            "left": "51.5%",
+                            "top": "25.7%",
+                            "width": "3.3%",
+                            "height": "3.4%"
+                        },
+                        {
+                            "left": "55.7%",
+                            "top": "27.2%",
+                            "width": "3.2%",
+                            "height": "1.3%"
+                        },
+                        {
+                            "left": "58.0%",
+                            "top": "24.6%",
+                            "width": "6.8%",
+                            "height": "2.0%"
+                        },
+                        {
+                            "left": "54.0%",
+                            "top": "56.5%",
+                            "width": "4.0%",
+                            "height": "2.0%"
+                        },
+                        {
+                            "left": "59.1%",
+                            "top": "50.9%",
+                            "width": "7.0%",
+                            "height": "2.0%"
+                        },
+                        {
+                            "left": "60.9%",
+                            "top": "54.4%",
+                            "width": "1.5%",
+                            "height": "3.7%"
+                        },
+                        {
+                            "left": "59.8%",
+                            "top": "57.6%",
+                            "width": "6.7%",
+                            "height": "1.7%"
+                        },
+                        {
+                            "left": "64.8%",
+                            "top": "56.8%",
+                            "width": "7.7%",
+                            "height": "1.8%"
+                        },
+                        {
+                            "left": "70.3%",
+                            "top": "53.4%",
+                            "width": "1.6%",
+                            "height": "3.8%"
+                        },
+                        {
+                            "left": "73.0%",
+                            "top": "55.1%",
+                            "width": "5.5%",
+                            "height": "3.5%"
+                        }
+                    ],
+                    "min": 1,
+                    "max": 5
                 },
-                {
-                    "left": "57.4%",
-                    "top": "27.7%",
-                    "width": "2.4%",
-                    "height": "2.8%"
+                "tPlayers": {
+                    "zones": [
+                        {
+                            "left": "81.4%",
+                            "top": "27.7%",
+                            "width": "2.6%",
+                            "height": "4.1%"
+                        },
+                        {
+                            "left": "80.9%",
+                            "top": "32.2%",
+                            "width": "2.1%",
+                            "height": "4.6%"
+                        },
+                        {
+                            "left": "70.9%",
+                            "top": "35.4%",
+                            "width": "8.5%",
+                            "height": "3.5%"
+                        },
+                        {
+                            "left": "65.2%",
+                            "top": "37.9%",
+                            "width": "2.2%",
+                            "height": "7.7%"
+                        },
+                        {
+                            "left": "75.7%",
+                            "top": "40.1%",
+                            "width": "4.5%",
+                            "height": "7.1%"
+                        },
+                        {
+                            "left": "70.9%",
+                            "top": "44.6%",
+                            "width": "3.8%",
+                            "height": "2.4%"
+                        },
+                        {
+                            "left": "80.8%",
+                            "top": "45.9%",
+                            "width": "2.1%",
+                            "height": "7.3%"
+                        }
+                    ],
+                    "min": 1,
+                    "max": 5
                 },
-                {
-                    "left": "51.3%",
-                    "top": "25.5%",
-                    "width": "4.5%",
-                    "height": "4.3%"
+                "bomb": {
+                    "zones": [
+                        {
+                            "left": "72.0%",
+                            "top": "42.1%",
+                            "width": "2.7%",
+                            "height": "2.0%"
+                        }
+                    ],
+                    "min": 1,
+                    "max": 1
                 }
-            ],
-            "min": 2,
-            "max": 5
-        },
-        "tPlayers": {
-            "zones": [
-                {
-                    "left": "81.0%",
-                    "top": "27.9%",
-                    "width": "4.0%",
-                    "height": "4.1%"
-                },
-                {
-                    "left": "81.2%",
-                    "top": "32.7%",
-                    "width": "1.6%",
-                    "height": "4.0%"
-                },
-                {
-                    "left": "72.7%",
-                    "top": "35.1%",
-                    "width": "7.7%",
-                    "height": "4.4%"
-                },
-                {
-                    "left": "74.9%",
-                    "top": "40.1%",
-                    "width": "6.1%",
-                    "height": "7.2%"
-                }
-            ],
-            "min": 3,
-            "max": 6
-        },
-        "bomb": {
-            "zones": [
-                {
-                    "left": "72.4%",
-                    "top": "42.3%",
-                    "width": "2.2%",
-                    "height": "1.3%"
-                }
-            ],
-            "min": 1,
-            "max": 1
-        }
-    };
+            };
 
         let currentSide = 'ct';
         let currentPhase = 'early';
@@ -964,16 +1030,31 @@
                 for (let i = 0; i < numT; i++)    placeDot('t', spawnConfig.tPlayers.zones, '#f59e0b');
                 for (let i = 0; i < numBomb; i++) placeDot('bomb', spawnConfig.bomb.zones, '#eab308');
 
-                container.innerHTML = `
+                    container.innerHTML = `
         <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
         <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
             Random T Afterplant • ${numCT} CT • ${numT} T • Bomb
         </p>
-        <div class="puzzle-wrapper" id="puzzle-wrapper">
-            <div class="map-container" id="map-container">
-                <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
+        
+        <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
+            <!-- Puzzle area (map + feedback) -->
+            <div class="puzzle-wrapper" id="puzzle-wrapper" style="flex:1;">
+                <div class="map-container" id="map-container">
+                    <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
+                </div>
+            </div>
+            
+            <!-- Refresh button on the right, instantly visible -->
+            <div style="flex:0 0 220px; display:flex; align-items:center; height:100%; padding-top:60px;">
+                <button onclick="generateNewTAfterplantPuzzle()" 
+                        style="background:#f59e0b; color:#111; font-size:19px; font-weight:600; 
+                               padding:22px 32px; border:none; border-radius:9999px; cursor:pointer; 
+                               box-shadow:0 8px 25px rgba(245,158,11,0.35); white-space:nowrap;">
+                    🔄 Refresh Positions
+                </button>
             </div>
         </div>
+        
         <div id="puzzle-feedback"></div>
     `;
 
