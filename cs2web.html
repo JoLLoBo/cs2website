@@ -872,68 +872,127 @@
             html += `</div>`;
             container.innerHTML = html;
         }
+        
+        window.generateNewTAfterplantPuzzle = function () {
+                const container = document.getElementById('puzzle-container');
 
-        window.generateNewTAfterplantPuzzle = function() {
-            const container = document.getElementById('puzzle-container');
-            
-            const numCT = Math.floor(Math.random() * (spawnConfig.ctPlayers.max - spawnConfig.ctPlayers.min + 1)) + spawnConfig.ctPlayers.min;
-            const numT  = Math.floor(Math.random() * (spawnConfig.tPlayers.max - spawnConfig.tPlayers.min + 1)) + spawnConfig.tPlayers.min;
-            const numBomb = spawnConfig.bomb.min;
+                const numCT = Math.floor(Math.random() * 5) + 1;
+                const numT = Math.floor(Math.random() * 5) + 1;
+                const numBomb = 1;
 
-            function randomInZone(zone) {
-                const left = parseFloat(zone.left) + Math.random() * parseFloat(zone.width);
-                const top  = parseFloat(zone.top) + Math.random() * parseFloat(zone.height);
-                return { left: left.toFixed(1) + '%', top: top.toFixed(1) + '%' };
-            }
+                function randomInZone(zone) {
+                    const left = parseFloat(zone.left) + Math.random() * parseFloat(zone.width);
+                    const top = parseFloat(zone.top) + Math.random() * parseFloat(zone.height);
+                    return { left: left.toFixed(1) + '%', top: top.toFixed(1) + '%' };
+                }
 
-            const dots = [];
-            let id = 1;
+                function clampToZone(pos, zone) {
+                    let l = parseFloat(pos.left);
+                    let t = parseFloat(pos.top);
+                    const zoneLeft = parseFloat(zone.left);
+                    const zoneTop = parseFloat(zone.top);
+                    const zoneRight = zoneLeft + parseFloat(zone.width);
+                    const zoneBottom = zoneTop + parseFloat(zone.height);
 
-            for (let i = 0; i < numCT; i++) {
-                const zone = spawnConfig.ctPlayers.zones[Math.floor(Math.random() * spawnConfig.ctPlayers.zones.length)] || {left:"20%", top:"20%", width:"20%", height:"20%"};
-                const pos = randomInZone(zone);
-                dots.push({ id: id++, type: 'ct', left: pos.left, top: pos.top, color: '#58c2f2' });
-            }
-            for (let i = 0; i < numT; i++) {
-                const zone = spawnConfig.tPlayers.zones[Math.floor(Math.random() * spawnConfig.tPlayers.zones.length)] || {left:"60%", top:"60%", width:"20%", height:"20%"};
-                const pos = randomInZone(zone);
-                dots.push({ id: id++, type: 't', left: pos.left, top: pos.top, color: '#f59e0b' });
-            }
-            for (let i = 0; i < numBomb; i++) {
-                const zone = spawnConfig.bomb.zones[Math.floor(Math.random() * spawnConfig.bomb.zones.length)] || {left:"50%", top:"50%", width:"10%", height:"10%"};
-                const pos = randomInZone(zone);
-                dots.push({ id: id++, type: 'bomb', left: pos.left, top: pos.top, color: '#eab308' });
-            }
+                    l = Math.max(zoneLeft, Math.min(l, zoneRight));
+                    t = Math.max(zoneTop, Math.min(t, zoneBottom));
 
-            container.innerHTML = `
-                <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
-                <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
-                    Random T Afterplant • ${numCT} CT • ${numT} T • Bomb
-                </p>
-                <div class="puzzle-wrapper" id="puzzle-wrapper">
-                    <div class="map-container" id="map-container">
-                        <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
-                    </div>
-                </div>
-                <div id="puzzle-feedback"></div>
-            `;
+                    return { left: l.toFixed(1) + '%', top: t.toFixed(1) + '%' };
+                }
 
-            const mapContainer = document.getElementById('map-container');
-            dots.forEach(dot => {
-                const dotEl = document.createElement('div');
-                dotEl.className = 'blue-dot';
-                dotEl.style.left = dot.left;
-                dotEl.style.top = dot.top;
-                dotEl.style.background = dot.color;
-                dotEl.style.width = dot.type === 'bomb' ? '32px' : '24px';
-                dotEl.style.height = dot.type === 'bomb' ? '32px' : '24px';
-                dotEl.style.fontSize = dot.type === 'bomb' ? '18px' : '15px';
-                dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
-                mapContainer.appendChild(dotEl);
-            });
+                const dots = [];
+                let id = 1;
 
-            console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb', 'color:#f59e0b; font-weight:600;');
-        };
+                function placeDot(type, zones, color) {
+                    const zone = zones[Math.floor(Math.random() * zones.length)] || { left: "20%", top: "20%", width: "20%", height: "20%" };
+                    let pos = randomInZone(zone);
+
+                    let attempts = 0;
+                    while (attempts < 2500) {
+                        attempts++;
+
+                        const candidate = { id: id, type: type, left: pos.left, top: pos.top, color: color };
+
+                        // Check overlap
+                        let collision = false;
+                        for (let existing of dots) {
+                            const dx = parseFloat(candidate.left) - parseFloat(existing.left);
+                            const dy = parseFloat(candidate.top) - parseFloat(existing.top);
+                            if (Math.sqrt(dx * dx + dy * dy) < 28) {   // 28% = guaranteed zero contact
+                                collision = true;
+                                break;
+                            }
+                        }
+
+                        if (!collision) {
+                            dots.push(candidate);
+                            id++;
+                            return;
+                        }
+
+                        // ADJUST: push away from closest dot, then clamp back inside the original zone
+                        let closest = dots[0];
+                        let minDist = Infinity;
+                        for (let existing of dots) {
+                            const dx = parseFloat(candidate.left) - parseFloat(existing.left);
+                            const dy = parseFloat(candidate.top) - parseFloat(existing.top);
+                            const d = Math.sqrt(dx * dx + dy * dy);
+                            if (d < minDist) {
+                                minDist = d;
+                                closest = existing;
+                            }
+                        }
+
+                        const dx = parseFloat(candidate.left) - parseFloat(closest.left);
+                        const dy = parseFloat(candidate.top) - parseFloat(closest.top);
+                        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                        const push = 32;   // strong push
+
+                        pos.left = (parseFloat(candidate.left) + (dx / len) * push).toFixed(1) + '%';
+                        pos.top = (parseFloat(candidate.top) + (dy / len) * push).toFixed(1) + '%';
+
+                        // Clamp back inside the original zone so it never leaves the allowed area
+                        pos = clampToZone(pos, zone);
+                    }
+
+                    // fallback
+                    dots.push({ id: id++, type: type, left: pos.left, top: pos.top, color: color });
+                }
+
+                // Place sequentially (CT first = lowest numbers)
+                for (let i = 0; i < numCT; i++)   placeDot('ct', spawnConfig.ctPlayers.zones, '#58c2f2');
+                for (let i = 0; i < numT; i++)    placeDot('t', spawnConfig.tPlayers.zones, '#f59e0b');
+                for (let i = 0; i < numBomb; i++) placeDot('bomb', spawnConfig.bomb.zones, '#eab308');
+
+                container.innerHTML = `
+        <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Infinite Menu</div>
+        <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
+            Random T Afterplant • ${numCT} CT • ${numT} T • Bomb
+        </p>
+        <div class="puzzle-wrapper" id="puzzle-wrapper">
+            <div class="map-container" id="map-container">
+                <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
+            </div>
+        </div>
+        <div id="puzzle-feedback"></div>
+    `;
+
+                const mapContainer = document.getElementById('map-container');
+                dots.forEach(dot => {
+                    const dotEl = document.createElement('div');
+                    dotEl.className = 'blue-dot';
+                    dotEl.style.left = dot.left;
+                    dotEl.style.top = dot.top;
+                    dotEl.style.background = dot.color;
+                    dotEl.style.width = dot.type === 'bomb' ? '32px' : '24px';
+                    dotEl.style.height = dot.type === 'bomb' ? '32px' : '24px';
+                    dotEl.style.fontSize = dot.type === 'bomb' ? '18px' : '15px';
+                    dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
+                    mapContainer.appendChild(dotEl);
+                });
+
+                console.log('%c✅ Generated random T Afterplant puzzle with ' + numCT + ' CT + ' + numT + ' T + 1 bomb (no contact + stays inside zones)', 'color:#f59e0b; font-weight:600;');
+            };
 
         // ==================== ZONE EDITOR ====================
         let zoneEditorData = {
