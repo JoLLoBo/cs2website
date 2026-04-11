@@ -165,7 +165,7 @@
                     <div onclick="loadHome()" class="back-btn">← Back to Home</div>
                     <div class="lessons-header">
                         <div class="breadcrumb">Tools &nbsp;›&nbsp; Dot Editor</div>
-                        <h1>Dot Editor – Click on the map to place dots</h1>
+                        <h1>Dot Editor – Left click: CT (blue) • Right click: T (orange)</h1>
                     </div>
                     <div class="edit-mode-bar">
                         <button onclick="copyEditorData()" style="background:#58c2f2;color:#000;border:none;padding:10px 20px;border-radius:9999px;font-weight:600;cursor:pointer;">📋 Copy Full Level Object</button>
@@ -182,63 +182,100 @@
         };
 
         function enableEditorClick() {
-            const mapContainer = document.getElementById('map-container');
-            const coordsDisplay = document.getElementById('live-coords');
+                const mapContainer = document.getElementById('map-container');
+                const coordsDisplay = document.getElementById('live-coords');
 
-            mapContainer.style.cursor = 'crosshair';
+                mapContainer.style.cursor = 'crosshair';
 
-            mapContainer.onmousemove = (e) => {
-                const rect = mapContainer.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-                const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-                coordsDisplay.textContent = `X: ${x}%   Y: ${y}%`;
-            };
+                mapContainer.onmousemove = (e) => {
+                    const rect = mapContainer.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+                    coordsDisplay.textContent = `X: ${x}%   Y: ${y}%`;
+                };
 
-            mapContainer.onclick = (e) => {
-                const rect = mapContainer.getBoundingClientRect();
-                const left = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
-                const top = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
+                // Left click: add CT dot (blue)
+                mapContainer.addEventListener('click', (e) => {
+                    const rect = mapContainer.getBoundingClientRect();
+                    const left = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
+                    const top = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
 
-                const newId = editorDots.length + 1;
-                editorDots.push({ id: newId, left: left, top: top, correct: false, expl: "New dot – edit later" });
-                renderEditorDots();
-            };
-        }
+                    const newId = editorDots.length + 1;
+                    editorDots.push({
+                        id: newId,
+                        type: 'ct',
+                        left: left,
+                        top: top,
+                        correct: false,
+                        expl: "New CT dot – edit later"
+                    });
+                    renderEditorDots();
+                });
 
-        function renderEditorDots() {
-            const container = document.getElementById('map-container');
-            container.querySelectorAll('.blue-dot').forEach(el => el.remove());
+                // Right click: add T dot (orange)
+                mapContainer.addEventListener('contextmenu', (e) => {
+                    e.preventDefault(); // Prevent context menu
+                    const rect = mapContainer.getBoundingClientRect();
+                    const left = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
+                    const top = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
 
-            editorDots.forEach(dot => {
-                const dotEl = document.createElement('div');
-                dotEl.className = 'blue-dot';
-                dotEl.style.left = dot.left;
-                dotEl.style.top = dot.top;
-                dotEl.textContent = dot.id;
-                container.appendChild(dotEl);
-            });
-        }
-
-        // UPDATED: now outputs exactly the compact inline style you asked for + trailing comma
-        function copyEditorData() {
-            if (editorDots.length === 0) {
-                alert("Place at least one dot first!");
-                return;
+                    const newId = editorDots.length + 1;
+                    editorDots.push({
+                        id: newId,
+                        type: 't',
+                        left: left,
+                        top: top,
+                        correct: false,
+                        expl: "New T dot – edit later"
+                    });
+                    renderEditorDots();
+                    return false;
+                });
             }
 
-            const levelNum = prompt("Enter the level number (e.g. 11):", "11");
-            const questionText = prompt("Enter the question for this level:", "Which of the following is the A fast info initial position?");
+        function renderEditorDots() {
+                const container = document.getElementById('map-container');
+                container.querySelectorAll('.blue-dot').forEach(el => el.remove());
 
-            let dotsStr = editorDots.map(dot => 
-                `                        { id: ${dot.id}, left: "${dot.left}", top: "${dot.top}", correct: ${dot.correct}, expl: "${dot.expl}" }`
-            ).join(',\n');
+                editorDots.forEach(dot => {
+                    const dotEl = document.createElement('div');
+                    dotEl.className = 'blue-dot';
+                    dotEl.style.left = dot.left;
+                    dotEl.style.top = dot.top;
+                    dotEl.textContent = dot.id;
 
-            const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "./mapImages/ancientMap.webp", dots: [\n${dotsStr}\n                    ]},\n`;
+                    // Style based on type
+                    if (dot.type === 'ct') {
+                        dotEl.style.background = '#58c2f2';
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                    } else {
+                        dotEl.style.background = '#f59e0b';
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                    }
 
-            navigator.clipboard.writeText(output).then(() => {
-                alert('✅ Copied in compact inline style with trailing comma!\n\nPaste directly into any levels array in puzzleData.');
-            });
-        }
+                    container.appendChild(dotEl);
+                });
+            }
+
+        function copyEditorData() {
+                if (editorDots.length === 0) {
+                    alert("Place at least one dot first!");
+                    return;
+                }
+
+                const levelNum = prompt("Enter the level number (e.g. 11):", "11");
+                const questionText = prompt("Enter the question for this level:", "Which of the following is the A fast info initial position?");
+
+                let dotsStr = editorDots.map(dot =>
+                    `                        { id: ${dot.id}, type: '${dot.type || 'ct'}', left: "${dot.left}", top: "${dot.top}", correct: ${dot.correct}, expl: "${dot.expl}" }`
+                ).join(',\n');
+
+                const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "./mapImages/ancientMap.webp", dots: [\n${dotsStr}\n                    ]},\n`;
+
+                navigator.clipboard.writeText(output).then(() => {
+                    alert('✅ Copied with type included!\n\nPaste directly into any levels array in puzzleData.');
+                });
+            }
 
         console.log('%c✅ "Dot Editor" now outputs exactly the compact inline format you requested (with trailing comma).', 'color:#58c2f2; font-size:15px; font-weight:600;');
     </script>
