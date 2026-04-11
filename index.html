@@ -563,17 +563,41 @@
             cursor: crosshair;
         }
 
-        .smoke-oval {
+        .smoke-cloud {
     position: absolute;
-    width: 40px;
-    height: 30px;
-    background: #6b7280;
-    border-radius: 50%;
-    opacity: 0.7;
+    width: 70px;
+    height: 70px;
     transform: translate(-50%, -50%);
     z-index: 5;
-    border: 2px solid #4b5563;
-    pointer-events: none;  /* So clicks pass through to dots underneath */
+    pointer-events: none;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+.smoke-cloud::before,
+.smoke-cloud::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: #a0a0a0;
+}
+.smoke-cloud::before {
+    width: 45px;
+    height: 45px;
+    top: 5px;
+    left: 0;
+    box-shadow: 
+        25px 10px 0 #909090,
+        50px 5px 0 #888,
+        15px 30px 0 #9a9a9a,
+        40px 35px 0 #858585,
+        -5px 20px 0 #b0b0b0;
+}
+.smoke-cloud::after {
+    width: 55px;
+    height: 55px;
+    top: 0;
+    left: 10px;
+    background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
+    opacity: 0.95;
 }
     </style>
 </head>
@@ -2331,20 +2355,20 @@
                 function renderPuzzleDots() {
                         const container = document.getElementById('map-container');
                         if (!container) return;
-                        container.querySelectorAll('.blue-dot, .smoke-oval').forEach(el => el.remove());
+                        container.querySelectorAll('.blue-dot, .smoke-cloud').forEach(el => el.remove());
 
                         if (!currentPuzzle) return;
 
                         // Render smokes first (so they are behind dots)
                         if (currentPuzzle.smokes) {
-                            currentPuzzle.smokes.forEach(smoke => {
-                                const smokeEl = document.createElement('div');
-                                smokeEl.className = 'smoke-oval';
-                                smokeEl.style.left = smoke.left;
-                                smokeEl.style.top = smoke.top;
-                                container.appendChild(smokeEl);
-                            });
-                        }
+                        currentPuzzle.smokes.forEach(smoke => {
+                            const smokeEl = document.createElement('div');
+                            smokeEl.className = 'smoke-cloud';
+                            smokeEl.style.left = smoke.left;
+                            smokeEl.style.top = smoke.top;
+                            container.appendChild(smokeEl);
+                        });
+                    }
 
                         // Render dots
                         if (currentPuzzle.dots) {
