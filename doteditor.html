@@ -148,7 +148,9 @@
         let currentPuzzleLevel = 1;
         let currentPuzzle = null;
         let editMode = false;
-        let editorDots = [];   // For the new Editor page
+            let editorDots = [];      // Dots (CT/T)
+            let editorSmokes = [];    // Smokes
+            let smokePlacementMode = false;  // Toggle for placing smokes
 
         let unlockedLevels = { "ct_early": 1, "ct_mid": 1, "ct_afterplant": 1, "t_early": 1, "t_mid": 1, "t_afterplant": 1 };
 
@@ -168,9 +170,10 @@
                         <h1>Dot Editor – Left click: CT (blue) • Right click: T (orange)</h1>
                     </div>
                     <div class="edit-mode-bar">
-                        <button onclick="copyEditorData()" style="background:#58c2f2;color:#000;border:none;padding:10px 20px;border-radius:9999px;font-weight:600;cursor:pointer;">📋 Copy Full Level Object</button>
-                        <div class="coord-display" id="live-coords">Move mouse over map → live coordinates</div>
-                    </div>
+    <button onclick="copyEditorData()" style="background:#58c2f2;color:#000;border:none;padding:10px 20px;border-radius:9999px;font-weight:600;cursor:pointer;">📋 Copy Full Level Object</button>
+    <button onclick="toggleSmokeMode()" id="smoke-mode-btn" style="background:#6b7280;color:#fff;border:none;padding:10px 20px;border-radius:9999px;font-weight:600;cursor:pointer;">💨 Smoke Mode: OFF</button>
+    <div class="coord-display" id="live-coords">Move mouse over map → live coordinates</div>
+</div>
                     <div class="map-container" id="map-container">
                         <img src="./mapImages/ancientMap.webp" alt="CS2 Map Puzzle">
                     </div>
@@ -194,27 +197,38 @@
                     coordsDisplay.textContent = `X: ${x}%   Y: ${y}%`;
                 };
 
-                // Left click: add CT dot (blue)
+                // Left click: add dot or smoke based on mode
                 mapContainer.addEventListener('click', (e) => {
                     const rect = mapContainer.getBoundingClientRect();
                     const left = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
                     const top = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
 
-                    const newId = editorDots.length + 1;
-                    editorDots.push({
-                        id: newId,
-                        type: 'ct',
-                        left: left,
-                        top: top,
-                        correct: false,
-                        expl: "New CT dot – edit later"
-                    });
-                    renderEditorDots();
+                    if (smokePlacementMode) {
+                        const newId = editorSmokes.length + 1;
+                        editorSmokes.push({
+                            id: newId,
+                            type: 'smoke',
+                            left: left,
+                            top: top
+                        });
+                    } else {
+                        const newId = editorDots.length + 1;
+                        editorDots.push({
+                            id: newId,
+                            type: 'ct',
+                            left: left,
+                            top: top,
+                            correct: false,
+                            expl: "New CT dot – edit later"
+                        });
+                    }
+                    renderEditorItems();
                 });
 
-                // Right click: add T dot (orange)
+                // Right click: add T dot (ignores smoke mode)
                 mapContainer.addEventListener('contextmenu', (e) => {
-                    e.preventDefault(); // Prevent context menu
+                    e.preventDefault();
+                    if (smokePlacementMode) return; // Don't place T dots in smoke mode
                     const rect = mapContainer.getBoundingClientRect();
                     const left = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
                     const top = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
@@ -228,23 +242,49 @@
                         correct: false,
                         expl: "New T dot – edit later"
                     });
-                    renderEditorDots();
+                    renderEditorItems();
                     return false;
                 });
             }
 
-        function renderEditorDots() {
-                const container = document.getElementById('map-container');
-                container.querySelectorAll('.blue-dot').forEach(el => el.remove());
+            function toggleSmokeMode() {
+                    smokePlacementMode = !smokePlacementMode;
+                    const btn = document.getElementById('smoke-mode-btn');
+                    btn.textContent = smokePlacementMode ? '💨 Smoke Mode: ON' : '💨 Smoke Mode: OFF';
+                    btn.style.background = smokePlacementMode ? '#ef4444' : '#6b7280';
+                }
+                window.toggleSmokeMode = toggleSmokeMode;
 
+        function renderEditorItems() {
+                const container = document.getElementById('map-container');
+                // Remove only editor-created elements (dots and smokes)
+                container.querySelectorAll('.blue-dot, .smoke-oval').forEach(el => el.remove());
+
+                // Render smokes
+                editorSmokes.forEach(smoke => {
+                    const smokeEl = document.createElement('div');
+                    smokeEl.className = 'smoke-oval';
+                    smokeEl.style.position = 'absolute';
+                    smokeEl.style.left = smoke.left;
+                    smokeEl.style.top = smoke.top;
+                    smokeEl.style.width = '40px';
+                    smokeEl.style.height = '30px';
+                    smokeEl.style.background = '#6b7280';
+                    smokeEl.style.borderRadius = '50%';
+                    smokeEl.style.opacity = '0.7';
+                    smokeEl.style.transform = 'translate(-50%, -50%)';
+                    smokeEl.style.zIndex = '5';
+                    smokeEl.style.border = '2px solid #4b5563';
+                    container.appendChild(smokeEl);
+                });
+
+                // Render dots
                 editorDots.forEach(dot => {
                     const dotEl = document.createElement('div');
                     dotEl.className = 'blue-dot';
                     dotEl.style.left = dot.left;
                     dotEl.style.top = dot.top;
                     dotEl.textContent = dot.id;
-
-                    // Style based on type
                     if (dot.type === 'ct') {
                         dotEl.style.background = '#58c2f2';
                         dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
@@ -252,28 +292,39 @@
                         dotEl.style.background = '#f59e0b';
                         dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
                     }
-
                     container.appendChild(dotEl);
                 });
             }
 
         function copyEditorData() {
-                if (editorDots.length === 0) {
-                    alert("Place at least one dot first!");
+                if (editorDots.length === 0 && editorSmokes.length === 0) {
+                    alert("Place at least one dot or smoke first!");
                     return;
                 }
 
                 const levelNum = prompt("Enter the level number (e.g. 11):", "11");
                 const questionText = prompt("Enter the question for this level:", "Which of the following is the A fast info initial position?");
 
+                // Build dots array
                 let dotsStr = editorDots.map(dot =>
-                    `                        { id: ${dot.id}, type: '${dot.type || 'ct'}', left: "${dot.left}", top: "${dot.top}", correct: ${dot.correct}, expl: "${dot.expl}" }`
+                    `                        { id: ${dot.id}, type: '${dot.type}', left: "${dot.left}", top: "${dot.top}", correct: ${dot.correct}, expl: "${dot.expl}" }`
                 ).join(',\n');
 
-                const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "./mapImages/ancientMap.webp", dots: [\n${dotsStr}\n                    ]},\n`;
+                // Build smokes array (if any)
+                let smokesStr = '';
+                if (editorSmokes.length > 0) {
+                    smokesStr = editorSmokes.map(smoke =>
+                        `                        { id: ${smoke.id}, type: 'smoke', left: "${smoke.left}", top: "${smoke.top}" }`
+                    ).join(',\n');
+                }
+
+                const dotsSection = dotsStr ? `dots: [\n${dotsStr}\n                    ]` : `dots: []`;
+                const smokesSection = smokesStr ? `,\n                    smokes: [\n${smokesStr}\n                    ]` : '';
+
+                const output = `{ level: ${levelNum}, question: "${questionText}", imageSrc: "./mapImages/ancientMap.webp", ${dotsSection}${smokesSection}\n                    },\n`;
 
                 navigator.clipboard.writeText(output).then(() => {
-                    alert('✅ Copied with type included!\n\nPaste directly into any levels array in puzzleData.');
+                    alert('✅ Copied level object with smokes (if any)!');
                 });
             }
 

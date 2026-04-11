@@ -562,6 +562,19 @@
             left: 0;
             cursor: crosshair;
         }
+
+        .smoke-oval {
+    position: absolute;
+    width: 40px;
+    height: 30px;
+    background: #6b7280;
+    border-radius: 50%;
+    opacity: 0.7;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    border: 2px solid #4b5563;
+    pointer-events: none;  /* So clicks pass through to dots underneath */
+}
     </style>
 </head>
 
@@ -690,7 +703,7 @@
                 levels: [
                     {
                         level: 1, question: "abcd", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                            { id: 1, type: 'ct', left: "21.2%", top: "32.2%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 1, type: 'ct', left: "21.2%", top: "32.2%", correct: true, expl: "New CT dot – edit later" },
                             { id: 2, type: 'ct', left: "31.9%", top: "42.3%", correct: false, expl: "New CT dot – edit later" },
                             { id: 3, type: 'ct', left: "47.6%", top: "31.7%", correct: false, expl: "New CT dot – edit later" },
                             { id: 4, type: 'ct', left: "67.4%", top: "38.9%", correct: false, expl: "New CT dot – edit later" },
@@ -702,6 +715,16 @@
                             { id: 10, type: 't', left: "69.9%", top: "71.3%", correct: false, expl: "New T dot – edit later" }
                         ]
                     },
+                    {
+                        level: 2, question: "Which of the following is the A fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
+                            { id: 1, type: 'ct', left: "48.1%", top: "14.4%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 2, type: 't', left: "52.3%", top: "19.6%", correct: false, expl: "New T dot – edit later" }
+                        ],
+                        smokes: [
+                            { id: 1, type: 'smoke', left: "53.1%", top: "12.7%" }
+                        ]
+                    },
+
                 ]
             },
             "ct_afterplant": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `CT After Plant Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
@@ -2308,27 +2331,44 @@
                 function renderPuzzleDots() {
                         const container = document.getElementById('map-container');
                         if (!container) return;
-                        container.querySelectorAll('.blue-dot').forEach(el => el.remove());
-                        if (!currentPuzzle || !currentPuzzle.dots) return;
-                        currentPuzzle.dots.forEach(dot => {
-                            const dotEl = document.createElement('div');
-                            dotEl.className = 'blue-dot';
-                            dotEl.style.left = dot.left;
-                            dotEl.style.top = dot.top;
-                            dotEl.textContent = dot.id;
+                        container.querySelectorAll('.blue-dot, .smoke-oval').forEach(el => el.remove());
 
-                            // Initial color based on type (ct = blue, t = orange)
-                            if (dot.type === 'ct') {
-                                dotEl.style.background = '#58c2f2';
-                                dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
-                            } else {
-                                dotEl.style.background = '#f59e0b';
-                                dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
-                            }
+                        if (!currentPuzzle) return;
 
-                            dotEl.onclick = () => handleDotClick(dot.id);
-                            container.appendChild(dotEl);
-                        });
+                        // Render smokes first (so they are behind dots)
+                        if (currentPuzzle.smokes) {
+                            currentPuzzle.smokes.forEach(smoke => {
+                                const smokeEl = document.createElement('div');
+                                smokeEl.className = 'smoke-oval';
+                                smokeEl.style.left = smoke.left;
+                                smokeEl.style.top = smoke.top;
+                                container.appendChild(smokeEl);
+                            });
+                        }
+
+                        // Render dots
+                        if (currentPuzzle.dots) {
+                            currentPuzzle.dots.forEach(dot => {
+                                const dotEl = document.createElement('div');
+                                dotEl.className = 'blue-dot';
+                                dotEl.style.left = dot.left;
+                                dotEl.style.top = dot.top;
+                                dotEl.textContent = dot.id;
+
+                                const dotType = dot.type || 'ct';
+                                if (dotType === 'ct') {
+                                    dotEl.style.background = '#58c2f2';
+                                    dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                                } else {
+                                    dotEl.style.background = '#f59e0b';
+                                    dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                                }
+
+                                dotEl.onclick = () => handleDotClick(dot.id);
+                                container.appendChild(dotEl);
+                            });
+                        }
+
                         if (lastClickedDotId !== null) {
                             const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
                             if (clickedDotEl) {
