@@ -857,6 +857,7 @@
         let activePushDotIds = new Set();
 
         let setupLinesSvg = null; // SVG element for connection lines
+        let initialDotPositions = {}; // Store original positions: { dotId: { left, top } }
 
         let unlockedLevels = {
             "ct_early": 1,
@@ -1355,6 +1356,85 @@
                 }
             }
 
+        function resetDotPositions() {
+                // Reset tactics and colors for all T dots
+                dotTactics = {};
+
+                document.querySelectorAll('.blue-dot').forEach(el => {
+                    const dotId = parseInt(el.textContent);
+                    const isBomb = isNaN(dotId);
+
+                    // Restore initial position
+                    if (!isBomb) {
+                        const initialPos = initialDotPositions[dotId];
+                        if (initialPos) {
+                            el.style.left = initialPos.left;
+                            el.style.top = initialPos.top;
+                        }
+                    } else {
+                        // Bomb dot - also restore position if stored
+                        const bombPos = initialDotPositions['bomb'];
+                        if (bombPos) {
+                            el.style.left = bombPos.left;
+                            el.style.top = bombPos.top;
+                        }
+                    }
+
+                    // Reset T dots to orange, remove tactic-assigned class
+                    const isT = el.style.background === 'rgb(245, 158, 11)' ||
+                        el.style.background === '#f59e0b' ||
+                        el.style.background === 'rgb(192, 132, 252)' || // purple (setup)
+                        el.style.background === '#c084fc' ||
+                        el.style.background === 'rgb(16, 185, 129)' ||  // green (fast info)
+                        el.style.background === '#10b981' ||
+                        el.style.background === 'rgb(239, 68, 68)' ||   // red (push)
+                        el.style.background === '#ef4444' ||
+                        el.classList.contains('tactic-assigned');
+
+                    if (isT && !isBomb) {
+                        el.style.background = '#f59e0b';
+                        el.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                        el.classList.remove('tactic-assigned');
+                    }
+                });
+
+                // Clear all active group states
+                setupActive = false;
+                activeSetupDotIds.clear();
+                setupSelectionMode = false;
+                setupAnchorDotId = null;
+                setupPartnerIds.clear();
+
+                pushActive = false;
+                activePushDotIds.clear();
+                pushSelectionMode = false;
+                pushAnchorDotId = null;
+                pushPartnerIds.clear();
+
+                // Remove SVG lines overlay
+                if (setupLinesSvg) {
+                    setupLinesSvg.remove();
+                    setupLinesSvg = null;
+                }
+
+                // Reset drag state
+                selectedDotForDrag = null;
+
+                // Reset panel message
+                const panel = document.getElementById('nade-menu-panel');
+                if (panel) {
+                    panel.innerHTML = `<em>Positions and tactics reset. Click any T‑side dot to choose a tactic</em>`;
+                }
+
+                console.log('%c↺ All dots reset to initial state (positions, colors, tactics cleared)', 'color:#f59e0b; font-weight:600;');
+            }
+
+            // Make it globally accessible
+            window.resetDotPositions = resetDotPositions;
+
+            // Make it globally accessible
+            window.resetDotPositions = resetDotPositions;
+
         // Modify enableDrag to also update lines when dragging setup dots
         // Find the onMouseMove function inside enableDrag and add a call to updateSetupLinesIfNeeded
 
@@ -1680,12 +1760,18 @@
             
             <!-- Right column: Refresh button + menu directly under it -->
             <div style="flex:0 0 280px; display:flex; flex-direction:column; gap:20px;">
-                <button onclick="generateNewTAfterplantPuzzle()" 
-                        style="background:#f59e0b; color:#111; font-size:19px; font-weight:600; 
-                               padding:22px 32px; border:none; border-radius:9999px; cursor:pointer; 
-                               box-shadow:0 8px 25px rgba(245,158,11,0.35);">
-                    🔄 Refresh Positions
-                </button>
+    <button onclick="generateNewTAfterplantPuzzle()" 
+            style="background:#f59e0b; color:#111; font-size:19px; font-weight:600; 
+                   padding:22px 32px; border:none; border-radius:9999px; cursor:pointer; 
+                   box-shadow:0 8px 25px rgba(245,158,11,0.35);">
+        🔄 New Puzzle
+    </button>
+    <button onclick="resetDotPositions()" 
+            style="background:#27272a; color:#f59e0b; font-size:17px; font-weight:500; 
+                   padding:16px 24px; border:1px solid #f59e0b; border-radius:9999px; cursor:pointer; 
+                   transition:all 0.2s;">
+        ↺ Reset Positions
+    </button>
                 
                 <!-- Menu appears here (under the button) -->
                 <div id="nade-menu-panel" style="background:#f59e0b; color:#111; padding:28px; border-radius:12px; min-height:280px; font-size:19px;">
@@ -1696,6 +1782,7 @@
     `;
 
             const mapContainer = document.getElementById('map-container');
+            initialDotPositions = {}; // Reset initial positions
             dots.forEach(dot => {
                 const dotEl = document.createElement('div');
                 dotEl.className = 'blue-dot';
@@ -1708,6 +1795,9 @@
                 dotEl.textContent = dot.type === 'bomb' ? '💣' : dot.id;
                 dotEl.onclick = () => handleInfiniteDotClick(dot);
                 mapContainer.appendChild(dotEl);
+
+                // Store initial position for reset functionality
+                initialDotPositions[dot.id] = { left: dot.left, top: dot.top };
             });
 
             // Add click listener on map container to clear selection when clicking empty area
