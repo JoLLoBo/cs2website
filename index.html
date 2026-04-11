@@ -2305,98 +2305,109 @@
             renderPuzzleDots();
         };
 
-        function renderPuzzleDots() {
-            const container = document.getElementById('map-container');
-            if (!container) return;
-            container.querySelectorAll('.blue-dot').forEach(el => el.remove());
+                function renderPuzzleDots() {
+                        const container = document.getElementById('map-container');
+                        if (!container) return;
+                        container.querySelectorAll('.blue-dot').forEach(el => el.remove());
+                        if (!currentPuzzle || !currentPuzzle.dots) return;
+                        currentPuzzle.dots.forEach(dot => {
+                            const dotEl = document.createElement('div');
+                            dotEl.className = 'blue-dot';
+                            dotEl.style.left = dot.left;
+                            dotEl.style.top = dot.top;
+                            dotEl.textContent = dot.id;
 
-            if (!currentPuzzle || !currentPuzzle.dots) return;
+                            // Initial color based on type (ct = blue, t = orange)
+                            if (dot.type === 'ct') {
+                                dotEl.style.background = '#58c2f2';
+                                dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                            } else {
+                                dotEl.style.background = '#f59e0b';
+                                dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                            }
 
-            currentPuzzle.dots.forEach(dot => {
-                const dotEl = document.createElement('div');
-                dotEl.className = 'blue-dot';
-                dotEl.style.left = dot.left;
-                dotEl.style.top = dot.top;
-                dotEl.textContent = dot.id;
-
-                // Support type-based coloring (ct = blue, otherwise orange)
-                if (dot.type === 'ct') {
-                    dotEl.style.background = '#58c2f2';
-                    dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
-                } else {
-                    dotEl.style.background = '#f59e0b';
-                    dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
-                }
-
-                dotEl.onclick = () => handleDotClick(dot.id);
-                container.appendChild(dotEl);
-            });
-
-            if (lastClickedDotId !== null) {
-                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
-                if (clickedDotEl) {
-                    const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
-                    if (dotData) {
-                        clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
+                            dotEl.onclick = () => handleDotClick(dot.id);
+                            container.appendChild(dotEl);
+                        });
+                        if (lastClickedDotId !== null) {
+                            const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
+                            if (clickedDotEl) {
+                                const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
+                                if (dotData) {
+                                    clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
+                                }
+                            }
+                        }
                     }
-                }
-            }
-        }
 
         function handleDotClick(id) {
-            lastClickedDotId = id;
-            const selectedDot = currentPuzzle.dots.find(d => d.id === id);
-            const isCorrect = selectedDot.correct;
+                lastClickedDotId = id;
+                const selectedDot = currentPuzzle.dots.find(d => d.id === id);
+                const isCorrect = selectedDot.correct;
+                const dotType = selectedDot.type || 'ct';
 
-            document.querySelectorAll('.blue-dot').forEach(el => {
-                el.classList.remove('correct', 'wrong');
-            });
+                // Define colors based on side
+                const correctBg = dotType === 'ct' ? '#c084fc' : '#fb923c';
+                const wrongBg = dotType === 'ct' ? '#e8c39e' : '#f97316';
+                const correctShadow = dotType === 'ct' ? 'rgba(192, 132, 252, 0.6)' : 'rgba(251, 146, 60, 0.6)';
+                const wrongShadow = dotType === 'ct' ? 'rgba(232, 195, 158, 0.6)' : 'rgba(249, 115, 22, 0.6)';
 
-            const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
-            if (clickedDotEl) {
-                clickedDotEl.classList.add(isCorrect ? 'correct' : 'wrong');
-            }
+                const wrapper = document.getElementById('puzzle-wrapper');
+                const gifHTML = (isCorrect && selectedDot.gifSrc)
+                    ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
+                    : '';
 
-            const wrapper = document.getElementById('puzzle-wrapper');
-            const gifHTML = (isCorrect && selectedDot.gifSrc)
-                ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
-                : '';
+                const key = getCategoryKey();
+                if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
+                }
 
-            const key = getCategoryKey();
-            if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
-                unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
-            }
+                const feedbackBgCorrect = dotType === 'ct' ? '#c084fc' : '#fb923c';
+                const feedbackBgWrong = dotType === 'ct' ? '#e8c39e' : '#f97316';
 
-            const feedbackHTML = isCorrect
-                ? `
-                    <div class="puzzle-feedback-side" style="background:#c084fc; color:#111;">
-                        👾 Correct<br>
-                        <strong>${selectedDot.expl}</strong>
-                        ${gifHTML}
-                        <div style="margin-top:25px; display:flex; gap:12px; justify-content:center;">
-                            <button onclick="goToNextLevel()" style="background:#58c2f2; color:#000; border:none; padding:14px 32px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
-                                Next Puzzle →
-                            </button>
-                        </div>
-                    </div>`
-                : `
-                    <div class="puzzle-feedback-side" style="background:#e8c39e; color:#111;">
-                        🤖 Not quite<br>
-                        <strong>${selectedDot.expl}</strong>
-                    </div>`;
-
-            wrapper.innerHTML = `
-                <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
-                    <div class="map-container" id="map-container" style="flex:1;">
-                        <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
-                    </div>
-                    ${feedbackHTML}
+                const feedbackHTML = isCorrect
+                    ? `
+            <div class="puzzle-feedback-side" style="background:${feedbackBgCorrect}; color:#111;">
+                👾 Correct<br>
+                <strong>${selectedDot.expl}</strong>
+                ${gifHTML}
+                <div style="margin-top:25px; display:flex; gap:12px; justify-content:center;">
+                    <button onclick="goToNextLevel()" style="background:#58c2f2; color:#000; border:none; padding:14px 32px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
+                        Next Puzzle →
+                    </button>
                 </div>
-            `;
+            </div>`
+                    : `
+            <div class="puzzle-feedback-side" style="background:${feedbackBgWrong}; color:#111;">
+                🤖 Not quite<br>
+                <strong>${selectedDot.expl}</strong>
+            </div>`;
 
-            renderPuzzleDots();
-            document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+                wrapper.innerHTML = `
+        <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
+            <div class="map-container" id="map-container" style="flex:1;">
+                <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+            </div>
+            ${feedbackHTML}
+        </div>
+    `;
+
+                // Re-render the dots
+                renderPuzzleDots();
+
+                // Apply correct/wrong style to the clicked dot (renderPuzzleDots resets all)
+                document.querySelectorAll('.blue-dot').forEach(el => {
+                    el.classList.remove('correct', 'wrong');
+                });
+                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                if (clickedDotEl) {
+                    clickedDotEl.style.background = isCorrect ? correctBg : wrongBg;
+                    clickedDotEl.style.boxShadow = isCorrect ? `0 0 0 5px ${correctShadow}` : `0 0 0 5px ${wrongShadow}`;
+                    clickedDotEl.classList.add(isCorrect ? 'correct' : 'wrong');
+                }
+
+                document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
+            }
 
         window.goToNextLevel = function () {
             const key = getCategoryKey();
