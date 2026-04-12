@@ -898,6 +898,71 @@
                             { id: 1, type: 'smoke', left: "31.6%", top: "37.3%" }
                         ]
                     },
+                    {
+                        level: 4,
+                        question: "Could someone replace the fast info in red room?",
+                        imageSrc: "./mapImages/ancientMap.webp",
+                        dots: [
+                            { id: 1, type: 'ct', left: "21.3%", top: "31.8%", correct: false, expl: "" },
+                            { id: 2, type: 'ct', left: "24.5%", top: "23.3%", correct: false, expl: "" },
+                            { id: 3, type: 'ct', left: "34.5%", top: "25.5%", correct: false, expl: "" },
+                            { id: 4, type: 'ct', left: "67.1%", top: "39.0%", correct: true, expl: "" },
+                            { id: 5, type: 'ct', left: "79.6%", top: "36.7%", correct: false, expl: "" },
+                            { id: 6, type: 't', left: "45.5%", top: "45.9%", correct: false, expl: "" },
+                            { id: 7, type: 't', left: "48.4%", top: "44.5%", correct: false, expl: "" },
+                            { id: 8, type: 't', left: "48.8%", top: "48.5%", correct: false, expl: "" },
+                            { id: 9, type: 't', left: "75.8%", top: "59.1%", correct: false, expl: "" },
+                            { id: 10, type: 't', left: "76.3%", top: "69.3%", correct: false, expl: "" }
+                        ],
+                        smokes: [
+                            { id: 1, type: 'smoke', left: "31.6%", top: "37.3%" },
+                            { id: 2, type: 'smoke', left: "46%", top: "33%" }
+                        ]
+                    },
+                    {
+                        level: 5,
+                        type: 'multipleChoice',
+                        question: "Having done all of this, is there a way to take care of B site as well?",
+                        imageSrc: "./mapImages/ancientMap.webp",
+                        options: ["Nope", "Fast info", "Partial info", "Setup", "Push"],
+                        correctAnswer: "Partial info",
+                        dots: [
+                            { id: 1, type: 'ct', left: "21.3%", top: "31.8%", correct: false, expl: "" },
+                            { id: 2, type: 'ct', left: "24.5%", top: "23.3%", correct: false, expl: "" },
+                            { id: 3, type: 'ct', left: "34.5%", top: "25.5%", correct: false, expl: "" },
+                            { id: 4, type: 'ct', left: "52.6%", top: "24.4%", correct: true, expl: "" },
+                            { id: 5, type: 'ct', left: "79.6%", top: "36.7%", correct: false, expl: "" },
+                            { id: 6, type: 't', left: "45.5%", top: "45.9%", correct: false, expl: "" },
+                            { id: 7, type: 't', left: "48.4%", top: "44.5%", correct: false, expl: "" },
+                            { id: 8, type: 't', left: "48.8%", top: "48.5%", correct: false, expl: "" },
+                            { id: 9, type: 't', left: "75.8%", top: "59.1%", correct: false, expl: "" },
+                            { id: 10, type: 't', left: "76.3%", top: "69.3%", correct: false, expl: "" }
+                        ],
+                        smokes: [
+                            { id: 1, type: 'smoke', left: "31.6%", top: "37.3%" },
+                            { id: 2, type: 'smoke', left: "46%", top: "33%" }
+                        ]
+                    },
+                    {
+                        level: 6,
+                        type: 'multipleChoice',
+                        question: "Because of the partial info, what do we want to do with the majority of the players?",
+                        imageSrc: "./mapImages/ancientMap.webp",
+                        options: ["Push", "Setup", "Play retake", "Fast info", "Partial info"],
+                        correctAnswer: "Push",
+                        dots: [
+                            { id: 1, type: 'ct', left: "21.3%", top: "31.8%", correct: false, expl: "" },
+                            { id: 2, type: 'ct', left: "24.5%", top: "23.3%", correct: false, expl: "" },
+                            { id: 3, type: 'ct', left: "34.5%", top: "25.5%", correct: false, expl: "" },
+                            { id: 4, type: 'ct', left: "52.6%", top: "24.4%", correct: true, expl: "" },
+                            { id: 5, type: 'ct', left: "75%", top: "10%", correct: false, expl: "" },
+                            { id: 6, type: 't', left: "45.5%", top: "45.9%", correct: false, expl: "" },
+                            { id: 7, type: 't', left: "48.4%", top: "44.5%", correct: false, expl: "" },
+                            { id: 8, type: 't', left: "48.8%", top: "48.5%", correct: false, expl: "" },
+                            { id: 9, type: 't', left: "75.8%", top: "59.1%", correct: false, expl: "" },
+                            { id: 10, type: 't', left: "76.3%", top: "69.3%", correct: false, expl: "" }
+                        ],
+                    },
                 ]
             },
             "ct_afterplant": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `CT After Plant Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
@@ -1082,13 +1147,13 @@
         let initialDotPositions = {}; // Store original positions: { dotId: { left, top } }
 
         let unlockedLevels = {
-            "ct_early": 1,
-            "ct_mid": 1,
-            "ct_afterplant": 1,
-            "t_early": 1,
-            "t_mid": 1,
-            "t_afterplant": 1
-        };
+                "ct_early": 10,
+                "ct_mid": 10,
+                "ct_afterplant": 10,
+                "t_early": 10,
+                "t_mid": 10,
+                "t_afterplant": 10
+            };
 
         function updateSetupLinesIfNeeded() {
             if (setupSelectionMode || setupActive || pushSelectionMode || pushActive) {
@@ -2788,7 +2853,7 @@
         function handleDotClick(id) {
             // If in multiple-choice mode, ignore dot clicks
             if (multipleChoiceMode) return;
-            
+
                 const selectedDot = currentPuzzle.dots.find(d => d.id === id);
                 if (!selectedDot) return;
 
