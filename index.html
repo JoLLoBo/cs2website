@@ -564,143 +564,156 @@
         }
 
         .smoke-cloud {
-    position: absolute;
-    width: 45px;
-    height: 45px;
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    pointer-events: none;
-    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
-}
-.smoke-cloud::before,
-.smoke-cloud::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: #a0a0a0;
-}
-.smoke-cloud::before {
-    width: 28px;
-    height: 28px;
-    top: 3px;
-    left: 0;
-    box-shadow:
-        16px 6px 0 #909090,
-        32px 3px 0 #888,
-        9px 20px 0 #9a9a9a,
-        25px 22px 0 #858585,
-        -3px 12px 0 #b0b0b0;
-}
-.smoke-cloud::after {
-    width: 35px;
-    height: 35px;
-    top: 0;
-    left: 6px;
-    background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
-    opacity: 0.95;
-}
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+        }
 
-/* Flash – softer, less bright star */
-.flash-bang {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    pointer-events: none;
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
-}
-.flash-bang::before,
-.flash-bang::after,
-.flash-bang .star-arm {
-    content: '';
-    position: absolute;
-    background: #f5f5f5;
-    border-radius: 2px;
-    box-shadow: 0 0 6px #fef08a;
-}
-.flash-bang::before {
-    width: 5px;
-    height: 26px;
-    top: 1px;
-    left: 12px;
-    transform: rotate(0deg);
-}
-.flash-bang::after {
-    width: 5px;
-    height: 26px;
-    top: 1px;
-    left: 12px;
-    transform: rotate(90deg);
-}
-.flash-bang .star-arm {
-    width: 4px;
-    height: 22px;
-    top: 3px;
-    left: 12px;
-    transform: rotate(45deg);
-}
-.flash-bang .star-arm:nth-child(2) {
-    transform: rotate(-45deg);
-}
+        .smoke-cloud::before,
+        .smoke-cloud::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: #a0a0a0;
+        }
 
-/* Molotov – sharp, flickering flame */
-.molotov-fire {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    pointer-events: none;
-    filter: drop-shadow(0 0 8px #f97316);
-}
-.molotov-fire::before,
-.molotov-fire::after {
-    content: '';
-    position: absolute;
-    border-radius: 50% 20% 50% 20%;
-    background: #f97316;
-    box-shadow: 0 0 10px #fb923c;
-}
-.molotov-fire::before {
-    width: 18px;
-    height: 32px;
-    top: 8px;
-    left: 12px;
-    transform: rotate(-20deg);
-    background: linear-gradient(45deg, #fffbeb, #f97316 60%, #c2410c);
-    border-radius: 40% 20% 40% 20%;
-}
-.molotov-fire::after {
-    width: 22px;
-    height: 36px;
-    top: 4px;
-    left: 20px;
-    transform: rotate(25deg);
-    background: linear-gradient(135deg, #fef08a, #ea580c 70%, #9a3412);
-    border-radius: 30% 50% 30% 50%;
-    box-shadow: 0 0 12px #fbbf24;
-}
-/* Additional flame tongue */
-.molotov-fire .flame-tongue {
-    position: absolute;
-    width: 14px;
-    height: 28px;
-    top: 12px;
-    left: 8px;
-    transform: rotate(-40deg);
-    background: linear-gradient(45deg, #fffbeb, #fb923c 80%, #b91c1c);
-    border-radius: 50% 20% 50% 20%;
-    box-shadow: 0 0 8px #f97316;
-}
-.molotov-fire .flame-tongue:nth-child(2) {
-    width: 12px;
-    height: 24px;
-    top: 6px;
-    left: 30px;
-    transform: rotate(45deg);
-    background: linear-gradient(135deg, #fef08a, #f97316 80%, #7c2d12);
-}
+        .smoke-cloud::before {
+            width: 28px;
+            height: 28px;
+            top: 3px;
+            left: 0;
+            box-shadow:
+                16px 6px 0 #909090,
+                32px 3px 0 #888,
+                9px 20px 0 #9a9a9a,
+                25px 22px 0 #858585,
+                -3px 12px 0 #b0b0b0;
+        }
+
+        .smoke-cloud::after {
+            width: 35px;
+            height: 35px;
+            top: 0;
+            left: 6px;
+            background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
+            opacity: 0.95;
+        }
+
+        /* Flash – softer, less bright star */
+        .flash-bang {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+        }
+
+        .flash-bang::before,
+        .flash-bang::after,
+        .flash-bang .star-arm {
+            content: '';
+            position: absolute;
+            background: #f5f5f5;
+            border-radius: 2px;
+            box-shadow: 0 0 6px #fef08a;
+        }
+
+        .flash-bang::before {
+            width: 5px;
+            height: 26px;
+            top: 1px;
+            left: 12px;
+            transform: rotate(0deg);
+        }
+
+        .flash-bang::after {
+            width: 5px;
+            height: 26px;
+            top: 1px;
+            left: 12px;
+            transform: rotate(90deg);
+        }
+
+        .flash-bang .star-arm {
+            width: 4px;
+            height: 22px;
+            top: 3px;
+            left: 12px;
+            transform: rotate(45deg);
+        }
+
+        .flash-bang .star-arm:nth-child(2) {
+            transform: rotate(-45deg);
+        }
+
+        /* Molotov – sharp, flickering flame */
+        .molotov-fire {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            filter: drop-shadow(0 0 8px #f97316);
+        }
+
+        .molotov-fire::before,
+        .molotov-fire::after {
+            content: '';
+            position: absolute;
+            border-radius: 50% 20% 50% 20%;
+            background: #f97316;
+            box-shadow: 0 0 10px #fb923c;
+        }
+
+        .molotov-fire::before {
+            width: 18px;
+            height: 32px;
+            top: 8px;
+            left: 12px;
+            transform: rotate(-20deg);
+            background: linear-gradient(45deg, #fffbeb, #f97316 60%, #c2410c);
+            border-radius: 40% 20% 40% 20%;
+        }
+
+        .molotov-fire::after {
+            width: 22px;
+            height: 36px;
+            top: 4px;
+            left: 20px;
+            transform: rotate(25deg);
+            background: linear-gradient(135deg, #fef08a, #ea580c 70%, #9a3412);
+            border-radius: 30% 50% 30% 50%;
+            box-shadow: 0 0 12px #fbbf24;
+        }
+
+        /* Additional flame tongue */
+        .molotov-fire .flame-tongue {
+            position: absolute;
+            width: 14px;
+            height: 28px;
+            top: 12px;
+            left: 8px;
+            transform: rotate(-40deg);
+            background: linear-gradient(45deg, #fffbeb, #fb923c 80%, #b91c1c);
+            border-radius: 50% 20% 50% 20%;
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        .molotov-fire .flame-tongue:nth-child(2) {
+            width: 12px;
+            height: 24px;
+            top: 6px;
+            left: 30px;
+            transform: rotate(45deg);
+            background: linear-gradient(135deg, #fef08a, #f97316 80%, #7c2d12);
+        }
     </style>
 </head>
 
@@ -720,6 +733,7 @@
                 <div class="submenu">
                     <a href="#" onclick="loadDailyPuzzle(); return false;" class="submenu-item">Puzzles</a>
                     <a href="#" onclick="loadZoneEditor(); return false;" class="submenu-item">Zone Editor</a>
+                    <a href="#" onclick="loadAIGame(); return false;" class="submenu-item">Play vs AI</a>
                 </div>
             </div>
             <!-- LEARN -->
@@ -966,7 +980,7 @@
                     {
                         level: 7,
                         type: 'multipleChoice',
-                        question: "#4 got contact in red and smoked it off. What will now happen towards red room in middle?", 
+                        question: "#4 got contact in red and smoked it off. What will now happen towards red room in middle?",
                         imageSrc: "./mapImages/ancientMap.webp",
                         options: ["Fighttt"],
                         correctAnswer: "Fighttt",
@@ -989,7 +1003,7 @@
                     {
                         level: 8,
                         type: 'multipleChoice',
-                        question: "We're left in a 3v2, what do we do now?", 
+                        question: "We're left in a 3v2, what do we do now?",
                         imageSrc: "./mapImages/ancientMap.webp",
                         options: ["Setup B + Partial info Rest", "Setup A + Partial info Rest", "Fast info mid + partial info rest", "Push as 3", "Fast info everywhere"],
                         correctAnswer: "Push as 3",
@@ -1007,7 +1021,7 @@
                     {
                         level: 9,
                         type: 'multipleChoice',
-                        question: "What do we do when we spot the Ts?", 
+                        question: "What do we do when we spot the Ts?",
                         imageSrc: "./mapImages/ancientMap.webp",
                         options: ["Setup", "Fight together", "Go back and play retake"],
                         correctAnswer: "Fight together",
@@ -1022,7 +1036,7 @@
                     {
                         level: 10,
                         type: 'multipleChoice',
-                        question: "We lost the round, what do we do?", 
+                        question: "We lost the round, what do we do?",
                         imageSrc: "./mapImages/ancientMap.webp",
                         options: ["Smash monitor", "Review it after the game"],
                         correctAnswer: "Review it after the game",
@@ -1202,25 +1216,25 @@
         let activePushDotIds = new Set();
 
         // Multi-select puzzle state
-            let multiSelectMode = false;                // Whether current puzzle is multi-select
-            let selectedDotIds = new Set();             // Currently selected dot IDs
-            let correctMultiSelectIds = new Set();      // Expected correct dot IDs
+        let multiSelectMode = false;                // Whether current puzzle is multi-select
+        let selectedDotIds = new Set();             // Currently selected dot IDs
+        let correctMultiSelectIds = new Set();      // Expected correct dot IDs
 
-            let multipleChoiceMode = false;          // Whether current puzzle is multiple-choice
-                let multipleChoiceCorrect = '';          // The correct answer string
-                let multipleChoiceOptions = [];          // Array of option strings
+        let multipleChoiceMode = false;          // Whether current puzzle is multiple-choice
+        let multipleChoiceCorrect = '';          // The correct answer string
+        let multipleChoiceOptions = [];          // Array of option strings
 
         let setupLinesSvg = null; // SVG element for connection lines
         let initialDotPositions = {}; // Store original positions: { dotId: { left, top } }
 
         let unlockedLevels = {
-                "ct_early": 10,
-                "ct_mid": 10,
-                "ct_afterplant": 10,
-                "t_early": 10,
-                "t_mid": 10,
-                "t_afterplant": 10
-            };
+            "ct_early": 10,
+            "ct_mid": 10,
+            "ct_afterplant": 10,
+            "t_early": 10,
+            "t_mid": 10,
+            "t_afterplant": 10
+        };
 
         function updateSetupLinesIfNeeded() {
             if (setupSelectionMode || setupActive || pushSelectionMode || pushActive) {
@@ -2689,16 +2703,16 @@
         };
 
         window.selectMultipleChoiceAnswer = function (selected) {
-                const isCorrect = (selected === multipleChoiceCorrect);
-                const feedbackDiv = document.getElementById('puzzle-feedback');
-                const key = getCategoryKey();
+            const isCorrect = (selected === multipleChoiceCorrect);
+            const feedbackDiv = document.getElementById('puzzle-feedback');
+            const key = getCategoryKey();
 
-                if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
-                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
-                }
+            if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
+            }
 
-                const feedbackHTML = isCorrect
-                    ? `
+            const feedbackHTML = isCorrect
+                ? `
             <div style="background:#c084fc; color:#111; padding:24px; border-radius:12px; text-align:center;">
                 👾 Correct!<br>
                 <strong>${selected} is the right answer.</strong>
@@ -2708,40 +2722,40 @@
                     </button>
                 </div>
             </div>`
-                    : `
+                : `
             <div style="background:#e8c39e; color:#111; padding:24px; border-radius:12px; text-align:center;">
                 🤖 Not quite<br>
                 <strong>${selected} is incorrect. Try again!</strong>
             </div>`;
 
-                feedbackDiv.innerHTML = feedbackHTML;
-            };
+            feedbackDiv.innerHTML = feedbackHTML;
+        };
 
         function updateMultiSelectVisuals() {
-                // Reset all CT dots to their side color and remove highlight
-                document.querySelectorAll('.blue-dot').forEach(el => {
-                    const dotId = parseInt(el.textContent);
-                    const dotData = currentPuzzle.dots.find(d => d.id === dotId);
-                    if (dotData) {
-                        const type = dotData.type || 'ct';
-                        el.style.background = type === 'ct' ? '#58c2f2' : '#f59e0b';
-                        el.style.boxShadow = type === 'ct' ? '0 0 0 5px rgba(88, 194, 242, 0.4)' : '0 0 0 5px rgba(245, 158, 11, 0.4)';
-                    }
-                    el.classList.remove('selected');
-                });
+            // Reset all CT dots to their side color and remove highlight
+            document.querySelectorAll('.blue-dot').forEach(el => {
+                const dotId = parseInt(el.textContent);
+                const dotData = currentPuzzle.dots.find(d => d.id === dotId);
+                if (dotData) {
+                    const type = dotData.type || 'ct';
+                    el.style.background = type === 'ct' ? '#58c2f2' : '#f59e0b';
+                    el.style.boxShadow = type === 'ct' ? '0 0 0 5px rgba(88, 194, 242, 0.4)' : '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                }
+                el.classList.remove('selected');
+            });
 
-                // Highlight selected CT dots with a gold border
-                selectedDotIds.forEach(id => {
-                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
-                    if (el) {
-                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
-                        el.classList.add('selected');
-                    }
-                });
+            // Highlight selected CT dots with a gold border
+            selectedDotIds.forEach(id => {
+                const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                if (el) {
+                    el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                    el.classList.add('selected');
+                }
+            });
 
-                // Update the feedback panel with a "Confirm Answer" button
-                const wrapper = document.getElementById('puzzle-wrapper');
-                const feedbackHTML = `
+            // Update the feedback panel with a "Confirm Answer" button
+            const wrapper = document.getElementById('puzzle-wrapper');
+            const feedbackHTML = `
         <div class="puzzle-feedback-side" style="background:#27272a; color:#fff;">
             <strong>Selected ${selectedDotIds.size} dot${selectedDotIds.size !== 1 ? 's' : ''}</strong><br><br>
             <button onclick="confirmMultiSelectAnswer()" style="background:#58c2f2; color:#000; border:none; padding:16px 32px; font-size:18px; font-weight:600; border-radius:9999px; cursor:pointer; width:100%;">
@@ -2751,7 +2765,7 @@
         </div>
     `;
 
-                wrapper.innerHTML = `
+            wrapper.innerHTML = `
         <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
             <div class="map-container" id="map-container" style="flex:1;">
                 <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
@@ -2760,29 +2774,29 @@
         </div>
     `;
 
-                renderPuzzleDots();
-                // Re-apply selection highlights after rendering
-                selectedDotIds.forEach(id => {
-                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
-                    if (el) {
-                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
-                        el.classList.add('selected');
-                    }
-                });
+            renderPuzzleDots();
+            // Re-apply selection highlights after rendering
+            selectedDotIds.forEach(id => {
+                const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                if (el) {
+                    el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                    el.classList.add('selected');
+                }
+            });
+        }
+
+        function confirmMultiSelectAnswer() {
+            const isCorrect = selectedDotIds.size === correctMultiSelectIds.size &&
+                [...selectedDotIds].every(id => correctMultiSelectIds.has(id));
+
+            const wrapper = document.getElementById('puzzle-wrapper');
+            const key = getCategoryKey();
+            if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
             }
 
-            function confirmMultiSelectAnswer() {
-                const isCorrect = selectedDotIds.size === correctMultiSelectIds.size &&
-                    [...selectedDotIds].every(id => correctMultiSelectIds.has(id));
-
-                const wrapper = document.getElementById('puzzle-wrapper');
-                const key = getCategoryKey();
-                if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
-                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
-                }
-
-                const feedbackHTML = isCorrect
-                    ? `
+            const feedbackHTML = isCorrect
+                ? `
             <div class="puzzle-feedback-side" style="background:#c084fc; color:#111;">
                 👾 Correct!<br>
                 <strong>You selected the correct setup.</strong>
@@ -2792,7 +2806,7 @@
                     </button>
                 </div>
             </div>`
-                    : `
+                : `
             <div class="puzzle-feedback-side" style="background:#e8c39e; color:#111;">
                 🤖 Not quite<br>
                 <strong>That's not the correct setup. Try again.</strong>
@@ -2803,7 +2817,7 @@
                 </div>
             </div>`;
 
-                wrapper.innerHTML = `
+            wrapper.innerHTML = `
         <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
             <div class="map-container" id="map-container" style="flex:1;">
                 <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
@@ -2812,38 +2826,38 @@
         </div>
     `;
 
-                renderPuzzleDots();
-                document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
-            }
+            renderPuzzleDots();
+            document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
+        }
 
-            function resetMultiSelect() {
-                selectedDotIds.clear();
-                updateMultiSelectVisuals();
-            }
+        function resetMultiSelect() {
+            selectedDotIds.clear();
+            updateMultiSelectVisuals();
+        }
 
-            // Make functions globally accessible
-            window.confirmMultiSelectAnswer = confirmMultiSelectAnswer;
-            window.resetMultiSelect = resetMultiSelect;
+        // Make functions globally accessible
+        window.confirmMultiSelectAnswer = confirmMultiSelectAnswer;
+        window.resetMultiSelect = resetMultiSelect;
 
         function renderPuzzleDots() {
-                const container = document.getElementById('map-container');
-                if (!container) return;
-                container.querySelectorAll('.blue-dot, .smoke-cloud, .molotov-fire, .flash-bang').forEach(el => el.remove());
+            const container = document.getElementById('map-container');
+            if (!container) return;
+            container.querySelectorAll('.blue-dot, .smoke-cloud, .molotov-fire, .flash-bang').forEach(el => el.remove());
 
-                if (!currentPuzzle) return;
+            if (!currentPuzzle) return;
 
-                // Render smokes
-                if (currentPuzzle.smokes) {
-                    currentPuzzle.smokes.forEach(smoke => {
-                        const el = document.createElement('div');
-                        el.className = 'smoke-cloud';
-                        el.style.left = smoke.left;
-                        el.style.top = smoke.top;
-                        container.appendChild(el);
-                    });
-                }
+            // Render smokes
+            if (currentPuzzle.smokes) {
+                currentPuzzle.smokes.forEach(smoke => {
+                    const el = document.createElement('div');
+                    el.className = 'smoke-cloud';
+                    el.style.left = smoke.left;
+                    el.style.top = smoke.top;
+                    container.appendChild(el);
+                });
+            }
 
-                if (currentPuzzle.molotovs) {
+            if (currentPuzzle.molotovs) {
                 currentPuzzle.molotovs.forEach(mol => {
                     const el = document.createElement('div');
                     el.className = 'molotov-fire';
@@ -2858,7 +2872,7 @@
                 });
             }
 
-                if (currentPuzzle.flashes) {
+            if (currentPuzzle.flashes) {
                 currentPuzzle.flashes.forEach(flash => {
                     const el = document.createElement('div');
                     el.className = 'flash-bang';
@@ -2873,96 +2887,96 @@
                 });
             }
 
-                // Render dots
-                if (currentPuzzle.dots) {
-                    currentPuzzle.dots.forEach(dot => {
-                        const dotEl = document.createElement('div');
-                        dotEl.className = 'blue-dot';
-                        dotEl.style.left = dot.left;
-                        dotEl.style.top = dot.top;
-                        dotEl.textContent = dot.id;
+            // Render dots
+            if (currentPuzzle.dots) {
+                currentPuzzle.dots.forEach(dot => {
+                    const dotEl = document.createElement('div');
+                    dotEl.className = 'blue-dot';
+                    dotEl.style.left = dot.left;
+                    dotEl.style.top = dot.top;
+                    dotEl.textContent = dot.id;
 
-                        const dotType = dot.type || 'ct';
-                        if (dotType === 'ct') {
-                            dotEl.style.background = '#58c2f2';
-                            dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
-                        } else {
-                            dotEl.style.background = '#f59e0b';
-                            dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
-                        }
+                    const dotType = dot.type || 'ct';
+                    if (dotType === 'ct') {
+                        dotEl.style.background = '#58c2f2';
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                    } else {
+                        dotEl.style.background = '#f59e0b';
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                    }
 
-                        dotEl.onclick = () => handleDotClick(dot.id);
-                        container.appendChild(dotEl);
-                    });
-                }
+                    dotEl.onclick = () => handleDotClick(dot.id);
+                    container.appendChild(dotEl);
+                });
+            }
 
-                if (lastClickedDotId !== null) {
-                    const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
-                    if (clickedDotEl) {
-                        const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
-                        if (dotData) {
-                            clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
-                        }
+            if (lastClickedDotId !== null) {
+                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
+                if (clickedDotEl) {
+                    const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
+                    if (dotData) {
+                        clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
                     }
                 }
-
-                if (multiSelectMode) {
-                    selectedDotIds.forEach(id => {
-                        const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
-                        if (el) {
-                            el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
-                            el.classList.add('selected');
-                        }
-                    });
-                }
             }
+
+            if (multiSelectMode) {
+                selectedDotIds.forEach(id => {
+                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                    if (el) {
+                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                        el.classList.add('selected');
+                    }
+                });
+            }
+        }
 
         function handleDotClick(id) {
             // If in multiple-choice mode, ignore dot clicks
             if (multipleChoiceMode) return;
 
-                const selectedDot = currentPuzzle.dots.find(d => d.id === id);
-                if (!selectedDot) return;
+            const selectedDot = currentPuzzle.dots.find(d => d.id === id);
+            if (!selectedDot) return;
 
-                // If in multi-select mode, toggle selection instead of immediate feedback
-                if (multiSelectMode) {
-                    // Only allow selecting CT dots (or all dots? Adjust as needed)
-                    if (selectedDot.type !== 'ct') return; // Only CT dots are selectable
+            // If in multi-select mode, toggle selection instead of immediate feedback
+            if (multiSelectMode) {
+                // Only allow selecting CT dots (or all dots? Adjust as needed)
+                if (selectedDot.type !== 'ct') return; // Only CT dots are selectable
 
-                    if (selectedDotIds.has(id)) {
-                        selectedDotIds.delete(id);
-                    } else {
-                        selectedDotIds.add(id);
-                    }
-                    updateMultiSelectVisuals();
-                    return;
+                if (selectedDotIds.has(id)) {
+                    selectedDotIds.delete(id);
+                } else {
+                    selectedDotIds.add(id);
                 }
+                updateMultiSelectVisuals();
+                return;
+            }
 
-                // Original single-dot puzzle logic (unchanged)
-                lastClickedDotId = id;
-                const isCorrect = selectedDot.correct;
-                const dotType = selectedDot.type || 'ct';
+            // Original single-dot puzzle logic (unchanged)
+            lastClickedDotId = id;
+            const isCorrect = selectedDot.correct;
+            const dotType = selectedDot.type || 'ct';
 
-                const correctBg = dotType === 'ct' ? '#c084fc' : '#fb923c';
-                const wrongBg = dotType === 'ct' ? '#e8c39e' : '#f97316';
-                const correctShadow = dotType === 'ct' ? 'rgba(192, 132, 252, 0.6)' : 'rgba(251, 146, 60, 0.6)';
-                const wrongShadow = dotType === 'ct' ? 'rgba(232, 195, 158, 0.6)' : 'rgba(249, 115, 22, 0.6)';
+            const correctBg = dotType === 'ct' ? '#c084fc' : '#fb923c';
+            const wrongBg = dotType === 'ct' ? '#e8c39e' : '#f97316';
+            const correctShadow = dotType === 'ct' ? 'rgba(192, 132, 252, 0.6)' : 'rgba(251, 146, 60, 0.6)';
+            const wrongShadow = dotType === 'ct' ? 'rgba(232, 195, 158, 0.6)' : 'rgba(249, 115, 22, 0.6)';
 
-                const wrapper = document.getElementById('puzzle-wrapper');
-                const gifHTML = (isCorrect && selectedDot.gifSrc)
-                    ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
-                    : '';
+            const wrapper = document.getElementById('puzzle-wrapper');
+            const gifHTML = (isCorrect && selectedDot.gifSrc)
+                ? `<img src="${selectedDot.gifSrc}" alt="Why this is correct" style="width:100%; max-width:none; border-radius:12px; margin-top:20px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3);">`
+                : '';
 
-                const key = getCategoryKey();
-                if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
-                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
-                }
+            const key = getCategoryKey();
+            if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
+            }
 
-                const feedbackBgCorrect = dotType === 'ct' ? '#c084fc' : '#fb923c';
-                const feedbackBgWrong = dotType === 'ct' ? '#e8c39e' : '#f97316';
+            const feedbackBgCorrect = dotType === 'ct' ? '#c084fc' : '#fb923c';
+            const feedbackBgWrong = dotType === 'ct' ? '#e8c39e' : '#f97316';
 
-                const feedbackHTML = isCorrect
-                    ? `
+            const feedbackHTML = isCorrect
+                ? `
             <div class="puzzle-feedback-side" style="background:${feedbackBgCorrect}; color:#111;">
                 👾 Correct<br>
                 <strong>${selectedDot.expl}</strong>
@@ -2973,13 +2987,13 @@
                     </button>
                 </div>
             </div>`
-                    : `
+                : `
             <div class="puzzle-feedback-side" style="background:${feedbackBgWrong}; color:#111;">
                 🤖 Not quite<br>
                 <strong>${selectedDot.expl}</strong>
             </div>`;
 
-                wrapper.innerHTML = `
+            wrapper.innerHTML = `
         <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
             <div class="map-container" id="map-container" style="flex:1;">
                 <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
@@ -2988,20 +3002,20 @@
         </div>
     `;
 
-                renderPuzzleDots();
+            renderPuzzleDots();
 
-                document.querySelectorAll('.blue-dot').forEach(el => {
-                    el.classList.remove('correct', 'wrong');
-                });
-                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
-                if (clickedDotEl) {
-                    clickedDotEl.style.background = isCorrect ? correctBg : wrongBg;
-                    clickedDotEl.style.boxShadow = isCorrect ? `0 0 0 5px ${correctShadow}` : `0 0 0 5px ${wrongShadow}`;
-                    clickedDotEl.classList.add(isCorrect ? 'correct' : 'wrong');
-                }
-
-                document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
+            document.querySelectorAll('.blue-dot').forEach(el => {
+                el.classList.remove('correct', 'wrong');
+            });
+            const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+            if (clickedDotEl) {
+                clickedDotEl.style.background = isCorrect ? correctBg : wrongBg;
+                clickedDotEl.style.boxShadow = isCorrect ? `0 0 0 5px ${correctShadow}` : `0 0 0 5px ${wrongShadow}`;
+                clickedDotEl.classList.add(isCorrect ? 'correct' : 'wrong');
             }
+
+            document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
+        }
 
         window.goToNextLevel = function () {
             const key = getCategoryKey();
@@ -3012,6 +3026,23 @@
                 showLevelPreview();
             }
         };
+
+        window.loadAIGame = function () {
+                const main = document.getElementById('main-content');
+                main.innerHTML = `
+        <div class="ai-game-page">
+            <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+            <div class="lessons-header">
+                <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
+                <h1>AI Practice – Map Overview</h1>
+                <p style="color:#aaa;">Ancient Map (Black & White) – Movement coming soon</p>
+            </div>
+            <div class="map-container" id="map-container">
+                <img src="./mapImages/ancientMapBlackWhite.webp" alt="Ancient Map Black/White" style="width:100%; border-radius:8px;">
+            </div>
+        </div>
+    `;
+            };
 
         window.loadHome = function () {
             const main = document.getElementById('main-content');
