@@ -564,41 +564,44 @@
         }
 
         .smoke-cloud {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    pointer-events: none;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-}
-.smoke-cloud::before,
-.smoke-cloud::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: #a0a0a0;
-}
-.smoke-cloud::before {
-    width: 45px;
-    height: 45px;
-    top: 5px;
-    left: 0;
-    box-shadow: 
-        25px 10px 0 #909090,
-        50px 5px 0 #888,
-        15px 30px 0 #9a9a9a,
-        40px 35px 0 #858585,
-        -5px 20px 0 #b0b0b0;
-}
-.smoke-cloud::after {
-    width: 55px;
-    height: 55px;
-    top: 0;
-    left: 10px;
-    background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
-    opacity: 0.95;
-}
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .smoke-cloud::before,
+        .smoke-cloud::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: #a0a0a0;
+        }
+
+        .smoke-cloud::before {
+            width: 45px;
+            height: 45px;
+            top: 5px;
+            left: 0;
+            box-shadow:
+                25px 10px 0 #909090,
+                50px 5px 0 #888,
+                15px 30px 0 #9a9a9a,
+                40px 35px 0 #858585,
+                -5px 20px 0 #b0b0b0;
+        }
+
+        .smoke-cloud::after {
+            width: 55px;
+            height: 55px;
+            top: 0;
+            left: 10px;
+            background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
+            opacity: 0.95;
+        }
     </style>
 </head>
 
@@ -726,17 +729,26 @@
             "ct_mid": {
                 levels: [
                     {
-                        level: 1, question: "abcd", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                            { id: 1, type: 'ct', left: "21.2%", top: "32.2%", correct: true, expl: "New CT dot – edit later" },
-                            { id: 2, type: 'ct', left: "31.9%", top: "42.3%", correct: false, expl: "New CT dot – edit later" },
-                            { id: 3, type: 'ct', left: "47.6%", top: "31.7%", correct: false, expl: "New CT dot – edit later" },
-                            { id: 4, type: 'ct', left: "67.4%", top: "38.9%", correct: false, expl: "New CT dot – edit later" },
-                            { id: 5, type: 'ct', left: "79.3%", top: "37.1%", correct: false, expl: "New CT dot – edit later" },
-                            { id: 6, type: 't', left: "31.8%", top: "63.0%", correct: false, expl: "New T dot – edit later" },
-                            { id: 7, type: 't', left: "35.9%", top: "68.8%", correct: false, expl: "New T dot – edit later" },
-                            { id: 8, type: 't', left: "35.9%", top: "60.1%", correct: false, expl: "New T dot – edit later" },
-                            { id: 9, type: 't', left: "24.7%", top: "46.6%", correct: false, expl: "New T dot – edit later" },
-                            { id: 10, type: 't', left: "69.9%", top: "71.3%", correct: false, expl: "New T dot – edit later" }
+                        level: 1,
+                        question: "Which CT dots should form a setup together? (Select all that apply)",
+                        imageSrc: "./mapImages/ancientMap.webp",
+                        multiSelect: true,
+                        correctDotIds: [2, 3],   // Correct answer: dots 2 and 3
+                        dots: [
+                            { id: 1, type: 'ct', left: "21.2%", top: "32.0%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 2, type: 'ct', left: "31.6%", top: "41.3%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 3, type: 'ct', left: "47.7%", top: "31.1%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 4, type: 'ct', left: "67.1%", top: "38.9%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 5, type: 'ct', left: "79.7%", top: "36.7%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 6, type: 't', left: "24.6%", top: "45.9%", correct: false, expl: "New T dot – edit later" },
+                            { id: 7, type: 't', left: "35.8%", top: "69.0%", correct: false, expl: "New T dot – edit later" },
+                            { id: 8, type: 't', left: "31.5%", top: "62.9%", correct: false, expl: "New T dot – edit later" },
+                            { id: 9, type: 't', left: "35.7%", top: "59.1%", correct: false, expl: "New T dot – edit later" },
+                            { id: 10, type: 't', left: "70.2%", top: "70.2%", correct: false, expl: "New T dot – edit later" }
+                        ],
+                        smokes: [
+                            { id: 1, type: 'smoke', left: "47.4%", top: "39.8%" },
+                            { id: 2, type: 'smoke', left: "40.1%", top: "45.9%" }
                         ]
                     },
                     {
@@ -919,6 +931,11 @@
         let pushPartnerIds = new Set();
         let pushActive = false;
         let activePushDotIds = new Set();
+
+        // Multi-select puzzle state
+            let multiSelectMode = false;                // Whether current puzzle is multi-select
+            let selectedDotIds = new Set();             // Currently selected dot IDs
+            let correctMultiSelectIds = new Set();      // Expected correct dot IDs
 
         let setupLinesSvg = null; // SVG element for connection lines
         let initialDotPositions = {}; // Store original positions: { dotId: { left, top } }
@@ -2336,6 +2353,13 @@
                 return;
             }
 
+            // Set up multi-select if applicable
+            multiSelectMode = currentPuzzle.multiSelect || false;
+            selectedDotIds.clear();
+            if (multiSelectMode) {
+                correctMultiSelectIds = new Set(currentPuzzle.correctDotIds || []);
+            }
+
             const container = document.getElementById('puzzle-container');
             container.innerHTML = `
                 <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Puzzles</div>
@@ -2352,65 +2376,199 @@
             renderPuzzleDots();
         };
 
-                function renderPuzzleDots() {
-                        const container = document.getElementById('map-container');
-                        if (!container) return;
-                        container.querySelectorAll('.blue-dot, .smoke-cloud').forEach(el => el.remove());
+        function updateMultiSelectVisuals() {
+                // Reset all CT dots to their side color and remove highlight
+                document.querySelectorAll('.blue-dot').forEach(el => {
+                    const dotId = parseInt(el.textContent);
+                    const dotData = currentPuzzle.dots.find(d => d.id === dotId);
+                    if (dotData) {
+                        const type = dotData.type || 'ct';
+                        el.style.background = type === 'ct' ? '#58c2f2' : '#f59e0b';
+                        el.style.boxShadow = type === 'ct' ? '0 0 0 5px rgba(88, 194, 242, 0.4)' : '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                    }
+                    el.classList.remove('selected');
+                });
 
-                        if (!currentPuzzle) return;
+                // Highlight selected CT dots with a gold border
+                selectedDotIds.forEach(id => {
+                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                    if (el) {
+                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                        el.classList.add('selected');
+                    }
+                });
 
-                        // Render smokes first (so they are behind dots)
-                        if (currentPuzzle.smokes) {
-                        currentPuzzle.smokes.forEach(smoke => {
-                            const smokeEl = document.createElement('div');
-                            smokeEl.className = 'smoke-cloud';
-                            smokeEl.style.left = smoke.left;
-                            smokeEl.style.top = smoke.top;
-                            container.appendChild(smokeEl);
-                        });
+                // Update the feedback panel with a "Confirm Answer" button
+                const wrapper = document.getElementById('puzzle-wrapper');
+                const feedbackHTML = `
+        <div class="puzzle-feedback-side" style="background:#27272a; color:#fff;">
+            <strong>Selected ${selectedDotIds.size} dot${selectedDotIds.size !== 1 ? 's' : ''}</strong><br><br>
+            <button onclick="confirmMultiSelectAnswer()" style="background:#58c2f2; color:#000; border:none; padding:16px 32px; font-size:18px; font-weight:600; border-radius:9999px; cursor:pointer; width:100%;">
+                ✅ Confirm Answer
+            </button>
+            <p style="margin-top:16px; font-size:14px; opacity:0.7;">Click CT dots to select/deselect</p>
+        </div>
+    `;
+
+                wrapper.innerHTML = `
+        <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
+            <div class="map-container" id="map-container" style="flex:1;">
+                <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+            </div>
+            ${feedbackHTML}
+        </div>
+    `;
+
+                renderPuzzleDots();
+                // Re-apply selection highlights after rendering
+                selectedDotIds.forEach(id => {
+                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                    if (el) {
+                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                        el.classList.add('selected');
+                    }
+                });
+            }
+
+            function confirmMultiSelectAnswer() {
+                const isCorrect = selectedDotIds.size === correctMultiSelectIds.size &&
+                    [...selectedDotIds].every(id => correctMultiSelectIds.has(id));
+
+                const wrapper = document.getElementById('puzzle-wrapper');
+                const key = getCategoryKey();
+                if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
+                }
+
+                const feedbackHTML = isCorrect
+                    ? `
+            <div class="puzzle-feedback-side" style="background:#c084fc; color:#111;">
+                👾 Correct!<br>
+                <strong>You selected the correct setup.</strong>
+                <div style="margin-top:25px; display:flex; gap:12px; justify-content:center;">
+                    <button onclick="goToNextLevel()" style="background:#58c2f2; color:#000; border:none; padding:14px 32px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
+                        Next Puzzle →
+                    </button>
+                </div>
+            </div>`
+                    : `
+            <div class="puzzle-feedback-side" style="background:#e8c39e; color:#111;">
+                🤖 Not quite<br>
+                <strong>That's not the correct setup. Try again.</strong>
+                <div style="margin-top:20px;">
+                    <button onclick="resetMultiSelect()" style="background:#27272a; color:#fff; border:none; padding:12px 24px; font-size:16px; font-weight:500; border-radius:9999px; cursor:pointer;">
+                        Try Again
+                    </button>
+                </div>
+            </div>`;
+
+                wrapper.innerHTML = `
+        <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
+            <div class="map-container" id="map-container" style="flex:1;">
+                <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+            </div>
+            ${feedbackHTML}
+        </div>
+    `;
+
+                renderPuzzleDots();
+                document.getElementById('puzzle-wrapper').scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+
+            function resetMultiSelect() {
+                selectedDotIds.clear();
+                updateMultiSelectVisuals();
+            }
+
+            // Make functions globally accessible
+            window.confirmMultiSelectAnswer = confirmMultiSelectAnswer;
+            window.resetMultiSelect = resetMultiSelect;
+
+        function renderPuzzleDots() {
+            const container = document.getElementById('map-container');
+            if (!container) return;
+            container.querySelectorAll('.blue-dot, .smoke-cloud').forEach(el => el.remove());
+
+            if (!currentPuzzle) return;
+
+            // Render smokes first (so they are behind dots)
+            if (currentPuzzle.smokes) {
+                currentPuzzle.smokes.forEach(smoke => {
+                    const smokeEl = document.createElement('div');
+                    smokeEl.className = 'smoke-cloud';
+                    smokeEl.style.left = smoke.left;
+                    smokeEl.style.top = smoke.top;
+                    container.appendChild(smokeEl);
+                });
+            }
+
+            // Render dots
+            if (currentPuzzle.dots) {
+                currentPuzzle.dots.forEach(dot => {
+                    const dotEl = document.createElement('div');
+                    dotEl.className = 'blue-dot';
+                    dotEl.style.left = dot.left;
+                    dotEl.style.top = dot.top;
+                    dotEl.textContent = dot.id;
+
+                    const dotType = dot.type || 'ct';
+                    if (dotType === 'ct') {
+                        dotEl.style.background = '#58c2f2';
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                    } else {
+                        dotEl.style.background = '#f59e0b';
+                        dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
                     }
 
-                        // Render dots
-                        if (currentPuzzle.dots) {
-                            currentPuzzle.dots.forEach(dot => {
-                                const dotEl = document.createElement('div');
-                                dotEl.className = 'blue-dot';
-                                dotEl.style.left = dot.left;
-                                dotEl.style.top = dot.top;
-                                dotEl.textContent = dot.id;
+                    dotEl.onclick = () => handleDotClick(dot.id);
+                    container.appendChild(dotEl);
+                });
+            }
 
-                                const dotType = dot.type || 'ct';
-                                if (dotType === 'ct') {
-                                    dotEl.style.background = '#58c2f2';
-                                    dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
-                                } else {
-                                    dotEl.style.background = '#f59e0b';
-                                    dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
-                                }
-
-                                dotEl.onclick = () => handleDotClick(dot.id);
-                                container.appendChild(dotEl);
-                            });
-                        }
-
-                        if (lastClickedDotId !== null) {
-                            const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
-                            if (clickedDotEl) {
-                                const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
-                                if (dotData) {
-                                    clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
-                                }
-                            }
-                        }
+            if (lastClickedDotId !== null) {
+                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
+                if (clickedDotEl) {
+                    const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
+                    if (dotData) {
+                        clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
                     }
+                }
+            }
+
+                if (multiSelectMode) {
+                selectedDotIds.forEach(id => {
+                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                    if (el) {
+                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                        el.classList.add('selected');
+                    }
+                });
+            }
+        }
 
         function handleDotClick(id) {
-                lastClickedDotId = id;
                 const selectedDot = currentPuzzle.dots.find(d => d.id === id);
+                if (!selectedDot) return;
+
+                // If in multi-select mode, toggle selection instead of immediate feedback
+                if (multiSelectMode) {
+                    // Only allow selecting CT dots (or all dots? Adjust as needed)
+                    if (selectedDot.type !== 'ct') return; // Only CT dots are selectable
+
+                    if (selectedDotIds.has(id)) {
+                        selectedDotIds.delete(id);
+                    } else {
+                        selectedDotIds.add(id);
+                    }
+                    updateMultiSelectVisuals();
+                    return;
+                }
+
+                // Original single-dot puzzle logic (unchanged)
+                lastClickedDotId = id;
                 const isCorrect = selectedDot.correct;
                 const dotType = selectedDot.type || 'ct';
 
-                // Define colors based on side
                 const correctBg = dotType === 'ct' ? '#c084fc' : '#fb923c';
                 const wrongBg = dotType === 'ct' ? '#e8c39e' : '#f97316';
                 const correctShadow = dotType === 'ct' ? 'rgba(192, 132, 252, 0.6)' : 'rgba(251, 146, 60, 0.6)';
@@ -2456,10 +2614,8 @@
         </div>
     `;
 
-                // Re-render the dots
                 renderPuzzleDots();
 
-                // Apply correct/wrong style to the clicked dot (renderPuzzleDots resets all)
                 document.querySelectorAll('.blue-dot').forEach(el => {
                     el.classList.remove('correct', 'wrong');
                 });
