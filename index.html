@@ -3034,14 +3034,59 @@
             <div onclick="loadHome()" class="back-btn">← Back to Home</div>
             <div class="lessons-header">
                 <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
-                <h1>AI Practice – Map Overview</h1>
-                <p style="color:#aaa;">Ancient Map (Black & White) – Movement coming soon</p>
+                <h1>AI Practice – T Side</h1>
+                <p style="color:#aaa;">CT (blue) vs T (orange) • Spawn positions only</p>
             </div>
             <div class="map-container" id="map-container">
-                <img src="./mapImages/ancientMapBlackWhite.webp" alt="Ancient Map Black/White" style="width:100%; border-radius:8px;">
+                <img src="./mapImages/ancientMapBlackWhite.webp" alt="Ancient Map Black/White" id="ai-map" style="width:100%; border-radius:8px;">
             </div>
         </div>
     `;
+
+                const container = document.getElementById('map-container');
+
+                // Approximate CT spawn positions (top green area)
+                // Adjust these using the Dot Editor for precise placement
+                const ctSpawns = [
+                    { left: "48%", top: "10%" },
+                    { left: "50%", top: "7%" },
+                    { left: "52%", top: "10%" },
+                    { left: "54%", top: "7%" },
+                    { left: "56%", top: "10%" }
+                ];
+
+                // Approximate T spawn positions (bottom green area)
+                const tSpawns = [
+                    { left: "44.7%", top: "90%" },
+                    { left: "46.5%", top: "88%" },
+                    { left: "48.5%", top: "90%" },
+                    { left: "50.4%", top: "88%" },
+                    { left: "52.0%", top: "90%" }
+                ];
+
+                // Spawn CT dots (blue)
+                ctSpawns.forEach((pos, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'blue-dot';
+                    dot.style.left = pos.left;
+                    dot.style.top = pos.top;
+                    dot.style.background = '#58c2f2';
+                    dot.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                    dot.textContent = i + 1;
+                    container.appendChild(dot);
+                });
+
+                // Spawn T dots (orange)
+                tSpawns.forEach((pos, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'blue-dot';
+                    dot.style.left = pos.left;
+                    dot.style.top = pos.top;
+                    dot.style.background = '#f59e0b';
+                    dot.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                    dot.textContent = i + 1;
+                    container.appendChild(dot);
+                });
             };
 
         window.loadHome = function () {
