@@ -599,6 +599,108 @@
     background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
     opacity: 0.95;
 }
+
+/* Flash – softer, less bright star */
+.flash-bang {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    pointer-events: none;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+.flash-bang::before,
+.flash-bang::after,
+.flash-bang .star-arm {
+    content: '';
+    position: absolute;
+    background: #f5f5f5;
+    border-radius: 2px;
+    box-shadow: 0 0 6px #fef08a;
+}
+.flash-bang::before {
+    width: 5px;
+    height: 26px;
+    top: 1px;
+    left: 12px;
+    transform: rotate(0deg);
+}
+.flash-bang::after {
+    width: 5px;
+    height: 26px;
+    top: 1px;
+    left: 12px;
+    transform: rotate(90deg);
+}
+.flash-bang .star-arm {
+    width: 4px;
+    height: 22px;
+    top: 3px;
+    left: 12px;
+    transform: rotate(45deg);
+}
+.flash-bang .star-arm:nth-child(2) {
+    transform: rotate(-45deg);
+}
+
+/* Molotov – sharp, flickering flame */
+.molotov-fire {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px #f97316);
+}
+.molotov-fire::before,
+.molotov-fire::after {
+    content: '';
+    position: absolute;
+    border-radius: 50% 20% 50% 20%;
+    background: #f97316;
+    box-shadow: 0 0 10px #fb923c;
+}
+.molotov-fire::before {
+    width: 18px;
+    height: 32px;
+    top: 8px;
+    left: 12px;
+    transform: rotate(-20deg);
+    background: linear-gradient(45deg, #fffbeb, #f97316 60%, #c2410c);
+    border-radius: 40% 20% 40% 20%;
+}
+.molotov-fire::after {
+    width: 22px;
+    height: 36px;
+    top: 4px;
+    left: 20px;
+    transform: rotate(25deg);
+    background: linear-gradient(135deg, #fef08a, #ea580c 70%, #9a3412);
+    border-radius: 30% 50% 30% 50%;
+    box-shadow: 0 0 12px #fbbf24;
+}
+/* Additional flame tongue */
+.molotov-fire .flame-tongue {
+    position: absolute;
+    width: 14px;
+    height: 28px;
+    top: 12px;
+    left: 8px;
+    transform: rotate(-40deg);
+    background: linear-gradient(45deg, #fffbeb, #fb923c 80%, #b91c1c);
+    border-radius: 50% 20% 50% 20%;
+    box-shadow: 0 0 8px #f97316;
+}
+.molotov-fire .flame-tongue:nth-child(2) {
+    width: 12px;
+    height: 24px;
+    top: 6px;
+    left: 30px;
+    transform: rotate(45deg);
+    background: linear-gradient(135deg, #fef08a, #f97316 80%, #7c2d12);
+}
     </style>
 </head>
 
@@ -755,10 +857,18 @@
                         multiSelect: true,
                         correctDotIds: [2, 3],
                         dots: [
-
+                            { id: 1, type: 'ct', left: "48.7%", top: "15.0%", correct: false, expl: "New CT dot – edit later" },
+                            { id: 2, type: 't', left: "71.2%", top: "27.3%", correct: false, expl: "New T dot – edit later" },
+                            { id: 3, type: 't', left: "67.9%", top: "26.8%", correct: false, expl: "New T dot – edit later" }
                         ],
                         smokes: [
-
+                            { id: 1, type: 'smoke', left: "47.5%", top: "41.8%" }
+                        ],
+                        molotovs: [
+                            { id: 1, type: 'molotov', left: "49.9%", top: "23.4%" }
+                        ],
+                        flashes: [
+                            { id: 1, type: 'flash', left: "60.2%", top: "27.3%" }
                         ]
                     },
 
@@ -2486,66 +2596,96 @@
             window.resetMultiSelect = resetMultiSelect;
 
         function renderPuzzleDots() {
-            const container = document.getElementById('map-container');
-            if (!container) return;
-            container.querySelectorAll('.blue-dot, .smoke-cloud').forEach(el => el.remove());
+                const container = document.getElementById('map-container');
+                if (!container) return;
+                container.querySelectorAll('.blue-dot, .smoke-cloud, .molotov-fire, .flash-bang').forEach(el => el.remove());
 
-            if (!currentPuzzle) return;
+                if (!currentPuzzle) return;
 
-            // Render smokes first (so they are behind dots)
-            if (currentPuzzle.smokes) {
-                currentPuzzle.smokes.forEach(smoke => {
-                    const smokeEl = document.createElement('div');
-                    smokeEl.className = 'smoke-cloud';
-                    smokeEl.style.left = smoke.left;
-                    smokeEl.style.top = smoke.top;
-                    container.appendChild(smokeEl);
-                });
-            }
+                // Render smokes
+                if (currentPuzzle.smokes) {
+                    currentPuzzle.smokes.forEach(smoke => {
+                        const el = document.createElement('div');
+                        el.className = 'smoke-cloud';
+                        el.style.left = smoke.left;
+                        el.style.top = smoke.top;
+                        container.appendChild(el);
+                    });
+                }
 
-            // Render dots
-            if (currentPuzzle.dots) {
-                currentPuzzle.dots.forEach(dot => {
-                    const dotEl = document.createElement('div');
-                    dotEl.className = 'blue-dot';
-                    dotEl.style.left = dot.left;
-                    dotEl.style.top = dot.top;
-                    dotEl.textContent = dot.id;
-
-                    const dotType = dot.type || 'ct';
-                    if (dotType === 'ct') {
-                        dotEl.style.background = '#58c2f2';
-                        dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
-                    } else {
-                        dotEl.style.background = '#f59e0b';
-                        dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                if (currentPuzzle.molotovs) {
+                currentPuzzle.molotovs.forEach(mol => {
+                    const el = document.createElement('div');
+                    el.className = 'molotov-fire';
+                    el.style.left = mol.left;
+                    el.style.top = mol.top;
+                    for (let i = 0; i < 2; i++) {
+                        const tongue = document.createElement('span');
+                        tongue.className = 'flame-tongue';
+                        el.appendChild(tongue);
                     }
-
-                    dotEl.onclick = () => handleDotClick(dot.id);
-                    container.appendChild(dotEl);
+                    container.appendChild(el);
                 });
             }
 
-            if (lastClickedDotId !== null) {
-                const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
-                if (clickedDotEl) {
-                    const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
-                    if (dotData) {
-                        clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
+                if (currentPuzzle.flashes) {
+                currentPuzzle.flashes.forEach(flash => {
+                    const el = document.createElement('div');
+                    el.className = 'flash-bang';
+                    el.style.left = flash.left;
+                    el.style.top = flash.top;
+                    for (let i = 0; i < 2; i++) {
+                        const arm = document.createElement('span');
+                        arm.className = 'star-arm';
+                        el.appendChild(arm);
+                    }
+                    container.appendChild(el);
+                });
+            }
+
+                // Render dots
+                if (currentPuzzle.dots) {
+                    currentPuzzle.dots.forEach(dot => {
+                        const dotEl = document.createElement('div');
+                        dotEl.className = 'blue-dot';
+                        dotEl.style.left = dot.left;
+                        dotEl.style.top = dot.top;
+                        dotEl.textContent = dot.id;
+
+                        const dotType = dot.type || 'ct';
+                        if (dotType === 'ct') {
+                            dotEl.style.background = '#58c2f2';
+                            dotEl.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
+                        } else {
+                            dotEl.style.background = '#f59e0b';
+                            dotEl.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                        }
+
+                        dotEl.onclick = () => handleDotClick(dot.id);
+                        container.appendChild(dotEl);
+                    });
+                }
+
+                if (lastClickedDotId !== null) {
+                    const clickedDotEl = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === lastClickedDotId);
+                    if (clickedDotEl) {
+                        const dotData = currentPuzzle.dots.find(d => d.id === lastClickedDotId);
+                        if (dotData) {
+                            clickedDotEl.classList.add(dotData.correct ? 'correct' : 'wrong');
+                        }
                     }
                 }
-            }
 
                 if (multiSelectMode) {
-                selectedDotIds.forEach(id => {
-                    const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
-                    if (el) {
-                        el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
-                        el.classList.add('selected');
-                    }
-                });
+                    selectedDotIds.forEach(id => {
+                        const el = Array.from(document.querySelectorAll('.blue-dot')).find(el => parseInt(el.textContent) === id);
+                        if (el) {
+                            el.style.boxShadow = '0 0 0 5px rgba(255, 215, 0, 0.8)';
+                            el.classList.add('selected');
+                        }
+                    });
+                }
             }
-        }
 
         function handleDotClick(id) {
                 const selectedDot = currentPuzzle.dots.find(d => d.id === id);
