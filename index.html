@@ -875,6 +875,29 @@
                             { id: 1, type: 'flash', left: "33.6%", top: "41.6%" }
                         ]
                     },
+                    {
+                        level: 3,
+                        type: 'multipleChoice',
+                        question: "What area would be open if we were to only form the donut setup?",
+                        imageSrc: "./mapImages/ancientMap.webp",
+                        options: ["A main", "Donut", "Red room", "Cave", "B ramp"],
+                        correctAnswer: "Red room",
+                        dots: [
+                            { id: 1, type: 'ct', left: "21.3%", top: "31.8%", correct: false, expl: "" },
+                            { id: 2, type: 'ct', left: "24.5%", top: "23.3%", correct: false, expl: "" },
+                            { id: 3, type: 'ct', left: "34.5%", top: "25.5%", correct: false, expl: "" },
+                            { id: 4, type: 'ct', left: "67.1%", top: "39.0%", correct: false, expl: "" },
+                            { id: 5, type: 'ct', left: "79.6%", top: "36.7%", correct: false, expl: "" },
+                            { id: 6, type: 't', left: "45.5%", top: "45.9%", correct: false, expl: "" },
+                            { id: 7, type: 't', left: "48.4%", top: "44.5%", correct: false, expl: "" },
+                            { id: 8, type: 't', left: "48.8%", top: "48.5%", correct: false, expl: "" },
+                            { id: 9, type: 't', left: "75.8%", top: "59.1%", correct: false, expl: "" },
+                            { id: 10, type: 't', left: "76.3%", top: "69.3%", correct: false, expl: "" }
+                        ],
+                        smokes: [
+                            { id: 1, type: 'smoke', left: "31.6%", top: "37.3%" }
+                        ]
+                    },
                 ]
             },
             "ct_afterplant": { levels: Array.from({ length: 10 }, (_, i) => ({ level: i + 1, question: `CT After Plant Level ${i + 1} (---)`, imageSrc: "./mapImages/ancientMap.webp", dots: [] })) },
@@ -1050,6 +1073,10 @@
             let multiSelectMode = false;                // Whether current puzzle is multi-select
             let selectedDotIds = new Set();             // Currently selected dot IDs
             let correctMultiSelectIds = new Set();      // Expected correct dot IDs
+
+            let multipleChoiceMode = false;          // Whether current puzzle is multiple-choice
+                let multipleChoiceCorrect = '';          // The correct answer string
+                let multipleChoiceOptions = [];          // Array of option strings
 
         let setupLinesSvg = null; // SVG element for connection lines
         let initialDotPositions = {}; // Store original positions: { dotId: { left, top } }
@@ -2467,6 +2494,13 @@
                 return;
             }
 
+            // Set up multiple-choice if applicable
+            multipleChoiceMode = currentPuzzle.type === 'multipleChoice' || false;
+            if (multipleChoiceMode) {
+                multipleChoiceCorrect = currentPuzzle.correctAnswer || '';
+                multipleChoiceOptions = currentPuzzle.options || [];
+            }
+
             // Set up multi-select if applicable
             multiSelectMode = currentPuzzle.multiSelect || false;
             selectedDotIds.clear();
@@ -2475,20 +2509,81 @@
             }
 
             const container = document.getElementById('puzzle-container');
-            container.innerHTML = `
-                <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Puzzles</div>
-                <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
-                    ${currentPuzzle.question}
-                </p>
-                <div class="puzzle-wrapper" id="puzzle-wrapper">
-                    <div class="map-container" id="map-container">
-                        <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
-                    </div>
+            if (multipleChoiceMode) {
+                // Build options HTML
+                const optionsHtml = multipleChoiceOptions.map(opt =>
+                    `<button onclick="window.selectMultipleChoiceAnswer('${opt}')" 
+            style="background:#27272a; color:#fff; border:2px solid #3b3b40; padding:16px 24px; margin:8px; font-size:18px; font-weight:500; border-radius:12px; cursor:pointer; transition:all 0.2s; width:200px;"
+            onmouseover="this.style.background='#3b3b40'" 
+            onmouseout="this.style.background='#27272a'">
+            ${opt}
+        </button>`
+                ).join('');
+
+                container.innerHTML = `
+        <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Puzzles</div>
+        <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
+            ${currentPuzzle.question}
+        </p>
+        <div style="display:flex; gap:40px; align-items:flex-start; width:100%;">
+            <div class="map-container" id="map-container" style="flex:1;">
+                <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+            </div>
+            <div style="flex:0 0 350px; display:flex; flex-direction:column; gap:20px; padding:20px;">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+                    ${optionsHtml}
                 </div>
-                <div id="puzzle-feedback"></div>
-            `;
-            renderPuzzleDots();
+                <div id="puzzle-feedback" style="margin-top:20px;"></div>
+            </div>
+        </div>
+    `;
+                renderPuzzleDots();
+            } else {
+                // Original single-dot / multi-select puzzle rendering
+                container.innerHTML = `
+        <div onclick="showLevelPreview()" class="back-btn" style="margin-bottom:16px;">← Back to Puzzles</div>
+        <p style="font-size: 22px; font-weight: 500; text-align: center; margin-bottom: 20px; color: #fff;">
+            ${currentPuzzle.question}
+        </p>
+        <div class="puzzle-wrapper" id="puzzle-wrapper">
+            <div class="map-container" id="map-container">
+                <img src="${currentPuzzle.imageSrc}" alt="CS2 Map Puzzle">
+            </div>
+        </div>
+        <div id="puzzle-feedback"></div>
+    `;
+                renderPuzzleDots();
+            }
         };
+
+        window.selectMultipleChoiceAnswer = function (selected) {
+                const isCorrect = (selected === multipleChoiceCorrect);
+                const feedbackDiv = document.getElementById('puzzle-feedback');
+                const key = getCategoryKey();
+
+                if (isCorrect && currentPuzzleLevel === unlockedLevels[key]) {
+                    unlockedLevels[key] = Math.min(10, currentPuzzleLevel + 1);
+                }
+
+                const feedbackHTML = isCorrect
+                    ? `
+            <div style="background:#c084fc; color:#111; padding:24px; border-radius:12px; text-align:center;">
+                👾 Correct!<br>
+                <strong>${selected} is the right answer.</strong>
+                <div style="margin-top:20px;">
+                    <button onclick="goToNextLevel()" style="background:#58c2f2; color:#000; border:none; padding:14px 32px; font-size:17px; font-weight:600; border-radius:9999px; cursor:pointer;">
+                        Next Puzzle →
+                    </button>
+                </div>
+            </div>`
+                    : `
+            <div style="background:#e8c39e; color:#111; padding:24px; border-radius:12px; text-align:center;">
+                🤖 Not quite<br>
+                <strong>${selected} is incorrect. Try again!</strong>
+            </div>`;
+
+                feedbackDiv.innerHTML = feedbackHTML;
+            };
 
         function updateMultiSelectVisuals() {
                 // Reset all CT dots to their side color and remove highlight
@@ -2691,6 +2786,9 @@
             }
 
         function handleDotClick(id) {
+            // If in multiple-choice mode, ignore dot clicks
+            if (multipleChoiceMode) return;
+            
                 const selectedDot = currentPuzzle.dots.find(d => d.id === id);
                 if (!selectedDot) return;
 
