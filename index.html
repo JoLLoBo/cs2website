@@ -564,44 +564,41 @@
         }
 
         .smoke-cloud {
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-            pointer-events: none;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
-        }
-
-        .smoke-cloud::before,
-        .smoke-cloud::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            background: #a0a0a0;
-        }
-
-        .smoke-cloud::before {
-            width: 45px;
-            height: 45px;
-            top: 5px;
-            left: 0;
-            box-shadow:
-                25px 10px 0 #909090,
-                50px 5px 0 #888,
-                15px 30px 0 #9a9a9a,
-                40px 35px 0 #858585,
-                -5px 20px 0 #b0b0b0;
-        }
-
-        .smoke-cloud::after {
-            width: 55px;
-            height: 55px;
-            top: 0;
-            left: 10px;
-            background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
-            opacity: 0.95;
-        }
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+}
+.smoke-cloud::before,
+.smoke-cloud::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: #a0a0a0;
+}
+.smoke-cloud::before {
+    width: 28px;
+    height: 28px;
+    top: 3px;
+    left: 0;
+    box-shadow:
+        16px 6px 0 #909090,
+        32px 3px 0 #888,
+        9px 20px 0 #9a9a9a,
+        25px 22px 0 #858585,
+        -3px 12px 0 #b0b0b0;
+}
+.smoke-cloud::after {
+    width: 35px;
+    height: 35px;
+    top: 0;
+    left: 6px;
+    background: radial-gradient(circle at 30% 30%, #b8b8b8, #7a7a7a);
+    opacity: 0.95;
+}
     </style>
 </head>
 
@@ -730,7 +727,7 @@
                 levels: [
                     {
                         level: 1,
-                        question: "Which CT dots should form a setup together? (Select all that apply)",
+                        question: "Which CT dots should move back to the next fast info position? (Select all that apply)",
                         imageSrc: "./mapImages/ancientMap.webp",
                         multiSelect: true,
                         correctDotIds: [2, 3],   // Correct answer: dots 2 and 3
@@ -752,12 +749,16 @@
                         ]
                     },
                     {
-                        level: 2, question: "Which of the following is the A fast info initial position?", imageSrc: "./mapImages/ancientMap.webp", dots: [
-                            { id: 1, type: 'ct', left: "48.1%", top: "14.4%", correct: false, expl: "New CT dot – edit later" },
-                            { id: 2, type: 't', left: "52.3%", top: "19.6%", correct: false, expl: "New T dot – edit later" }
+                        level: 2,
+                        question: "xx",
+                        imageSrc: "./mapImages/ancientMap.webp",
+                        multiSelect: true,
+                        correctDotIds: [2, 3],
+                        dots: [
+
                         ],
                         smokes: [
-                            { id: 1, type: 'smoke', left: "53.1%", top: "12.7%" }
+
                         ]
                     },
 
