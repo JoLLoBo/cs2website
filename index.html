@@ -3035,7 +3035,7 @@
             <div class="lessons-header">
                 <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
                 <h1>AI Practice – CT Predefined / T Manual</h1>
-                <p style="color:#aaa;">CT move automatically • Click T dot → click map to send it</p>
+                <p style="color:#aaa;">CT move automatically • Click T dot → click map to send • Lines connect all CT↔T</p>
             </div>
             <div style="margin-bottom: 20px; display: flex; gap: 12px;">
                 <button id="reset-ai-dots" style="background:#27272a; color:#fff; border:none; padding:12px 24px; font-size:16px; font-weight:500; border-radius:9999px; cursor:pointer;">
@@ -3045,12 +3045,14 @@
             </div>
             <div class="map-container" id="map-container" style="position: relative;">
                 <img src="./mapImages/ancientMapBlackWhite.webp" alt="Map" style="width: 100%; height: auto; display: block; border-radius: 8px;" id="ai-map-img">
+                <svg id="lines-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></svg>
             </div>
         </div>
     `;
 
                 const container = document.getElementById('map-container');
                 const mapImg = document.getElementById('ai-map-img');
+                const svg = document.getElementById('lines-svg');
                 const statusSpan = document.getElementById('selection-status');
 
                 // ---------- Configuration ----------
@@ -3100,14 +3102,13 @@
                 }
 
                 function spawnDots() {
-                    // Clear old dots and markers
                     container.querySelectorAll('.blue-dot').forEach(el => el.remove());
                     ctDots = [];
                     tDots = [];
                     selectedTDotId = null;
                     statusSpan.textContent = '';
 
-                    // CT dots (auto‑move)
+                    // CT dots
                     ctSpawns.forEach((pos, i) => {
                         const id = i + 1;
                         const dest = ctDestinations[i] || pos;
@@ -3124,7 +3125,7 @@
                         });
                     });
 
-                    // T dots (manual selection)
+                    // T dots
                     tSpawns.forEach((pos, i) => {
                         const id = i + 1;
                         const dot = createDot(pos.left, pos.top, '#f59e0b', 'rgba(245, 158, 11, 0.4)', id, 't', id);
@@ -3143,10 +3144,11 @@
                             selectTDot(id);
                         });
                     });
+
+                    drawAllLines();
                 }
 
                 function selectTDot(id) {
-                    // Remove highlight from all T dots
                     tDots.forEach(d => {
                         d.element.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
                         d.element.style.transform = 'translate(-50%, -50%)';
@@ -3172,18 +3174,37 @@
                     const dot = tDots.find(d => d.id === selectedTDotId);
                     if (!dot) return;
 
-                    // Set destination
                     dot.destLeft = percentLeft;
                     dot.destTop = percentTop;
                     dot.active = true;
 
                     statusSpan.textContent = `T #${selectedTDotId} moving to (${percentLeft.toFixed(1)}%, ${percentTop.toFixed(1)}%)`;
-                    selectedTDotId = null; // clear selection after setting
+                    selectedTDotId = null;
 
-                    // Start movement if not already running
                     if (!animationFrame) {
                         startMovement();
                     }
+                }
+
+                // ---------- Draw all CT→T lines ----------
+                function drawAllLines() {
+                    svg.innerHTML = '';
+                    if (ctDots.length === 0 || tDots.length === 0) return;
+
+                    ctDots.forEach(ct => {
+                        tDots.forEach(t => {
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', ct.left + '%');
+                            line.setAttribute('y1', ct.top + '%');
+                            line.setAttribute('x2', t.left + '%');
+                            line.setAttribute('y2', t.top + '%');
+                            line.setAttribute('stroke', '#ffffff');
+                            line.setAttribute('stroke-width', '1.5');
+                            line.setAttribute('stroke-opacity', '0.3');
+                            line.setAttribute('stroke-dasharray', '4 4');
+                            svg.appendChild(line);
+                        });
+                    });
                 }
 
                 // ---------- Movement (straight line) ----------
@@ -3195,7 +3216,7 @@
                     function animate() {
                         let anyActive = false;
 
-                        // Move CT dots
+                        // CT movement
                         ctDots.forEach(dot => {
                             if (!dot.active) return;
                             const dx = dot.destLeft - dot.left;
@@ -3214,7 +3235,7 @@
                             anyActive = true;
                         });
 
-                        // Move T dots
+                        // T movement
                         tDots.forEach(dot => {
                             if (!dot.active || dot.destLeft === null || dot.destTop === null) return;
                             const dx = dot.destLeft - dot.left;
@@ -3233,11 +3254,13 @@
                             anyActive = true;
                         });
 
+                        drawAllLines(); // update lines every frame
+
                         if (anyActive) {
                             animationFrame = requestAnimationFrame(animate);
                         } else {
                             animationFrame = null;
-                            statusSpan.textContent = 'All dots idle – click a T dot to send it';
+                            statusSpan.textContent = 'All dots idle – click a T dot to send';
                         }
                     }
 
