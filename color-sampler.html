@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Color Sampler</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #fff;
+      font-family: monospace;
+      padding: 20px;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 600px;
+      overflow: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Image Color Sampler</h1>
+  <p>Sample all four images (center + corners) and the bottom region of the main map.</p>
+
+  <div>
+    <button onclick="sampleAllImages()">📊 Sample All Images</button>
+    <button onclick="sampleBottomRegion()">🗺️ Sample Bottom Region (y &gt; 70%)</button>
+  </div>
+
+  <div id="results">
+    <pre id="output">Click a button to sample colors...</pre>
+  </div>
+
+  <script>
+    // Image list for the four separate color samples
+    const imageFiles = [
+      { name: 'black', src: './mapImages/black.png' },
+      { name: 'blackAndWhite', src: './mapImages/blackAndWhite.png' },
+      { name: 'green', src: './mapImages/green.png' },
+      { name: 'red', src: './mapImages/red.png' }
+    ];
+
+    async function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function getPixelColor(img, x, y) {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const data = ctx.getImageData(x, y, 1, 1).data;
+      return { r: data[0], g: data[1], b: data[2] };
+    }
+
+    // Sample all four images (center and four corners)
+    async function sampleAllImages() {
+      const output = document.getElementById('output');
+      let text = '=== COLOR SAMPLING RESULTS (all images) ===\n\n';
+
+      for (const file of imageFiles) {
+        try {
+          const img = await loadImage(file.src);
+          const centerX = Math.floor(img.naturalWidth / 2);
+          const centerY = Math.floor(img.naturalHeight / 2);
+          const color = getPixelColor(img, centerX, centerY);
+          text += `${file.name}:\n`;
+          text += `  Center (${centerX},${centerY}): RGB(${color.r}, ${color.g}, ${color.b})\n`;
+
+          const samples = [
+            [10, 10],
+            [img.naturalWidth - 10, 10],
+            [10, img.naturalHeight - 10],
+            [img.naturalWidth - 10, img.naturalHeight - 10]
+          ];
+          text += `  Corner samples:\n`;
+          for (const [x, y] of samples) {
+            if (x < img.naturalWidth && y < img.naturalHeight) {
+              const c = getPixelColor(img, x, y);
+              text += `    (${x},${y}): RGB(${c.r}, ${c.g}, ${c.b})\n`;
+            }
+          }
+          text += '\n';
+        } catch (e) {
+          text += `${file.name}: ERROR loading\n\n`;
+        }
+      }
+
+      output.textContent = text;
+    }
+
+    // Sample the bottom region of the main black‑and‑white map
+    async function sampleBottomRegion() {
+      const output = document.getElementById('output');
+      let text = '=== BOTTOM REGION SAMPLING (ancientMapBlackWhite.webp, y > 70%) ===\n';
+
+      try {
+        const img = await loadImage('./mapImages/ancientMapBlackWhite.webp');
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const startY = Math.floor(canvas.height * 0.7);
+        const sampleStep = 5;
+        const uniqueColors = new Map();
+
+        text += `Image size: ${canvas.width} x ${canvas.height}\n`;
+        text += `Sampling from y = ${startY} to ${canvas.height - 1} with step ${sampleStep}px\n`;
+        text += 'Collecting unique non‑black/white colors...\n\n';
+
+        for (let y = startY; y < canvas.height; y += sampleStep) {
+          for (let x = 0; x < canvas.width; x += sampleStep) {
+            const data = ctx.getImageData(x, y, 1, 1).data;
+            const r = data[0], g = data[1], b = data[2];
+
+            // Skip pure black (0,0,0) and pure white (255,255,255)
+            if ((r === 0 && g === 0 && b === 0) || (r === 255 && g === 255 && b === 255)) {
+              continue;
+            }
+
+            const key = `${r},${g},${b}`;
+            if (!uniqueColors.has(key)) {
+              uniqueColors.set(key, { r, g, b });
+            }
+          }
+        }
+
+        const colors = Array.from(uniqueColors.values());
+        text += `Found ${colors.length} unique non‑B/W colors:\n`;
+        colors.sort((a, b) => a.r - b.r || a.g - b.g || a.b - b.b);
+        colors.forEach(c => {
+          text += `  RGB(${c.r}, ${c.g}, ${c.b})\n`;
+        });
+
+        // Also show a small visual grid of the bottom area
+        text += '\n\n=== BOTTOM AREA VISUAL GRID (step=10px) ===\n';
+        text += 'Legend: W=White, K=Black, G=Green, B=Blue, R=Red, .=Other\n\n';
+
+        const gridStep = 10;
+        const gridCols = Math.floor(canvas.width / gridStep);
+        const gridRows = Math.floor((canvas.height - startY) / gridStep);
+
+        for (let row = 0; row < gridRows; row++) {
+          let line = '';
+          for (let col = 0; col < gridCols; col++) {
+            const x = col * gridStep;
+            const y = startY + row * gridStep;
+            const data = ctx.getImageData(x, y, 1, 1).data;
+            const r = data[0], g = data[1], b = data[2];
+
+            let char = '.';
+            if (r > 200 && g > 200 && b > 200) char = 'W';
+            else if (r < 50 && g < 50 && b < 50) char = 'K';
+            else if (r < 100 && g < 100 && b > 200) char = 'B';
+            else if (r < 100 && g > 200 && b < 100) char = 'G';
+            else if (r > 200 && g < 100 && b < 100) char = 'R';
+
+            line += char;
+          }
+          text += line + '\n';
+        }
+
+      } catch (e) {
+        text += 'ERROR: ' + e.message;
+      }
+
+      output.textContent = text;
+    }
+  </script>
+</body>
+
+</html>

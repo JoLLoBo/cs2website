@@ -3030,63 +3030,141 @@
         window.loadAIGame = function () {
                 const main = document.getElementById('main-content');
                 main.innerHTML = `
-        <div class="ai-game-page">
-            <div onclick="loadHome()" class="back-btn">← Back to Home</div>
-            <div class="lessons-header">
-                <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
-                <h1>AI Practice – T Side</h1>
-                <p style="color:#aaa;">CT (blue) vs T (orange) • Spawn positions only</p>
+            <div class="ai-game-page">
+                <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+                <div class="lessons-header">
+                    <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
+                    <h1>AI Practice – T Side</h1>
+                    <p style="color:#aaa;">CT (blue) moves down • Stops on white pixels • T (orange) stays still</p>
+                </div>
+                <div class="map-container" id="map-container" style="position: relative;">
+                    <canvas id="ai-canvas" style="width: 100%; height: auto; display: block; border-radius: 8px;"></canvas>
+                </div>
             </div>
-            <div class="map-container" id="map-container">
-                <img src="./mapImages/ancientMapBlackWhite.webp" alt="Ancient Map Black/White" id="ai-map" style="width:100%; border-radius:8px;">
-            </div>
-        </div>
-    `;
+        `;
 
                 const container = document.getElementById('map-container');
+                const canvas = document.getElementById('ai-canvas');
+                const ctx = canvas.getContext('2d');
 
-                // Approximate CT spawn positions (top green area)
-                // Adjust these using the Dot Editor for precise placement
-                const ctSpawns = [
-                    { left: "48%", top: "10%" },
-                    { left: "50%", top: "7%" },
-                    { left: "52%", top: "10%" },
-                    { left: "54%", top: "7%" },
-                    { left: "56%", top: "10%" }
-                ];
+                // Load the black/white map image
+                const img = new Image();
+                img.src = './mapImages/ancientMapBlackWhite.webp';
+                img.onload = () => {
+                    // Set canvas dimensions to match the container width
+                    const containerWidth = container.clientWidth;
+                    const scale = containerWidth / img.naturalWidth;
+                    canvas.width = containerWidth;
+                    canvas.height = img.naturalHeight * scale;
 
-                // Approximate T spawn positions (bottom green area)
-                const tSpawns = [
-                    { left: "44.7%", top: "90%" },
-                    { left: "46.5%", top: "88%" },
-                    { left: "48.5%", top: "90%" },
-                    { left: "50.4%", top: "88%" },
-                    { left: "52.0%", top: "90%" }
-                ];
+                    // Draw the image scaled to fit the canvas
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // Spawn CT dots (blue)
-                ctSpawns.forEach((pos, i) => {
-                    const dot = document.createElement('div');
-                    dot.className = 'blue-dot';
-                    dot.style.left = pos.left;
-                    dot.style.top = pos.top;
-                    dot.style.background = '#58c2f2';
-                    dot.style.boxShadow = '0 0 0 5px rgba(88, 194, 242, 0.4)';
-                    dot.textContent = i + 1;
-                    container.appendChild(dot);
-                });
+                    // Spawn dots
+                    spawnAIDots(container, canvas, ctx);
+                };
 
-                // Spawn T dots (orange)
-                tSpawns.forEach((pos, i) => {
-                    const dot = document.createElement('div');
-                    dot.className = 'blue-dot';
-                    dot.style.left = pos.left;
-                    dot.style.top = pos.top;
-                    dot.style.background = '#f59e0b';
-                    dot.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
-                    dot.textContent = i + 1;
-                    container.appendChild(dot);
-                });
+                function spawnAIDots(container, canvas, ctx) {
+                    // Approximate spawn positions (percentages relative to container)
+                    const ctSpawns = [
+                        { left: "48%", top: "10%" },
+                        { left: "50%", top: "7%" },
+                        { left: "52%", top: "10%" },
+                        { left: "54%", top: "7%" },
+                        { left: "56%", top: "10%" }
+                    ];
+                    const tSpawns = [
+                        { left: "44.7%", top: "90%" },
+                        { left: "46.5%", top: "88%" },
+                        { left: "48.5%", top: "90%" },
+                        { left: "50.4%", top: "88%" },
+                        { left: "52.0%", top: "90%" }
+                    ];
+
+                    const movingDots = [];   // Only CT dots will be animated
+                    const speed = 0.15;      // percentage per frame
+
+                    // Helper to create a dot element
+                    function createDot(left, top, bgColor, shadowColor, text) {
+                        const dot = document.createElement('div');
+                        dot.className = 'blue-dot';
+                        dot.style.left = left;
+                        dot.style.top = top;
+                        dot.style.background = bgColor;
+                        dot.style.boxShadow = `0 0 0 5px ${shadowColor}`;
+                        dot.textContent = text;
+                        container.appendChild(dot);
+                        return dot;
+                    }
+
+                    // Create CT dots (will move down)
+                    ctSpawns.forEach((pos, i) => {
+                        const dot = createDot(pos.left, pos.top, '#58c2f2', 'rgba(88, 194, 242, 0.4)', i + 1);
+                        movingDots.push({
+                            element: dot,
+                            left: parseFloat(pos.left),
+                            top: parseFloat(pos.top),
+                            vx: 0,
+                            vy: speed,      // downward
+                            active: true
+                        });
+                    });
+
+                    // Create T dots (static, no animation)
+                    tSpawns.forEach((pos, i) => {
+                        createDot(pos.left, pos.top, '#f59e0b', 'rgba(245, 158, 11, 0.4)', i + 1);
+                    });
+
+                    // Animation loop – only for movingDots
+                    function animate() {
+                        let anyActive = false;
+
+                        movingDots.forEach(dot => {
+                            if (!dot.active) return;
+
+                            // Proposed new position
+                            let newLeft = dot.left + dot.vx;
+                            let newTop = dot.top + dot.vy;
+
+                            // Clamp to map boundaries (0–100%)
+                            newLeft = Math.max(0, Math.min(100, newLeft));
+                            newTop = Math.max(0, Math.min(100, newTop));
+
+                            // Convert percentage to canvas pixel coordinates
+                            const pixelX = Math.floor((newLeft / 100) * canvas.width);
+                            const pixelY = Math.floor((newTop / 100) * canvas.height);
+
+                            // Check if the pixel is white
+                            let isWhite = false;
+                            if (pixelX >= 0 && pixelX < canvas.width && pixelY >= 0 && pixelY < canvas.height) {
+                                const imageData = ctx.getImageData(pixelX, pixelY, 1, 1);
+                                const [r, g, b] = imageData.data;
+                                isWhite = (r > 240 && g > 240 && b > 240);
+                            }
+
+                            if (isWhite) {
+                                // Stop moving
+                                dot.active = false;
+                                dot.vx = 0;
+                                dot.vy = 0;
+                            } else {
+                                // Update position
+                                dot.left = newLeft;
+                                dot.top = newTop;
+                                dot.element.style.left = dot.left + '%';
+                                dot.element.style.top = dot.top + '%';
+                                anyActive = true;
+                            }
+                        });
+
+                        if (anyActive) {
+                            requestAnimationFrame(animate);
+                        }
+                    }
+
+                    // Start animation
+                    requestAnimationFrame(animate);
+                }
             };
 
         window.loadHome = function () {
