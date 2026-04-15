@@ -3030,141 +3030,234 @@
         window.loadAIGame = function () {
                 const main = document.getElementById('main-content');
                 main.innerHTML = `
-            <div class="ai-game-page">
-                <div onclick="loadHome()" class="back-btn">← Back to Home</div>
-                <div class="lessons-header">
-                    <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
-                    <h1>AI Practice – T Side</h1>
-                    <p style="color:#aaa;">CT (blue) moves down • Stops on white pixels • T (orange) stays still</p>
-                </div>
-                <div class="map-container" id="map-container" style="position: relative;">
-                    <canvas id="ai-canvas" style="width: 100%; height: auto; display: block; border-radius: 8px;"></canvas>
-                </div>
+        <div class="ai-game-page">
+            <div onclick="loadHome()" class="back-btn">← Back to Home</div>
+            <div class="lessons-header">
+                <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
+                <h1>AI Practice – CT Predefined / T Manual</h1>
+                <p style="color:#aaa;">CT move automatically • Click T dot → click map to send it</p>
             </div>
-        `;
+            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+                <button id="reset-ai-dots" style="background:#27272a; color:#fff; border:none; padding:12px 24px; font-size:16px; font-weight:500; border-radius:9999px; cursor:pointer;">
+                    ↺ Reset All
+                </button>
+                <span id="selection-status" style="color:#f59e0b; margin-left:auto; align-self:center;"></span>
+            </div>
+            <div class="map-container" id="map-container" style="position: relative;">
+                <img src="./mapImages/ancientMapBlackWhite.webp" alt="Map" style="width: 100%; height: auto; display: block; border-radius: 8px;" id="ai-map-img">
+            </div>
+        </div>
+    `;
 
                 const container = document.getElementById('map-container');
-                const canvas = document.getElementById('ai-canvas');
-                const ctx = canvas.getContext('2d');
+                const mapImg = document.getElementById('ai-map-img');
+                const statusSpan = document.getElementById('selection-status');
 
-                // Load the black/white map image
-                const img = new Image();
-                img.src = './mapImages/ancientMapBlackWhite.webp';
-                img.onload = () => {
-                    // Set canvas dimensions to match the container width
-                    const containerWidth = container.clientWidth;
-                    const scale = containerWidth / img.naturalWidth;
-                    canvas.width = containerWidth;
-                    canvas.height = img.naturalHeight * scale;
+                // ---------- Configuration ----------
+                const ctSpawns = [
+                    { left: "48%", top: "10%" },
+                    { left: "50%", top: "7%" },
+                    { left: "52%", top: "10%" },
+                    { left: "54%", top: "7%" },
+                    { left: "56%", top: "10%" }
+                ];
 
-                    // Draw the image scaled to fit the canvas
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const ctDestinations = [
+                    { left: "15.2%", top: "30.6%" },
+                    { left: "28.1%", top: "41.8%" },
+                    { left: "48.5%", top: "29.4%" },
+                    { left: "73.7%", top: "38.0%" },
+                    { left: "88.8%", top: "36.4%" }
+                ];
 
-                    // Spawn dots
-                    spawnAIDots(container, canvas, ctx);
-                };
+                const tSpawns = [
+                    { left: "44.7%", top: "90%" },
+                    { left: "46.5%", top: "88%" },
+                    { left: "48.5%", top: "90%" },
+                    { left: "50.4%", top: "88%" },
+                    { left: "52.0%", top: "90%" }
+                ];
 
-                function spawnAIDots(container, canvas, ctx) {
-                    // Approximate spawn positions (percentages relative to container)
-                    const ctSpawns = [
-                        { left: "48%", top: "10%" },
-                        { left: "50%", top: "7%" },
-                        { left: "52%", top: "10%" },
-                        { left: "54%", top: "7%" },
-                        { left: "56%", top: "10%" }
-                    ];
-                    const tSpawns = [
-                        { left: "44.7%", top: "90%" },
-                        { left: "46.5%", top: "88%" },
-                        { left: "48.5%", top: "90%" },
-                        { left: "50.4%", top: "88%" },
-                        { left: "52.0%", top: "90%" }
-                    ];
+                // State
+                let ctDots = [];
+                let tDots = [];
+                let selectedTDotId = null;
+                let animationFrame = null;
 
-                    const movingDots = [];   // Only CT dots will be animated
-                    const speed = 0.15;      // percentage per frame
+                // ---------- Helpers ----------
+                function createDot(left, top, bgColor, shadowColor, text, type, id) {
+                    const dot = document.createElement('div');
+                    dot.className = 'blue-dot';
+                    dot.style.left = left;
+                    dot.style.top = top;
+                    dot.style.background = bgColor;
+                    dot.style.boxShadow = `0 0 0 5px ${shadowColor}`;
+                    dot.textContent = text;
+                    if (type === 'ct') dot.dataset.ctId = id;
+                    if (type === 't') dot.dataset.tId = id;
+                    container.appendChild(dot);
+                    return dot;
+                }
 
-                    // Helper to create a dot element
-                    function createDot(left, top, bgColor, shadowColor, text) {
-                        const dot = document.createElement('div');
-                        dot.className = 'blue-dot';
-                        dot.style.left = left;
-                        dot.style.top = top;
-                        dot.style.background = bgColor;
-                        dot.style.boxShadow = `0 0 0 5px ${shadowColor}`;
-                        dot.textContent = text;
-                        container.appendChild(dot);
-                        return dot;
-                    }
+                function spawnDots() {
+                    // Clear old dots and markers
+                    container.querySelectorAll('.blue-dot').forEach(el => el.remove());
+                    ctDots = [];
+                    tDots = [];
+                    selectedTDotId = null;
+                    statusSpan.textContent = '';
 
-                    // Create CT dots (will move down)
+                    // CT dots (auto‑move)
                     ctSpawns.forEach((pos, i) => {
-                        const dot = createDot(pos.left, pos.top, '#58c2f2', 'rgba(88, 194, 242, 0.4)', i + 1);
-                        movingDots.push({
+                        const id = i + 1;
+                        const dest = ctDestinations[i] || pos;
+                        const dot = createDot(pos.left, pos.top, '#58c2f2', 'rgba(88, 194, 242, 0.4)', id, 'ct', id);
+                        ctDots.push({
                             element: dot,
+                            id: id,
                             left: parseFloat(pos.left),
                             top: parseFloat(pos.top),
-                            vx: 0,
-                            vy: speed,      // downward
-                            active: true
+                            destLeft: parseFloat(dest.left),
+                            destTop: parseFloat(dest.top),
+                            active: true,
+                            type: 'ct'
                         });
                     });
 
-                    // Create T dots (static, no animation)
+                    // T dots (manual selection)
                     tSpawns.forEach((pos, i) => {
-                        createDot(pos.left, pos.top, '#f59e0b', 'rgba(245, 158, 11, 0.4)', i + 1);
+                        const id = i + 1;
+                        const dot = createDot(pos.left, pos.top, '#f59e0b', 'rgba(245, 158, 11, 0.4)', id, 't', id);
+                        tDots.push({
+                            element: dot,
+                            id: id,
+                            left: parseFloat(pos.left),
+                            top: parseFloat(pos.top),
+                            destLeft: null,
+                            destTop: null,
+                            active: false,
+                            type: 't'
+                        });
+                        dot.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            selectTDot(id);
+                        });
                     });
+                }
 
-                    // Animation loop – only for movingDots
+                function selectTDot(id) {
+                    // Remove highlight from all T dots
+                    tDots.forEach(d => {
+                        d.element.style.boxShadow = '0 0 0 5px rgba(245, 158, 11, 0.4)';
+                        d.element.style.transform = 'translate(-50%, -50%)';
+                    });
+                    selectedTDotId = id;
+                    const dot = tDots.find(d => d.id === id);
+                    if (dot) {
+                        dot.element.style.boxShadow = '0 0 0 5px #ffffff';
+                        dot.element.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                        statusSpan.textContent = `T #${id} selected – click map to send`;
+                    }
+                }
+
+                function handleMapClick(e) {
+                    if (selectedTDotId === null) return;
+
+                    const rect = mapImg.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const clickY = e.clientY - rect.top;
+                    const percentLeft = (clickX / rect.width) * 100;
+                    const percentTop = (clickY / rect.height) * 100;
+
+                    const dot = tDots.find(d => d.id === selectedTDotId);
+                    if (!dot) return;
+
+                    // Set destination
+                    dot.destLeft = percentLeft;
+                    dot.destTop = percentTop;
+                    dot.active = true;
+
+                    statusSpan.textContent = `T #${selectedTDotId} moving to (${percentLeft.toFixed(1)}%, ${percentTop.toFixed(1)}%)`;
+                    selectedTDotId = null; // clear selection after setting
+
+                    // Start movement if not already running
+                    if (!animationFrame) {
+                        startMovement();
+                    }
+                }
+
+                // ---------- Movement (straight line) ----------
+                function startMovement() {
+                    if (animationFrame) cancelAnimationFrame(animationFrame);
+
+                    const speed = 0.8;
+
                     function animate() {
                         let anyActive = false;
 
-                        movingDots.forEach(dot => {
+                        // Move CT dots
+                        ctDots.forEach(dot => {
                             if (!dot.active) return;
-
-                            // Proposed new position
-                            let newLeft = dot.left + dot.vx;
-                            let newTop = dot.top + dot.vy;
-
-                            // Clamp to map boundaries (0–100%)
-                            newLeft = Math.max(0, Math.min(100, newLeft));
-                            newTop = Math.max(0, Math.min(100, newTop));
-
-                            // Convert percentage to canvas pixel coordinates
-                            const pixelX = Math.floor((newLeft / 100) * canvas.width);
-                            const pixelY = Math.floor((newTop / 100) * canvas.height);
-
-                            // Check if the pixel is white
-                            let isWhite = false;
-                            if (pixelX >= 0 && pixelX < canvas.width && pixelY >= 0 && pixelY < canvas.height) {
-                                const imageData = ctx.getImageData(pixelX, pixelY, 1, 1);
-                                const [r, g, b] = imageData.data;
-                                isWhite = (r > 240 && g > 240 && b > 240);
-                            }
-
-                            if (isWhite) {
-                                // Stop moving
+                            const dx = dot.destLeft - dot.left;
+                            const dy = dot.destTop - dot.top;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < speed) {
+                                dot.left = dot.destLeft;
+                                dot.top = dot.destTop;
                                 dot.active = false;
-                                dot.vx = 0;
-                                dot.vy = 0;
                             } else {
-                                // Update position
-                                dot.left = newLeft;
-                                dot.top = newTop;
-                                dot.element.style.left = dot.left + '%';
-                                dot.element.style.top = dot.top + '%';
-                                anyActive = true;
+                                dot.left += (dx / dist) * speed;
+                                dot.top += (dy / dist) * speed;
                             }
+                            dot.element.style.left = dot.left + '%';
+                            dot.element.style.top = dot.top + '%';
+                            anyActive = true;
+                        });
+
+                        // Move T dots
+                        tDots.forEach(dot => {
+                            if (!dot.active || dot.destLeft === null || dot.destTop === null) return;
+                            const dx = dot.destLeft - dot.left;
+                            const dy = dot.destTop - dot.top;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < speed) {
+                                dot.left = dot.destLeft;
+                                dot.top = dot.destTop;
+                                dot.active = false;
+                            } else {
+                                dot.left += (dx / dist) * speed;
+                                dot.top += (dy / dist) * speed;
+                            }
+                            dot.element.style.left = dot.left + '%';
+                            dot.element.style.top = dot.top + '%';
+                            anyActive = true;
                         });
 
                         if (anyActive) {
-                            requestAnimationFrame(animate);
+                            animationFrame = requestAnimationFrame(animate);
+                        } else {
+                            animationFrame = null;
+                            statusSpan.textContent = 'All dots idle – click a T dot to send it';
                         }
                     }
 
-                    // Start animation
-                    requestAnimationFrame(animate);
+                    animationFrame = requestAnimationFrame(animate);
                 }
+
+                function resetDots() {
+                    if (animationFrame) cancelAnimationFrame(animationFrame);
+                    spawnDots();
+                    startMovement();
+                    statusSpan.textContent = 'CT moving • Click T dot to send';
+                }
+
+                // ---------- Init ----------
+                spawnDots();
+                startMovement();
+                statusSpan.textContent = 'CT moving • Click T dot to send';
+
+                mapImg.addEventListener('click', handleMapClick);
+                document.getElementById('reset-ai-dots').onclick = resetDots;
             };
 
         window.loadHome = function () {
