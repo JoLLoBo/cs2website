@@ -4200,18 +4200,28 @@
             <div onclick="loadHome()" class="back-btn">← Back to Home</div>
             <div class="lessons-header">
                 <div class="breadcrumb">Play &nbsp;›&nbsp; vs AI</div>
-                <h1>AI Practice – Full Dot Control</h1>
+                <h1>AI Practice – Full Dot + Utility Control</h1>
                 <p style="color:#aaa;">
-                    • Click dot → then click map = move<br>
-                    • Drag = move<br>
+                    • Click dot → map = move<br>
+                    • Drag dot = move<br>
                     • Double-click dot = remove<br>
+                    • Click utility tool → click map = place<br>
+                    • Drag utilities = move | Double-click = remove<br>
                     • Lines show line-of-sight
                 </p>
             </div>
-            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
                 <button id="reset-ai-dots" style="background:#27272a; color:#fff; border:none; padding:12px 24px; font-size:16px; font-weight:500; border-radius:9999px; cursor:pointer;">
                     ↺ Reset All
                 </button>
+                
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="setUtilityMode('none')" class="utility-tool active" id="tool-none">🏠 Dots Mode</button>
+                    <button onclick="setUtilityMode('smoke')" class="utility-tool" id="tool-smoke">💨 Smoke</button>
+                    <button onclick="setUtilityMode('molotov')" class="utility-tool" id="tool-molotov">🔥 Molotov</button>
+                    <button onclick="setUtilityMode('flash')" class="utility-tool" id="tool-flash">✨ Flash</button>
+                </div>
+                
                 <span id="movement-status" style="color:#58c2f2; margin-left:auto; align-self:center;"></span>
             </div>
             <div class="map-container" id="map-container" style="position: relative;">
@@ -4226,6 +4236,7 @@
         const svg = document.getElementById("lines-svg");
         const statusSpan = document.getElementById("movement-status");
 
+        // Spawn data
         const ctSpawns = [
           { left: "48%", top: "10%" },
           { left: "50%", top: "7%" },
@@ -4233,7 +4244,6 @@
           { left: "54%", top: "7%" },
           { left: "56%", top: "10%" },
         ];
-
         const ctDestinations = [
           { left: "15.2%", top: "30.6%" },
           { left: "28.1%", top: "41.8%" },
@@ -4241,7 +4251,6 @@
           { left: "73.7%", top: "38.0%" },
           { left: "88.8%", top: "36.4%" },
         ];
-
         const tSpawns = [
           { left: "44.7%", top: "90%" },
           { left: "46.5%", top: "88%" },
@@ -4252,29 +4261,15 @@
 
         let ctDots = [];
         let tDots = [];
+        let utilities = [];
         let animationFrame = null;
         let selectedDot = null;
+        let currentUtilityMode = "none";
 
         let offscreenCanvas = null;
         let offscreenCtx = null;
         let mapWidth = 0,
           mapHeight = 0;
-
-        function createDot(left, top, bgColor, shadowColor, text, type, id) {
-          const dot = document.createElement("div");
-          dot.className = "blue-dot";
-          dot.style.left = left;
-          dot.style.top = top;
-          dot.style.background = bgColor;
-          dot.style.boxShadow = `0 0 0 5px ${shadowColor}`;
-          dot.style.width = "24px";
-          dot.style.height = "24px";
-          dot.style.fontSize = "15px";
-          dot.style.cursor = "pointer";
-          dot.textContent = text;
-          container.appendChild(dot);
-          return dot;
-        }
 
         function initOffscreenCanvas() {
           offscreenCanvas = document.createElement("canvas");
@@ -4364,81 +4359,128 @@
           });
         }
 
-        function handleMapClick(e) {
-          if (!selectedDot) return;
+        function createUtility(left, top, type) {
+          const el = document.createElement("div");
+          el.style.left = left;
+          el.style.top = top;
+          el.style.position = "absolute";
+          el.style.transform = "translate(-50%, -50%)";
+          el.style.zIndex = "6";
+          el.style.cursor = "pointer";
 
-          const rect = mapImg.getBoundingClientRect();
-          let newLeft = ((e.clientX - rect.left) / rect.width) * 100;
-          let newTop = ((e.clientY - rect.top) / rect.height) * 100;
-          newLeft = Math.max(0, Math.min(100, newLeft));
-          newTop = Math.max(0, Math.min(100, newTop));
-
-          selectedDot.left = newLeft;
-          selectedDot.top = newTop;
-          selectedDot.element.style.left = newLeft + "%";
-          selectedDot.element.style.top = newTop + "%";
-
-          drawAllLines();
-
-          selectedDot.element.style.boxShadow =
-            selectedDot.type === "ct"
-              ? "0 0 0 5px rgba(88, 194, 242, 0.4)"
-              : "0 0 0 5px rgba(245, 158, 11, 0.4)";
-
-          selectedDot = null;
-          statusSpan.textContent = "Dot moved • Click any dot then map";
-        }
-
-        function selectDot(dotData) {
-          if (selectedDot) {
-            selectedDot.element.style.boxShadow =
-              selectedDot.type === "ct"
-                ? "0 0 0 5px rgba(88, 194, 242, 0.4)"
-                : "0 0 0 5px rgba(245, 158, 11, 0.4)";
+          if (type === "smoke") {
+            el.className = "smoke-cloud";
+          } else if (type === "molotov") {
+            el.className = "molotov-fire";
+            for (let i = 0; i < 2; i++) {
+              const tongue = document.createElement("span");
+              tongue.className = "flame-tongue";
+              el.appendChild(tongue);
+            }
+          } else if (type === "flash") {
+            el.className = "flash-bang";
+            for (let i = 0; i < 2; i++) {
+              const arm = document.createElement("span");
+              arm.className = "star-arm";
+              el.appendChild(arm);
+            }
           }
-          selectedDot = dotData;
-          dotData.element.style.boxShadow = "0 0 0 8px rgba(234, 179, 8, 0.9)";
-          statusSpan.textContent = `Selected ${dotData.type.toUpperCase()}#${dotData.id} → Click map to move`;
-        }
-
-        function removeDot(dotData) {
-          // Remove from DOM
-          if (dotData.element && dotData.element.parentNode) {
-            dotData.element.parentNode.removeChild(dotData.element);
-          }
-
-          // Remove from array
-          if (dotData.type === "ct") {
-            ctDots = ctDots.filter((d) => d.id !== dotData.id);
-          } else {
-            tDots = tDots.filter((d) => d.id !== dotData.id);
-          }
-
-          drawAllLines();
-          statusSpan.textContent = `${dotData.type.toUpperCase()}#${dotData.id} removed`;
-
-          // If it was selected, clear selection
-          if (selectedDot && selectedDot.id === dotData.id) {
-            selectedDot = null;
-          }
-        }
-
-        function makeClickable(dotElement, dotData) {
-          dotElement.onclick = (e) => {
-            e.stopImmediatePropagation();
-            selectDot(dotData);
-          };
-
-          // Double click to remove
-          dotElement.ondblclick = (e) => {
-            e.stopImmediatePropagation();
-            removeDot(dotData);
+          container.appendChild(el);
+          return {
+            element: el,
+            type,
+            left: parseFloat(left),
+            top: parseFloat(top),
           };
         }
 
-        function makeDraggable(dotElement, dotData) {
+        function makeUtilityDraggable(util) {
           let isDragging = false;
+          function onMouseMove(e) {
+            if (!isDragging) return;
+            const rect = mapImg.getBoundingClientRect();
+            let newLeft = ((e.clientX - rect.left) / rect.width) * 100;
+            let newTop = ((e.clientY - rect.top) / rect.height) * 100;
+            newLeft = Math.max(0, Math.min(100, newLeft));
+            newTop = Math.max(0, Math.min(100, newTop));
+            util.left = newLeft;
+            util.top = newTop;
+            util.element.style.left = newLeft + "%";
+            util.element.style.top = newTop + "%";
+          }
+          function onMouseUp() {
+            if (isDragging) {
+              isDragging = false;
+              document.removeEventListener("mousemove", onMouseMove);
+              document.removeEventListener("mouseup", onMouseUp);
+            }
+          }
+          util.element.addEventListener("mousedown", (e) => {
+            if (e.button !== 0) return;
+            e.stopImmediatePropagation();
+            isDragging = true;
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+          });
+        }
 
+        function makeUtilityRemovable(util) {
+          util.element.ondblclick = (e) => {
+            e.stopImmediatePropagation();
+            util.element.remove();
+            utilities = utilities.filter((u) => u !== util);
+            statusSpan.textContent = `${util.type} removed`;
+          };
+        }
+
+        function createDot(left, top, bgColor, shadowColor, text, type, id) {
+          const dot = document.createElement("div");
+          dot.className = "blue-dot";
+          dot.style.left = left;
+          dot.style.top = top;
+          dot.style.background = bgColor;
+          dot.style.boxShadow = `0 0 0 5px ${shadowColor}`;
+          dot.style.width = "24px";
+          dot.style.height = "24px";
+          dot.style.fontSize = "15px";
+          dot.style.cursor = "pointer";
+          dot.textContent = text;
+          container.appendChild(dot);
+          return dot;
+        }
+
+        function makeDotClickableAndRemovable(dotData) {
+          // Single click - select for movement
+          dotData.element.onclick = (e) => {
+            e.stopImmediatePropagation();
+            if (selectedDot) {
+              selectedDot.element.style.boxShadow =
+                selectedDot.type === "ct"
+                  ? "0 0 0 5px rgba(88, 194, 242, 0.4)"
+                  : "0 0 0 5px rgba(245, 158, 11, 0.4)";
+            }
+            selectedDot = dotData;
+            dotData.element.style.boxShadow =
+              "0 0 0 8px rgba(234, 179, 8, 0.9)";
+            statusSpan.textContent = `Selected ${dotData.type.toUpperCase()}#${dotData.id} → Click map to move`;
+          };
+
+          // Double click - remove
+          dotData.element.ondblclick = (e) => {
+            e.stopImmediatePropagation();
+            dotData.element.remove();
+            if (dotData.type === "ct")
+              ctDots = ctDots.filter((d) => d.id !== dotData.id);
+            else tDots = tDots.filter((d) => d.id !== dotData.id);
+            drawAllLines();
+            statusSpan.textContent = `${dotData.type.toUpperCase()}#${dotData.id} removed`;
+            if (selectedDot && selectedDot.id === dotData.id)
+              selectedDot = null;
+          };
+        }
+
+        function makeDotDraggable(dotData) {
+          let isDragging = false;
           function onMouseMove(e) {
             if (!isDragging) return;
             const rect = mapImg.getBoundingClientRect();
@@ -4449,11 +4491,10 @@
 
             dotData.left = newLeft;
             dotData.top = newTop;
-            dotElement.style.left = newLeft + "%";
-            dotElement.style.top = newTop + "%";
+            dotData.element.style.left = newLeft + "%";
+            dotData.element.style.top = newTop + "%";
             drawAllLines();
           }
-
           function onMouseUp() {
             if (isDragging) {
               isDragging = false;
@@ -4461,8 +4502,7 @@
               document.removeEventListener("mouseup", onMouseUp);
             }
           }
-
-          dotElement.addEventListener("mousedown", (e) => {
+          dotData.element.addEventListener("mousedown", (e) => {
             if (e.button !== 0) return;
             e.stopImmediatePropagation();
             isDragging = true;
@@ -4471,10 +4511,65 @@
           });
         }
 
+        function handleMapClick(e) {
+          const rect = mapImg.getBoundingClientRect();
+          let newLeft = ((e.clientX - rect.left) / rect.width) * 100;
+          let newTop = ((e.clientY - rect.top) / rect.height) * 100;
+          newLeft = Math.max(0, Math.min(100, newLeft));
+          newTop = Math.max(0, Math.min(100, newTop));
+
+          if (currentUtilityMode !== "none") {
+            const util = createUtility(
+              newLeft + "%",
+              newTop + "%",
+              currentUtilityMode,
+            );
+            utilities.push(util);
+            makeUtilityDraggable(util);
+            makeUtilityRemovable(util);
+            statusSpan.textContent = `${currentUtilityMode.charAt(0).toUpperCase() + currentUtilityMode.slice(1)} placed`;
+            return;
+          }
+
+          if (selectedDot) {
+            selectedDot.left = newLeft;
+            selectedDot.top = newTop;
+            selectedDot.element.style.left = newLeft + "%";
+            selectedDot.element.style.top = newTop + "%";
+            drawAllLines();
+            selectedDot.element.style.boxShadow =
+              selectedDot.type === "ct"
+                ? "0 0 0 5px rgba(88, 194, 242, 0.4)"
+                : "0 0 0 5px rgba(245, 158, 11, 0.4)";
+            selectedDot = null;
+            statusSpan.textContent = "Dot moved • Click any dot then map";
+          }
+        }
+
+        window.setUtilityMode = function (mode) {
+          currentUtilityMode = mode;
+          document.querySelectorAll(".utility-tool").forEach((btn) => {
+            btn.classList.toggle(
+              "active",
+              (mode === "none" && btn.id === "tool-none") ||
+                (mode === "smoke" && btn.id === "tool-smoke") ||
+                (mode === "molotov" && btn.id === "tool-molotov") ||
+                (mode === "flash" && btn.id === "tool-flash"),
+            );
+          });
+          statusSpan.textContent =
+            mode === "none" ? "Dot mode active" : `Click map to place ${mode}`;
+        };
+
         function spawnDots() {
-          container.querySelectorAll(".blue-dot").forEach((el) => el.remove());
+          container
+            .querySelectorAll(
+              ".blue-dot, .smoke-cloud, .molotov-fire, .flash-bang",
+            )
+            .forEach((el) => el.remove());
           ctDots = [];
           tDots = [];
+          utilities = [];
           selectedDot = null;
 
           // CT dots
@@ -4501,8 +4596,8 @@
               type: "ct",
             };
             ctDots.push(dotData);
-            makeClickable(dot, dotData);
-            makeDraggable(dot, dotData);
+            makeDotClickableAndRemovable(dotData);
+            makeDotDraggable(dotData);
           });
 
           // T dots
@@ -4525,8 +4620,8 @@
               type: "t",
             };
             tDots.push(dotData);
-            makeClickable(dot, dotData);
-            makeDraggable(dot, dotData);
+            makeDotClickableAndRemovable(dotData);
+            makeDotDraggable(dotData);
           });
 
           drawAllLines();
@@ -4565,7 +4660,7 @@
           if (animationFrame) cancelAnimationFrame(animationFrame);
           spawnDots();
           startMovement();
-          statusSpan.textContent = "All dots reset";
+          statusSpan.textContent = "All reset";
         }
 
         container.addEventListener("click", handleMapClick);
@@ -4583,7 +4678,7 @@
         }
 
         statusSpan.textContent =
-          "Click dot → map to move | Double-click to remove";
+          "Click utility button then map to place | Drag/Double-click to edit";
         document.getElementById("reset-ai-dots").onclick = resetDots;
       };
 
