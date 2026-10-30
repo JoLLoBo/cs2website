@@ -666,6 +666,27 @@
       .ai-game-page .flash-bang {
         pointer-events: auto;
       }
+
+      .bomb-marker {
+        width: 26px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #a69a70;
+        border-radius: 3px;
+        background: linear-gradient(135deg, #77765b, #343c2d);
+        color: #e8d9a5;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        user-select: none;
+      }
+
+      .ai-game-page .bomb-marker {
+        pointer-events: auto;
+      }
     </style>
   </head>
 
@@ -2066,6 +2087,7 @@
                     <button onclick="setUtilityMode('smoke')" class="utility-tool" id="tool-smoke">💨 Smoke</button>
                     <button onclick="setUtilityMode('molotov')" class="utility-tool" id="tool-molotov">🔥 Molotov</button>
                     <button onclick="setUtilityMode('flash')" class="utility-tool" id="tool-flash">✨ Flash</button>
+                    <button onclick="setUtilityMode('bomb')" class="utility-tool" id="tool-bomb">💣 Plant Bomb</button>
                 </div>
                 <span id="movement-status" style="color:#58c2f2;margin-left:auto;align-self:center;"></span>
             </div>
@@ -2226,6 +2248,11 @@
               a.className = "star-arm";
               el.appendChild(a);
             }
+          } else if (type === "bomb") {
+            el.className = "bomb-marker";
+            el.textContent = "C4";
+            el.title =
+              "Planted bomb — drag to move, double-click or right-click to remove";
           }
           container.appendChild(el);
           return { element: el, type, left: leftPercent, top: topPercent };
@@ -2459,10 +2486,16 @@
         function handleMapClick(e) {
           const pct = getImagePercent(e);
           if (currentUtilityMode !== "none") {
+            if (currentUtilityMode === "bomb") {
+              const existingBomb = utilities.find((u) => u.type === "bomb");
+              if (existingBomb) removeUtility(existingBomb);
+            }
+
             const util = createUtility(pct.left, pct.top, currentUtilityMode);
             utilities.push(util);
             makeUtilityDraggable(util);
             makeUtilityRemovable(util);
+
             statusSpan.textContent = `${currentUtilityMode} placed`;
             return;
           }
@@ -2490,7 +2523,8 @@
               (mode === "none" && btn.id === "tool-none") ||
                 (mode === "smoke" && btn.id === "tool-smoke") ||
                 (mode === "molotov" && btn.id === "tool-molotov") ||
-                (mode === "flash" && btn.id === "tool-flash"),
+                (mode === "flash" && btn.id === "tool-flash") ||
+                (mode === "bomb" && btn.id === "tool-bomb"),
             );
           });
           statusSpan.textContent =
@@ -2500,7 +2534,7 @@
         function spawnDots() {
           container
             .querySelectorAll(
-              ".blue-dot, .smoke-cloud, .molotov-fire, .flash-bang",
+              ".blue-dot, .smoke-cloud, .molotov-fire, .flash-bang, .bomb-marker",
             )
             .forEach((el) => el.remove());
           ctDots = [];
