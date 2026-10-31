@@ -2180,6 +2180,7 @@
 
         const jiggleDots = new Set();
         let jiggleAnimationId = null;
+        let jiggleStartTime = performance.now();
 
         function initOffscreenCanvas() {
           offscreenCanvas = document.createElement("canvas");
@@ -2352,23 +2353,39 @@
           return dot;
         }
 
-        // Jiggle (unchanged)
         function jiggleLoop() {
-          if (jiggleDots.size === 0) {
+          if (document.hidden || jiggleDots.size === 0) {
             jiggleAnimationId = null;
             return;
           }
-          const now = Date.now() / 1000;
+
+          const elapsed = (performance.now() - jiggleStartTime) / 1000;
+
           jiggleDots.forEach((dotData) => {
-            const offset = Math.sin(now * Math.PI * 2) * 50;
-            if (dotData.jiggleDirection === "vertical") {
-              dotData.element.style.transform = `translate(-50%, -50%) translateY(${offset}px)`;
-            } else {
-              dotData.element.style.transform = `translate(-50%, -50%) translateX(${offset}px)`;
-            }
+            const offset = Math.sin(elapsed * Math.PI * 2) * 50;
+            const axis = dotData.jiggleDirection === "vertical" ? "Y" : "X";
+
+            dotData.element.style.transform = `translate(-50%, -50%) translate${axis}(${offset}px)`;
           });
+
           jiggleAnimationId = requestAnimationFrame(jiggleLoop);
         }
+
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            if (jiggleAnimationId !== null) {
+              cancelAnimationFrame(jiggleAnimationId);
+              jiggleAnimationId = null;
+            }
+
+            jiggleDots.forEach((dotData) => {
+              dotData.element.style.transform = "translate(-50%, -50%)";
+            });
+          } else if (jiggleDots.size > 0 && jiggleAnimationId === null) {
+            jiggleStartTime = performance.now();
+            jiggleLoop();
+          }
+        });
 
         function toggleJiggle(dotData, newDirection) {
           if (newDirection === undefined) {
