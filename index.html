@@ -687,6 +687,38 @@
       .ai-game-page .bomb-marker {
         pointer-events: auto;
       }
+
+      .nade-explosion {
+        position: absolute;
+        font-size: 22px;
+        line-height: 1;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        cursor: move;
+        user-select: none;
+      }
+
+      .he-grenade::before {
+        content: "";
+        position: absolute;
+        width: 7px;
+        height: 5px;
+        top: -4px;
+        left: 3px;
+        background: #343a2b;
+        border-radius: 2px 2px 0 0;
+        border: 1px solid #20251b;
+      }
+
+      .he-grenade::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        top: 7px;
+        left: 0;
+        background: #a33b32;
+      }
     </style>
   </head>
 
@@ -2087,6 +2119,7 @@
                     <button onclick="setUtilityMode('smoke')" class="utility-tool" id="tool-smoke">💨 Smoke</button>
                     <button onclick="setUtilityMode('molotov')" class="utility-tool" id="tool-molotov">🔥 Molotov</button>
                     <button onclick="setUtilityMode('flash')" class="utility-tool" id="tool-flash">✨ Flash</button>
+                    <button onclick="setUtilityMode('nade')" class="utility-tool" id="tool-nade">💥 Nade</button>
                     <button onclick="setUtilityMode('bomb')" class="utility-tool" id="tool-bomb">💣 Plant Bomb</button>
                 </div>
                 <span id="movement-status" style="color:#58c2f2;margin-left:auto;align-self:center;"></span>
@@ -2248,6 +2281,9 @@
               a.className = "star-arm";
               el.appendChild(a);
             }
+          } else if (type === "nade") {
+            el.className = "nade-explosion";
+            el.textContent = "💥";
           } else if (type === "bomb") {
             el.className = "bomb-marker";
             el.textContent = "C4";
@@ -2524,6 +2560,7 @@
                 (mode === "smoke" && btn.id === "tool-smoke") ||
                 (mode === "molotov" && btn.id === "tool-molotov") ||
                 (mode === "flash" && btn.id === "tool-flash") ||
+                (mode === "nade" && btn.id === "tool-nade") ||
                 (mode === "bomb" && btn.id === "tool-bomb"),
             );
           });
@@ -2534,7 +2571,7 @@
         function spawnDots() {
           container
             .querySelectorAll(
-              ".blue-dot, .smoke-cloud, .molotov-fire, .flash-bang, .bomb-marker",
+              ".blue-dot, .smoke-cloud, .molotov-fire, .flash-bang, .he-grenade, .bomb-marker",
             )
             .forEach((el) => el.remove());
           ctDots = [];
